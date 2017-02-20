@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="com-thestudnet-plugins-twiccordovaplugin" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <name>TWICCordovaPlugin</name>
+
+    <js-module name="TWICCordovaPlugin" src="www/TWICCordovaPlugin.js">
+        <clobbers target="twiccordovaplugin"/>
+    </js-module>
+
+    <platform name="android">
+        <config-file parent="/*" target="res/xml/config.xml">
+            <feature name="TWICCordovaPlugin">
+                <param name="android-package" value="com.thestudnet.plugin.TWICCordovaPlugin"/>
+            </feature>
+        </config-file>
+        <source-file src="src/android/com/thestudnet/plugin/TWICCordovaPlugin.java"
+                     target-dir="src/com/thestudnet/plugin"/>
+
+        <framework src="src/android/plugin.gradle" custom="true" type="gradleReference" />
+        <resource-file src="androidaar/TWICAndroidPlugin.aar" target="libs/TWICAndroidPlugin.aar" />
+
+        <hook type="after_plugin_install" src="scripts/androidAfterInstall.js" />
+    </platform>
+
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="TWICCordovaPlugin">
+                <param name="ios-package" value="TWICCordovaPlugin" />
+            </feature>
+        </config-file>
+        <header-file src="src/ios/TWICCordovaPlugin.h" />
+        <source-file src="src/ios/TWICCordovaPlugin.m" />
+    </platform>
+</plugin>
