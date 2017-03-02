@@ -31,5 +31,11 @@
         </config-file>
         <header-file src="src/ios/TWICCordovaPlugin.h" />
         <source-file src="src/ios/TWICCordovaPlugin.m" />
+
+        <pods-config ios-min-version="9.0" use-frameworks="true"/>
+        <!-- Dependencies -->
+        <pod id="Firebase/Core" />
+        <pod id="SVProgressHUD" />
+        <pod id="OpenTok" version="~> 2.10"/>
     </platform>
 </plugin>
