@@ -31,15 +31,11 @@
             </feature>
         </config-file>
         <!--info.plist-->
-        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
-          <array>
-              <dict>
-                  <key>NSMicrophoneUsageDescription</key>
-	                <string>Studnet needs access to the microphone to stream your audio</string>
-                  <key>NSCameraUsageDescription</key>
-	                <string>Studnet needs access to the camera to stream your video</string>
-              </dict>
-          </array>
+        <config-file target="*-Info.plist" parent="NSMicrophoneUsageDescription">
+          <string>Studnet needs access to the microphone to stream your audio</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
+          <string>Studnet needs access to the camera to stream your video</string>
         </config-file>
         <!--header files-->
         <header-file src="src/ios/TWICCordovaPlugin.h" />
