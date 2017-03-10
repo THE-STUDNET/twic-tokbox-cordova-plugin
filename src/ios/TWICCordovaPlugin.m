@@ -1,8 +1,11 @@
 #import "TWICCordovaPlugin.h"
 #import <Cordova/CDV.h>
 #import "SVProgressHUD.h"
-#import <FirebaseStorage/FirebaseStorage.h>
+
+
 #import "StreamViewController.h"
+#import "FirebaseClient.h"
+#import "SocketIOClient.h"
 
 @interface TWICCordovaPlugin()
 
@@ -14,22 +17,28 @@
 {
     CDVPluginResult* pluginResult = nil;
     NSString* msg = [command.arguments objectAtIndex:0];
-
     if (msg == nil || [msg length] == 0) {
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR];
     }
     else
     {
-       [SVProgressHUD showSuccessWithStatus:msg];
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                          messageAsString:msg];
     }
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
     
-    //testing otsession    
+    //otsession
     StreamViewController *streamViewController = [[StreamViewController alloc]initWithNibName:[StreamViewController description] bundle:nil];
     [self.viewController presentViewController:streamViewController animated:YES completion:nil];
+    
+    //firebase configuration
+    [[FirebaseClient sharedInstance] configure];
+    [[FirebaseClient sharedInstance] writeStringValue:[NSString stringWithFormat:@"Hello world from iOS %@",[NSDate date]]];
+    
+    //socketio
+    [[SocketIOClient sharedInstance]connect];
+    
 }
 
 - (void)configure:(CDVInvokedUrlCommand*)command

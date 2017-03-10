@@ -1,20 +1,87 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11134" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11106"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StreamViewController">
             <connections>
+                <outlet property="connectSessionButton" destination="1S7-VU-avV" id="By1-nu-mvO"/>
+                <outlet property="disconnectSession" destination="H4S-FT-eTU" id="zEx-1g-Tkp"/>
+                <outlet property="startPublishingButton" destination="Cxg-Ow-2hu" id="EDh-63-1G4"/>
+                <outlet property="stopPublishingButton" destination="7fT-63-tzT" id="N8g-gJ-dNW"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+                <outletCollection property="actionButtons" destination="1S7-VU-avV" id="HF9-6v-thB"/>
+                <outletCollection property="actionButtons" destination="Cxg-Ow-2hu" id="5VJ-Ua-4fP"/>
+                <outletCollection property="actionButtons" destination="7fT-63-tzT" id="ctE-SX-Bly"/>
+                <outletCollection property="actionButtons" destination="H4S-FT-eTU" id="JEJ-VJ-4Li"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7fT-63-tzT">
+                    <rect key="frame" x="224" y="621" width="135" height="30"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <state key="normal" title="Stop publishing"/>
+                    <connections>
+                        <action selector="stopPublishing:" destination="-1" eventType="touchUpInside" id="x6q-LB-TGn"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cxg-Ow-2hu">
+                    <rect key="frame" x="224" y="583" width="135" height="30"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <state key="normal" title="Start publishing"/>
+                    <connections>
+                        <action selector="startPublishing:" destination="-1" eventType="touchUpInside" id="BjU-nf-8L9"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1S7-VU-avV">
+                    <rect key="frame" x="16" y="583" width="135" height="30"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <state key="normal" title="Connect Session"/>
+                    <connections>
+                        <action selector="connectSession:" destination="-1" eventType="touchUpInside" id="NEP-do-2NN"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H4S-FT-eTU">
+                    <rect key="frame" x="16" y="621" width="135" height="30"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="58q-9V-jfV"/>
+                        <constraint firstAttribute="width" constant="135" id="62I-pf-N7V"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <state key="normal" title="Disconnect Session"/>
+                    <connections>
+                        <action selector="disconnectSession:" destination="-1" eventType="touchUpInside" id="LMz-9F-J8S"/>
+                    </connections>
+                </button>
+            </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="7fT-63-tzT" firstAttribute="top" secondItem="Cxg-Ow-2hu" secondAttribute="bottom" constant="8" id="2DD-jg-wAt"/>
+                <constraint firstItem="1S7-VU-avV" firstAttribute="height" secondItem="H4S-FT-eTU" secondAttribute="height" id="AX4-UP-38M"/>
+                <constraint firstItem="7fT-63-tzT" firstAttribute="width" secondItem="H4S-FT-eTU" secondAttribute="width" id="DrP-F2-8MT"/>
+                <constraint firstAttribute="bottom" secondItem="H4S-FT-eTU" secondAttribute="bottom" constant="16" id="GGa-Ul-SE7"/>
+                <constraint firstItem="1S7-VU-avV" firstAttribute="width" secondItem="H4S-FT-eTU" secondAttribute="width" id="HQl-fR-9O6"/>
+                <constraint firstAttribute="bottom" secondItem="7fT-63-tzT" secondAttribute="bottom" constant="16" id="QGY-qP-uZ6"/>
+                <constraint firstItem="Cxg-Ow-2hu" firstAttribute="height" secondItem="H4S-FT-eTU" secondAttribute="height" id="iQN-4H-RHY"/>
+                <constraint firstItem="7fT-63-tzT" firstAttribute="height" secondItem="H4S-FT-eTU" secondAttribute="height" id="n9A-xW-pf1"/>
+                <constraint firstAttribute="trailing" secondItem="Cxg-Ow-2hu" secondAttribute="trailing" constant="16" id="nLi-n5-aqH"/>
+                <constraint firstItem="Cxg-Ow-2hu" firstAttribute="width" secondItem="H4S-FT-eTU" secondAttribute="width" id="p0H-iu-9et"/>
+                <constraint firstItem="H4S-FT-eTU" firstAttribute="top" secondItem="1S7-VU-avV" secondAttribute="bottom" constant="8" id="sLF-dO-gXL"/>
+                <constraint firstAttribute="trailing" secondItem="7fT-63-tzT" secondAttribute="trailing" constant="16" id="tVy-f3-HuG"/>
+                <constraint firstItem="1S7-VU-avV" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="16" id="tZL-xX-hvg"/>
+                <constraint firstItem="H4S-FT-eTU" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="16" id="zos-iT-CY1"/>
+            </constraints>
+            <point key="canvasLocation" x="33.5" y="54.5"/>
         </view>
     </objects>
 </document>
