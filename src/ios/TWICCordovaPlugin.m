@@ -1,6 +1,12 @@
 #import "TWICCordovaPlugin.h"
 #import <Cordova/CDV.h>
 #import "SVProgressHUD.h"
+#import <FirebaseStorage/FirebaseStorage.h>
+#import "StreamViewController.h"
+
+@interface TWICCordovaPlugin()
+
+@end
 
 @implementation TWICCordovaPlugin
 
@@ -20,6 +26,10 @@
     }
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
+    
+    //testing otsession    
+    StreamViewController *streamViewController = [[StreamViewController alloc]initWithNibName:[StreamViewController description] bundle:nil];
+    [self.viewController presentViewController:streamViewController animated:YES completion:nil];
 }
 
 - (void)configure:(CDVInvokedUrlCommand*)command

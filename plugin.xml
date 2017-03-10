@@ -24,17 +24,34 @@
     </platform>
 
     <platform name="ios">
+      <!--config.xml-->
         <config-file target="config.xml" parent="/*">
             <feature name="TWICCordovaPlugin">
                 <param name="ios-package" value="TWICCordovaPlugin" />
             </feature>
         </config-file>
+        <!--info.plist-->
+        <config-file target="*-Info.plist" parent="CFBundleURLTypes">
+          <array>
+              <dict>
+                  <key>NSMicrophoneUsageDescription</key>
+	                <string>Studnet needs access to the microphone to stream your audio</string>
+                  <key>NSCameraUsageDescription</key>
+	                <string>Studnet needs access to the camera to stream your video</string>
+              </dict>
+          </array>
+        </config-file>
+        <!--header files-->
         <header-file src="src/ios/TWICCordovaPlugin.h" />
+        <header-file src="src/ios/StreamViewController.h" />
+        <!--source files-->
         <source-file src="src/ios/TWICCordovaPlugin.m" />
-
+        <source-file src="src/ios/StreamViewController.m" />
+        <!--resources files-->
+        <resource-file src="CDVFooViewController.xib" />
+        <!-- Cocoapods -->
         <pods-config ios-min-version="9.0" use-frameworks="true"/>
-        <!-- Dependencies -->
-        <pod id="Firebase/Core" />
+        <pod id="Firebase/Storage" version="~> 1.1" />
         <pod id="SVProgressHUD" />
         <pod id="OpenTok" version="~> 2.10"/>
     </platform>
