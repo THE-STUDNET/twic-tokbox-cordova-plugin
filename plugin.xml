@@ -48,7 +48,7 @@
         <source-file src="src/ios/TWICCordovaPlugin.m" />
         <source-file src="src/ios/StreamViewController.m" />
         <!--resources files-->
-        <resource-file src="CDVFooViewController.xib" />
+        <resource-file src="src/ios/StreamViewController.xib" />
         <!-- Cocoapods -->
         <pods-config ios-min-version="9.0" use-frameworks="true"/>
         <pod id="Firebase/Storage" version="~> 1.1" />
