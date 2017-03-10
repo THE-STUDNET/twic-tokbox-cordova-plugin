@@ -51,7 +51,7 @@
         <resource-file src="src/ios/StreamViewController.xib" />
         <!-- Cocoapods -->
         <pods-config ios-min-version="9.0" use-frameworks="true"/>
-        <pod id="Firebase/Storage" version="~> 1.1" />
+        <pod id="FirebaseStorage" version="~> 1.1" />
         <pod id="SVProgressHUD" />
         <pod id="OpenTok" version="~> 2.10"/>
         <pod id="GONMacros" />
