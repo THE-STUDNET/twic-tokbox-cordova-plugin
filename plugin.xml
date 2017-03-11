@@ -42,8 +42,10 @@
         <source-file src="src/ios/TWICCordovaPlugin.m" />
         <header-file src="src/ios/StreamViewController.h" />
         <source-file src="src/ios/StreamViewController.m" />
-        <header-file src="src/ios/FirebaseClient.h" />
-        <source-file src="src/ios/FirebaseClient.m" />
+        <header-file src="src/ios/TWICFirebaseClient.h" />
+        <source-file src="src/ios/TWICFirebaseClient.m" />
+        <header-file src="src/ios/TWICSocketIO.h" />
+        <source-file src="src/ios/TWICSocketIO.m" />
         <!--resources files-->
         <resource-file src="src/ios/StreamViewController.xib" />
         <!-- Cocoapods -->
@@ -55,6 +57,6 @@
         <pod id="GONCategories" />
         <pod id="GONMarkupParser" />
         <pod id="NSString+Color" />
-        <pod id="socket.IO" version="~> 0.5" />
+        <pod id="Socket.IO-Client-Swift" version="~> 8.3.0" />
     </platform>
 </plugin>

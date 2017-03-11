@@ -3,6 +3,6 @@
 @interface TWICCordovaPlugin : CDVPlugin
 
 - (void)configure:(CDVInvokedUrlCommand*)command;
-- (void)show:(CDVInvokedUrlCommand*)command;
+- (void)launchHangout:(CDVInvokedUrlCommand*)command;
 /*commentaire*/
 @end

@@ -4,8 +4,8 @@
 
 
 #import "StreamViewController.h"
-#import "FirebaseClient.h"
-#import "SocketIOClient.h"
+#import "TWICFirebaseClient.h"
+#import "TWICSocketIOClient.h"
 
 @interface TWICCordovaPlugin()
 
@@ -13,7 +13,7 @@
 
 @implementation TWICCordovaPlugin
 
-- (void)show:(CDVInvokedUrlCommand*)command
+- (void)launchHangout:(CDVInvokedUrlCommand*)command
 {
     CDVPluginResult* pluginResult = nil;
     NSString* msg = [command.arguments objectAtIndex:0];
@@ -33,12 +33,11 @@
     [self.viewController presentViewController:streamViewController animated:YES completion:nil];
     
     //firebase configuration
-    [[FirebaseClient sharedInstance] configure];
-    [[FirebaseClient sharedInstance] writeStringValue:[NSString stringWithFormat:@"Hello world from iOS %@",[NSDate date]]];
+    [[TWICFirebaseClient sharedInstance] configure];
+    [[TWICFirebaseClient sharedInstance] writeStringValue:[NSString stringWithFormat:@"Hello world from iOS %@",[NSDate date]]];
     
     //socketio
-    [[SocketIOClient sharedInstance]connect];
-    
+    [[TWICSocketIOClient sharedInstance]connect];
 }
 
 - (void)configure:(CDVInvokedUrlCommand*)command
