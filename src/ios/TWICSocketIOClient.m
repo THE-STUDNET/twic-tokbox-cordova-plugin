@@ -7,6 +7,8 @@
 //
 
 #import "TWICSocketIOClient.h"
+#import "SVProgressHUD.h"
+
 @import SocketIO;
 
 @interface TWICSocketIOClient()
@@ -71,6 +73,9 @@ static NSString *action_authentify           = @"authentify";
     }];
     
     [self.socket on:event_ch_message callback:^(NSArray * data, SocketAckEmitter * ack) {
+        if([data count] > 0){
+            [weakSelf.delegate twicSocketIOClient:self didReceiveMessage:[data firstObject]];
+        }
         NSLog(@"%@",data);
     }];
     

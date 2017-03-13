@@ -7,7 +7,7 @@
 #import "TWICFirebaseClient.h"
 #import "TWICSocketIOClient.h"
 
-@interface TWICCordovaPlugin()
+@interface TWICCordovaPlugin()<TWICSocketIOClientDelegate>
 
 @end
 
@@ -37,6 +37,7 @@
     [[TWICFirebaseClient sharedInstance] writeStringValue:[NSString stringWithFormat:@"Hello world from iOS %@",[NSDate date]]];
     
     //socketio
+    [TWICSocketIOClient sharedInstance].delegate = self;
     [[TWICSocketIOClient sharedInstance]connect];
 }
 
@@ -44,5 +45,10 @@
 {
     [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK]
                                 callbackId:command.callbackId];
+}
+
+-(void)twicSocketIOClient:(id)sender didReceiveMessage:(NSDictionary *)messageObject{
+    [SVProgressHUD setMaximumDismissTimeInterval:3];
+    [SVProgressHUD showInfoWithStatus:[NSString stringWithFormat:@"%@",messageObject]];
 }
 @end
