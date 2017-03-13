@@ -16,12 +16,14 @@
 @implementation TWICSocketIOClient
 
 static NSString *_auth_token = @"2437e141f8ed03a110e3292ce54c741eff6164d5";
-static NSString *_domain = @"ws-new.thestudnet.com";
-static int _port = 443;
+static NSString *_domain     = @"ws-new.thestudnet.com";
 
-static NSString *event_authentify = @"authentify";
-static NSString *event_authenticated = @"authenticated";
-static NSString *event_ch_message = @"ch.message";
+static NSString *event_connect              = @"connect";
+static NSString *event_authenticated        = @"authenticated";
+static NSString *event_ch_message           = @"ch.message";
+static NSString *event_connection_timeout   = @"connect_timeout";
+static NSString *event_connection_error     = @"connect_error";
+static NSString *action_authentify           = @"authentify";
 
 + (TWICSocketIOClient *)sharedInstance
 {
@@ -36,96 +38,48 @@ static NSString *event_ch_message = @"ch.message";
 -(SocketIOClient*)socket{
     if(!_socket)
     {
-        NSURL* url = [[NSURL alloc] initWithString:[NSString stringWithFormat:@"https://%@:%d",_domain,_port]];
+        NSURL* url = [[NSURL alloc] initWithString:[NSString stringWithFormat:@"wss://%@",_domain]];
         _socket = [[SocketIOClient alloc] initWithSocketURL:url
                                                      config:@{@"log": @YES,
                                                               @"selfSigned":@YES,
                                                               @"forceWebsockets":@NO,
-                                                              @"doubleEncodeUTF8":@NO}];
+                                                              @"doubleEncodeUTF8":@NO,
+                                                              @"forceNew":@YES,
+                                                              @"secure":@YES}];
     }
     return _socket;
 }
 
 -(void)connect{
-    [self.socket connectWithTimeoutAfter:5 withHandler:^
-    {
-        if(self.socket.status == SocketIOClientStatusConnected){
-            NSUUID  *UUID = [NSUUID UUID];
-            NSString* stringUUID = [UUID UUIDString];
-            
-            NSDictionary *data = @{@"user_id":@"1",
-                                   @"authentification":_auth_token,
-                                   @"connection_token":stringUUID};
-            
-    //        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:data
-    //                                                           options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
-    //                                                             error:nil];
-            
-            [self.socket emit:event_authentify with:@[data]];
-        }else{
-            NSLog(@"%@",self.socket);
-        }
-    }];
+    __weak __typeof(self) weakSelf = self;
     
-    [self.socket on:event_authenticated callback:^(NSArray * _Nonnull data, SocketAckEmitter * _Nonnull ack)
-    {
-        NSLog(@"%@",data);
-        
-    }];
+    [self.socket connect];
     
     [self.socket on:@"connect" callback:^(NSArray* data, SocketAckEmitter* ack) {
-        NSLog(@"socket connected");
+        NSUUID  *UUID = [NSUUID UUID];
+        NSString* stringUUID = [UUID UUIDString];
+        
+        NSDictionary *dataToSend = @{@"id":@(1),
+                                     @"authentification":_auth_token,
+                                     @"connection_token":stringUUID};
+        
+        [weakSelf.socket emit:action_authentify with:@[dataToSend]];
+    }];
+    
+    [self.socket on:event_authenticated callback:^(NSArray* data, SocketAckEmitter* ack) {
+        NSLog(@"%@",data);
+    }];
+    
+    [self.socket on:event_ch_message callback:^(NSArray * data, SocketAckEmitter * ack) {
+        NSLog(@"%@",data);
+    }];
+    
+    [self.socket on:@"connect_timeout" callback:^(NSArray* data, SocketAckEmitter* ack) {
+        NSLog(@"connect_timeout");
+    }];
+
+    [self.socket on:@"connect_error" callback:^(NSArray* data, SocketAckEmitter* ack) {
+        NSLog(@"connect_error");
     }];
 }
-
-- (void)engineDidErrorWithReason:(NSString * _Nonnull)reason{
-    
-}
-
-/*
-- (void) socketIODidConnect:(SocketIO *)socket
-{
-    NSUUID  *UUID = [NSUUID UUID];
-    NSString* stringUUID = [UUID UUIDString];
-    
-    NSDictionary *data = @{@"user_id":@"1",
-                           @"authentification":_auth_token,
-                           @"connection_token":stringUUID};
-    
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:data
-                                                       options:NSJSONWritingPrettyPrinted // Pass 0 if you don't care about the readability of the generated string
-                                                         error:nil];
-    
-    [self.socket sendEvent:event_authentify withData:jsonData];
-}
-- (void) socketIODidDisconnect:(SocketIO *)socket disconnectedWithError:(NSError *)error
-{
-    NSLog(@"socketIODidDisconnect");
-}
-
-- (void) socketIO:(SocketIO *)socket didReceiveMessage:(SocketIOPacket *)packet
-{
-    id data = [packet dataAsJSON];
-    NSLog(@"%@",data);
-}
-- (void) socketIO:(SocketIO *)socket didReceiveJSON:(SocketIOPacket *)packet
-{
-    id data = [packet dataAsJSON];
-    NSLog(@"%@",data);
-}
-- (void) socketIO:(SocketIO *)socket didReceiveEvent:(SocketIOPacket *)packet
-{
-    id data = [packet dataAsJSON];
-    NSLog(@"%@",data);
-}
-- (void) socketIO:(SocketIO *)socket didSendMessage:(SocketIOPacket *)packet
-{
-    id data = [packet dataAsJSON];
-    NSLog(@"%@",data);
-}
-- (void) socketIO:(SocketIO *)socket onError:(NSError *)error
-{
-    NSLog(@"%@",error.localizedDescription);
-}
-*/
 @end
