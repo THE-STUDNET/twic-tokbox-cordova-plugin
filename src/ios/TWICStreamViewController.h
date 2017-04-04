@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface StreamViewController : UIViewController
+@interface TWICStreamViewController : UIViewController
 
 @end

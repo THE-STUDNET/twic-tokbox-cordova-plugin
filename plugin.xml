@@ -38,16 +38,76 @@
           <string>Studnet needs access to the camera to stream your video</string>
         </config-file>
         <!--source and header files-->
+        <header-file src="src/ios/TWICConstants.h" />
         <header-file src="src/ios/TWICCordovaPlugin.h" />
         <source-file src="src/ios/TWICCordovaPlugin.m" />
-        <header-file src="src/ios/StreamViewController.h" />
-        <source-file src="src/ios/StreamViewController.m" />
         <header-file src="src/ios/TWICFirebaseClient.h" />
         <source-file src="src/ios/TWICFirebaseClient.m" />
         <header-file src="src/ios/TWICSocketIO.h" />
         <source-file src="src/ios/TWICSocketIO.m" />
+        <header-file src="src/ios/TWICMainViewController.h" />
+        <source-file src="src/ios/TWICMainViewController.m" />
+        <header-file src="src/ios/TWICStreamViewController.h" />
+        <source-file src="src/ios/TWICStreamViewController.m" />
+        <header-file src="src/ios/TWICStreamGridViewController.h" />
+        <source-file src="src/ios/TWICStreamGridViewController.m" />
+        <header-file src="src/ios/TWICStreamCollectionViewCell.h" />
+        <source-file src="src/ios/TWICStreamCollectionViewCell.m" />
+        <header-file src="src/ios/TWICMenuViewController.h" />
+        <source-file src="src/ios/TWICMenuViewController.m" />
+        <header-file src="src/ios/TWICMenuActionTableViewCell.h" />
+        <source-file src="src/ios/TWICMenuActionTableViewCell.m" />
+        <header-file src="src/ios/TWICMenuAccordionHeaderView.h" />
+        <source-file src="src/ios/TWICMenuAccordionHeaderView.m" />
         <!--resources files-->
-        <resource-file src="src/ios/StreamViewController.xib" />
+        <resource-file src="src/ios/TWICCordovaPlugin.storyboard" />
+        <resource-file src="src/ios/TWICMenuAccordionHeaderView.xib" />
+        <!--media files-->
+        <source-file src="src/ios/TWICMedia.xcassets/camera.imageset/camera.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/camera.imageset/camera@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/camera.imageset/camera@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/chat.imageset/chat.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/chat.imageset/chat@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/chat.imageset/chat@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/disconnect.imageset/disconnect.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/disconnect.imageset/disconnect@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/disconnect.imageset/disconnect@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/microphone.imageset/microphone.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/microphone.imageset/microphone@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/microphone.imageset/microphone@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/record.imageset/record.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/record.imageset/record@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/record.imageset/record@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/rotate.imageset/rotate.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/rotate.imageset/rotate@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/rotate.imageset/rotate@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/screen.imageset/screen.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/screen.imageset/screen@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/screen.imageset/screen@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/send.imageset/send.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/send.imageset/send@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/send.imageset/send@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/stop.imageset/stop.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/stop.imageset/stop@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/stop.imageset/stop@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/user.imageset/user.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/user.imageset/user@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/user.imageset/user@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/cross.imageset/cross.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/cross.imageset/cross@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/cross.imageset/cross@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/up-arrow.imageset/up-arrow.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/up-arrow.imageset/up-arrow@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/up-arrow.imageset/up-arrow@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/down-arrow.imageset/down-arrow.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/down-arrow.imageset/down-arrow@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/down-arrow.imageset/down-arrow@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/microphone-green.imageset/microphone-green.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/microphone-green.imageset/microphone-green@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/microphone-green.imageset/microphone-green@3x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/screen-green.imageset/screen-green.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/screen-green.imageset/screen-green@2x.png" />
+        <source-file src="src/ios/TWICMedia.xcassets/screen-green.imageset/screen-green@3x.png" />
         <!-- Cocoapods -->
         <pods-config ios-min-version="9.0" use-frameworks="true"/>
         <pod id="Firebase/Database" version="~> 3.1" />
@@ -57,6 +117,7 @@
         <pod id="GONCategories" />
         <pod id="GONMarkupParser" />
         <pod id="NSString+Color" />
+        <pod id="FZAccordionTableView" />
         <pod id="Socket.IO-Client-Swift" version="~> 8.3.0" />
     </platform>
 </plugin>

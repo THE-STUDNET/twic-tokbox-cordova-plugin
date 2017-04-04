@@ -1,9 +1,8 @@
 #import "TWICCordovaPlugin.h"
 #import <Cordova/CDV.h>
-#import "SVProgressHUD.h"
+#import "TWICConstants.h"
 
-
-#import "StreamViewController.h"
+#import "TWICMainViewController.h"
 #import "TWICFirebaseClient.h"
 #import "TWICSocketIOClient.h"
 
@@ -28,9 +27,9 @@
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
     
-    //otsession
-    StreamViewController *streamViewController = [[StreamViewController alloc]initWithNibName:[StreamViewController description] bundle:nil];
-    [self.viewController presentViewController:streamViewController animated:YES completion:nil];
+    //main
+    UINavigationController *vc = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[NSString stringWithFormat:@"Navigation%@",[TWICMainViewController description]]];
+    [self.viewController presentViewController:vc animated:YES completion:nil];
     
     //firebase configuration
     [[TWICFirebaseClient sharedInstance] configure];

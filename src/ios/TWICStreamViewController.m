@@ -6,7 +6,7 @@
 //
 //
 
-#import "StreamViewController.h"
+#import "TWICStreamViewController.h"
 #import "SVProgressHUD.h"
 #import <OpenTok/OpenTok.h>
 
@@ -14,7 +14,7 @@
 #define SESSION_ID @"1_MX40NTcyMDQwMn5-MTQ4ODI3NDcyNTc4Mn5SdEpBWXFkNmRFTysrZmg0YnJwSnllbmh-UH4"
 #define TOKEN @"T1==cGFydG5lcl9pZD00NTcyMDQwMiZzaWc9MmM4YTkyMDFhMzMwYzkyM2JiMzc4ZjUzMjJlNzZhNDY4ODZmM2I0YjpzZXNzaW9uX2lkPTFfTVg0ME5UY3lNRFF3TW41LU1UUTRPREkzTkRjeU5UYzRNbjVTZEVwQldYRmtObVJGVHlzclptZzBZbkp3U25sbGJtaC1VSDQmY3JlYXRlX3RpbWU9MTQ4ODI3NDcyNiZyb2xlPW1vZGVyYXRvciZub25jZT0xNDg4Mjc0NzI2LjAxNzQxNzQ4NjU1MzI1JmV4cGlyZV90aW1lPTE0OTA4NjY3MjYmY29ubmVjdGlvbl9kYXRhPSU3QiUyMmlkJTIyJTNBMSU3RA=="
 
-@interface StreamViewController ()<OTSessionDelegate, OTSubscriberKitDelegate, OTPublisherDelegate>
+@interface TWICStreamViewController ()<OTSessionDelegate, OTSubscriberKitDelegate, OTPublisherDelegate>
 //outlets
 @property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *actionButtons;
 @property (weak, nonatomic) IBOutlet UIButton *connectSessionButton;
@@ -27,7 +27,7 @@
 @property (strong, nonatomic) OTSubscriber* subscriber;
 @end
 
-@implementation StreamViewController
+@implementation TWICStreamViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
