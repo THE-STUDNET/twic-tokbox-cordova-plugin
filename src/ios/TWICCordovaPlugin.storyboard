@@ -325,8 +325,8 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Bqb-Nx-fei">
-                                                    <rect key="frame" x="72" y="19" width="42" height="21"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <rect key="frame" x="72" y="21" width="37.5" height="18"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
@@ -352,15 +352,15 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="fhF-Uu-mfx">
-                                                    <rect key="frame" x="16" y="16" width="343" height="27.5"/>
-                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                    <rect key="frame" x="16" y="8" width="343" height="44"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="fhF-Uu-mfx" firstAttribute="top" secondItem="WAk-IO-iJc" secondAttribute="topMargin" constant="8" id="Y3d-Oo-n9D"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="fhF-Uu-mfx" secondAttribute="bottom" constant="8" id="lUe-x0-onw"/>
+                                                <constraint firstItem="fhF-Uu-mfx" firstAttribute="top" secondItem="WAk-IO-iJc" secondAttribute="topMargin" id="Y3d-Oo-n9D"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="fhF-Uu-mfx" secondAttribute="bottom" id="lUe-x0-onw"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="fhF-Uu-mfx" secondAttribute="trailing" constant="8" id="u6k-Fa-738"/>
                                                 <constraint firstItem="fhF-Uu-mfx" firstAttribute="leading" secondItem="WAk-IO-iJc" secondAttribute="leadingMargin" constant="8" id="yRw-tO-Bg7"/>
                                             </constraints>
@@ -391,8 +391,8 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="7Sd-63-hS2">
-                                        <rect key="frame" x="8" y="17" width="42" height="21"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <rect key="frame" x="8" y="19" width="37.5" height="18"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>

@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-static const CGFloat kDefaultMenuActionTableViewCellHeight = 60.0;
+static const CGFloat kDefaultMenuActionTableViewCellHeight = 50.0;
 
 @interface TWICMenuActionTableViewCell : UITableViewCell
 
