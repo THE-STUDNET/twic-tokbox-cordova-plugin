@@ -43,8 +43,8 @@
         <source-file src="src/ios/TWICCordovaPlugin.m" />
         <header-file src="src/ios/TWICFirebaseClient.h" />
         <source-file src="src/ios/TWICFirebaseClient.m" />
-        <header-file src="src/ios/TWICSocketIO.h" />
-        <source-file src="src/ios/TWICSocketIO.m" />
+        <header-file src="src/ios/TWICSocketIOClient.h" />
+        <source-file src="src/ios/TWICSocketIOClient.m" />
         <header-file src="src/ios/TWICMainViewController.h" />
         <source-file src="src/ios/TWICMainViewController.m" />
         <header-file src="src/ios/TWICStreamViewController.h" />
