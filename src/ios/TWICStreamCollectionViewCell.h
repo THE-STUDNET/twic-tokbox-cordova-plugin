@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface TWICStreamCollectionViewCell : UICollectionViewCell
--(void)configureWithData:(id)data;
+-(void)configureWithUser:(id)user;
 @end

@@ -7,24 +7,16 @@
 //
 
 #import "TWICStreamViewController.h"
-#import "SVProgressHUD.h"
+#import "TWICConstants.h"
 #import <OpenTok/OpenTok.h>
 
-#define API_KEY @"45720402"
-#define SESSION_ID @"1_MX40NTcyMDQwMn5-MTQ4ODI3NDcyNTc4Mn5SdEpBWXFkNmRFTysrZmg0YnJwSnllbmh-UH4"
-#define TOKEN @"T1==cGFydG5lcl9pZD00NTcyMDQwMiZzaWc9MmM4YTkyMDFhMzMwYzkyM2JiMzc4ZjUzMjJlNzZhNDY4ODZmM2I0YjpzZXNzaW9uX2lkPTFfTVg0ME5UY3lNRFF3TW41LU1UUTRPREkzTkRjeU5UYzRNbjVTZEVwQldYRmtObVJGVHlzclptZzBZbkp3U25sbGJtaC1VSDQmY3JlYXRlX3RpbWU9MTQ4ODI3NDcyNiZyb2xlPW1vZGVyYXRvciZub25jZT0xNDg4Mjc0NzI2LjAxNzQxNzQ4NjU1MzI1JmV4cGlyZV90aW1lPTE0OTA4NjY3MjYmY29ubmVjdGlvbl9kYXRhPSU3QiUyMmlkJTIyJTNBMSU3RA=="
-
 @interface TWICStreamViewController ()<OTSessionDelegate, OTSubscriberKitDelegate, OTPublisherDelegate>
-//outlets
-@property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *actionButtons;
-@property (weak, nonatomic) IBOutlet UIButton *connectSessionButton;
-@property (weak, nonatomic) IBOutlet UIButton *startPublishingButton;
-@property (weak, nonatomic) IBOutlet UIButton *stopPublishingButton;
-@property (weak, nonatomic) IBOutlet UIButton *disconnectSession;
 //TokBox
 @property (strong, nonatomic) OTSession* session;
 @property (strong, nonatomic) OTPublisher* publisher;
 @property (strong, nonatomic) OTSubscriber* subscriber;
+
+@property (nonatomic, assign) TWICStreamDisplay streamDisplay;
 @end
 
 @implementation TWICStreamViewController
@@ -32,57 +24,90 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor blackColor];
-    
-    //buttons
-    [_actionButtons enumerateObjectsUsingBlock:^(UIButton *button, NSUInteger idx, BOOL * _Nonnull stop) {
-        button.layer.cornerRadius = 5;
-        button.backgroundColor = [UIColor whiteColor];
-        [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        button.alpha = .5;
-    }];
+    self.view.backgroundColor = TWIC_COLOR_GREY;
 }
 
-
-- (BOOL)prefersStatusBarHidden
+-(void)configureWithUser:(id)data twicStreamDisplay:(TWICStreamDisplay)streamDisplay
 {
-    return YES;
+    self.streamDisplay = streamDisplay;
 }
 
+-(void)dealloc{
+    if(self.streamDisplay == TWICStreamDisplayFullScreen){
+        [self stopPublishing];
+    }
+    [self disconnectSession];
+}
+#pragma mark - Actions
+- (void)connectSession {
+    _session = [[OTSession alloc] initWithApiKey:TOK_API_KEY sessionId:TOK_SESSION_ID delegate:self];
+    [_session connectWithToken:TOK_TOKEN error:nil];
+}
+
+- (void)disconnectSession
+{
+    NSError *error=nil;
+    [self.session disconnect:&error];
+    if(error){
+        [SVProgressHUD showWithStatus:error.localizedDescription];
+    }
+}
+
+- (void)stopPublishing
+{
+    NSError *error;
+    [self.session unpublish:self.publisher error:&error];
+    if(error){
+        [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+    }
+}
+
+- (void)startPublishing
+{
+    NSError *error;
+    [self.session publish:self.publisher error:&error];
+    if(error){
+        [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+    }
+}
+
+#pragma mark - OTSession Callbacks
 //connected to the session
 - (void)sessionDidConnect:(OTSession*)session
 {
     self.session = session;
     
-    //authorize capture
-    [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted)
-     {
-         if(granted){
-             if (self.session.capabilities.canPublish)
+    if(self.streamDisplay == TWICStreamDisplayFullScreen)//add a publisher
+    {
+        //authorize capture
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
+                                 completionHandler:^(BOOL granted)
+         {
+             if(granted)
              {
-                 self.startPublishingButton.enabled = YES;
-                 self.stopPublishingButton.enabled = YES;
-                 
-                 self.publisher = [[OTPublisher alloc] initWithDelegate:self];
-                 [self.publisher.view setFrame:CGRectMake(10, 10, 120, 120)];
-                 self.publisher.view.layer.borderColor = [UIColor whiteColor].CGColor;
-                 self.publisher.view.layer.cornerRadius = 5.0f;
-                 self.publisher.view.layer.borderWidth = 1.0f;
-                 self.publisher.view.clipsToBounds = YES;
-                 [self.publisher setPublishAudio:YES];
-                 [self.publisher setPublishVideo:YES];
-                 [self.view addSubview:self.publisher.view];
+                 if (self.session.capabilities.canPublish)
+                 {
+                     self.publisher = [[OTPublisher alloc] initWithDelegate:self];
+                     [self.publisher.view setFrame:CGRectMake(10, 10, 120, 120)];
+                     self.publisher.view.layer.borderColor = [UIColor whiteColor].CGColor;
+                     self.publisher.view.layer.cornerRadius = 5.0f;
+                     self.publisher.view.layer.borderWidth = 1.0f;
+                     self.publisher.view.clipsToBounds = YES;
+                     [self.publisher setPublishAudio:YES];
+                     [self.publisher setPublishVideo:YES];
+                     [self.view addSubview:self.publisher.view];
+                 }
+                 else
+                 {
+                     [SVProgressHUD showErrorWithStatus:@"Can't publish"];
+                 }
              }
              else
              {
-                 [SVProgressHUD showErrorWithStatus:@"Can't publish"];
+                 [SVProgressHUD showErrorWithStatus:@"Authorization failed"];
              }
-         }
-         else
-         {
-             [SVProgressHUD showErrorWithStatus:@"Authorization failed"];
-         }
-     }];
+         }];
+    }
 }
 
 //new ststream created
@@ -126,42 +151,4 @@
 {
     NSLog(@"subscriber %@ didFailWithError %@", subscriber.stream.streamId, error);
 }
-
-#pragma mark - Actions
-
-- (IBAction)connectSession:(id)sender {
-    _session = [[OTSession alloc] initWithApiKey:API_KEY
-                                       sessionId:SESSION_ID
-                                        delegate:self];
-    [_session connectWithToken:TOKEN error:nil];
-    
-}
-
-- (IBAction)disconnectSession:(id)sender {
-    NSError *error=nil;
-    [self.session disconnect:&error];
-    if(error){
-        [SVProgressHUD showWithStatus:error.localizedDescription];
-    }
-}
-
-- (IBAction)stopPublishing:(id)sender {
-    NSError *error;
-    [self.session unpublish:self.publisher error:&error];
-    if(error){
-        [SVProgressHUD showErrorWithStatus:error.localizedDescription];
-    }
-}
-
-- (IBAction)startPublishing:(id)sender
-{
-    NSError *error;
-    [self.session publish:self.publisher error:&error];
-    if(error){
-        [SVProgressHUD showErrorWithStatus:error.localizedDescription];
-    }
-}
-
-
-
 @end

@@ -37,7 +37,18 @@
 
 -(void)configureWithUser:(NSDictionary *)user
 {
+    self.chevronImageView.image = [UIImage imageNamed:@"down-arrow"];
     [self.avatarImageView setImageWithURL:[NSURL URLWithString:user[TWIC_USER_AVATAR_URL_KEY]]];
     self.displayNameLabel.text = [NSString stringWithFormat:@"%@ %@",user[TWIC_USER_FIRSTNAME_KEY],user[TWIC_USER_LASTNAME_KEY]];
+}
+
+-(void)willOpen
+{
+    self.chevronImageView.image = [UIImage imageNamed:@"up-arrow"];
+}
+
+-(void)willClose
+{
+    self.chevronImageView.image = [UIImage imageNamed:@"down-arrow"];
 }
 @end

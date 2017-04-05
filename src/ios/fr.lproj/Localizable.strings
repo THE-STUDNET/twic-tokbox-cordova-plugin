@@ -1,0 +1,538 @@
+// Globals
+"globals.authenticating" = "Authentification...";
+"globals.progress.cancelled" = "La demande est annulée!";
+"globals.progress.error" = "L'erreur de connexion!";
+"globals.email.error.empty" = "L'email ne peut pas être vide!";
+"globals.email.error.existed" = "L'email existe déjà!";
+"globals.email.error.format" = "Le format d'email n'est pas valide!";
+"globals.username.error.length" = "Le longeur d'identifiant doit être plus que 5 caractères!";
+"globals.username.error.character" = "L'identifiant ne peut pas contenir les caractères spéciales!";
+"globals.username.error.existed" = "L'identifiant existe déjà!";
+"globals.password.error.length" = "Le longeur du mot de passe doit être plus que 6 caractères!";
+"globals.name.error.empty" = "Le nom ne peut pas être vide!";
+"globals.firstname.error.empty" = "Le prénom ne peut pas être vide!";
+"globals.authentication.failed" = "L'authentification a échoué";
+"globals.firstname"="Prénom";
+"globals.lastname"="Nom";
+"globals.email"="eMail";
+"globals.password"="Mot de passe";
+"globals.passwordVerif"="Confirmation du mot de passe";
+"globals.password.error.notMatching" = "Les mots de passe ne sont pas identiques";
+"globals.somebody" = "Quelqu'un";
+"globals.pulltorefresh.pull"="Tirer pour recharger...";
+"globals.pulltorefresh.release"="Relacher pour recharger...";
+"globals.pulltorefresh.loading"="Chargement...";
+"globals.unknownDistance"="Distance inconnue";
+"globals.unknownLocalization"="Localisation inconnue";
+"globals.distance"="Distance";
+"globals.price"="Prix";
+"globals.evaluations"="Evaluations";
+"globals.default"="Par défaut";
+"globals.1"="un";
+"globals.2"="deux";
+"globals.3"="trois";
+"globals.continue"="Continuer";
+"globals.ok"="Ok";
+"globals.grade.novice" = "Débutant";
+"globals.grade.elite" = "Elite";
+"globals.grade.usual" = "Habitué";
+"globals.grade.expert" = "Expert";
+"globals.grade.confirmed" = "Confirmé";
+"globals.grade.unknown" = "Inconnu";
+"globals.edit" = "Modifier";
+"globals.choose" = "Choisir";
+"globals.address" = "Adresse";
+"globals.zip" = "Code postal";
+"globals.city" = "Ville";
+"globals.country" = "Pays";
+"globals.continue" = "Continuer";
+"globals.cancel" = "Annuler";
+"globals.details" = "Details";
+"globals.moreinfo" = "+ infos";
+"globals.calculate" = "Calculer";
+"globals.later" = "Plus tard";
+"globals.validate" = "Valider";
+"globals.selectFuturDate" = "Veuillez sélectionner une date dans le futur";
+"globals.error" = "Erreur";
+"globals.updatingData"="Mise à jour des données";
+"globals.moveAndResize" = "Déplacer et redimensionner";
+"globals.yesterday"="Hier";
+"globals.today"="Aujourd'hui";
+"globals.loading"="Chargement";
+"globals.close"="Fermer";
+"globals.monday"="Lundi";
+"globals.tuesday"="Mardi";
+"globals.wednesday"="Mercredi";
+"globals.thursday"="Jeudi";
+"globals.friday"="Vendredi";
+"globals.saturday"="Samedi";
+"globals.sunday"="Dimanche";
+"globals.morning"="Matin";
+"globals.afternoon"="Après-midi";
+"globals.evening"="Soirée";
+"globals.unknown" = "Inconnu";
+"globals.yes" = "Oui";
+"globals.no" = "Non";
+"globals.confirmation" = "Confirmation";
+"globals.verify" = "Vérifier";
+"globals.send" = "Envoyer";
+"globals.delete" = "Supprimer";
+"globals.location.notAllowed" = "La localisation n'est pas activée.\nMerci de vous rendre dans Réglages > Confidentialité > Service de localisation.";
+"globals.updating"="Mise à jour...";
+
+/*request status*/
+"request.status.refused" = "Refusé";
+"request.status.canceled" = "Annulé";
+"request.status.accepted" = "Accepté";
+"request.status.toolate" = "Accepté par un réparateur";
+"request.status.unknown" = "Statut de demande inconnu";
+"request.status.waiting" = "En attente";
+
+/*intervention status */
+"intervention.status.inCreation" = "En création";
+"intervention.status.created" = "Créée";
+"intervention.status.created.next" = " - En attente d'une acceptation";
+"intervention.status.accepted" = "Acceptée";
+"intervention.status.accepted.next" = " - En attente du paiement";
+"intervention.status.paid" = "Payée";
+"intervention.status.paid.next" = " - En attente du démarrage";
+"intervention.status.started" = "Démarrée";
+"intervention.status.started.next" = " - Visualiser";
+"intervention.status.finished" = "Terminée";
+"intervention.status.finished.next" = " - En attente de la confirmation";
+"intervention.status.confirmed" = "Confirmée";//confirmée par le demandeur
+"intervention.status.confirmed.next" = " - En attente de la notation";
+"intervention.status.scored" = "Notée";
+"intervention.status.canceled" = "Annulée";
+"intervention.status.inGarantee" = "En garantie";
+"intervention.status.unknown" = "Statut d'intervention inconnu";
+"intervention.status.resolved" = "Résolue";
+"intervention.status.notresolved" = "Non résolue";
+"intervention.status.problem" = "Problème";
+
+/*menu items*/
+"menu.home" = "Accueil";
+"menu.myAccount" = "Mon compte";
+"menu.parameters" = "Paramètres";
+"menu.settings" = "Réglages";
+"menu.iban" = "Coordonnées bancaires";
+"menu.notifications" = "Notifications";
+"menu.help" = "Aide";
+"menu.help.show" = "Afficher l'aide";
+"menu.help.video" = "Comment ça marche ?";
+"menu.help.praticalAdvices" = "Conseils pratiques";
+"menu.help.contact" = "Contactez-nous";
+"menu.about" = "A propos / Press / CGU";
+"menu.information" = "Informations";
+"menu.information.about" = "A propos";
+"menu.information.press" = "Presse";
+"menu.information.cgu" = "CGU";
+"menu.share" = "Partagez Tynkle avec vos amis";
+"menu.disconnect" = "Déconnexion";
+"menu.paiements" = "Historique des paiements";
+"menu.rate" = "Noter l'application";
+"menu.suggest" = "Envoyer une Suggestion";
+
+/*connect view controller*/
+"connectvc.welcome"="Bienvenue sur Tynkle";
+"connectvc.facebook"="Poursuivre avec Facebook";
+"connectvc.createAccount"="Créer un compte";
+"connectvc.connect"="Connexion";
+"connectvc.title"="Connexion";
+
+/*register user type view controller*/
+"registerusertypevc.registerTitle" = "Inscription";
+"registerusertypevc.statusTitle"="Choisissez votre statut";
+"registerusertypevc.askForRepairman"="Vous <bold>recherchez</bold> un dépanneur";
+"registerusertypevc.becomeRepairman"="Vous <bold>souhaitez devenir</bold> dépanneur";
+"registerusertypevc.validation.user" = "Vous avez choisi le statut de demandeur, si votre choix est correct veuillez appuyer sur « Oui » sinon veuillez appuyer sur « Non » pour modifier votre choix";
+"registerusertypevc.validation.repairman" = "Vous avez choisi le statut de dépanneur, si votre choix est correct veuillez appuyer sur « Oui » sinon veuillez appuyer sur « Non » pour modifier votre choix";
+"registerusertypevc.cgu.title"="Accepter les conditions générales d'utilisation";
+"registerusertypevc.cgu.confirm"="Vous devez valider les conditions générales d'utilisation pour continuer";
+"registerusertypevc.majority.title"="Je suis majeur";
+"registerusertypevc.majority.confirm"="Vous devez valider être majeur pour continuer";
+
+/*register user view controller*/
+"registeruservc.registerTitle"="Inscription";
+"registeruservc.yourInformations"="Saisissez vos informations";
+"registeruservc.publicInformation"="<blue>#</blue> Ces informations n'apparaissent pas publiquement";
+"registeruservc.registerButton"="Inscrivez-vous";
+"registeruservc.createAccount"="Votre compte est en cours de création...";
+
+/*home view controller*/
+"homevc.title"="Accueil";
+"homerepairmanvc.numberOfRequests" = "Mes %d demandes";
+"homerepairmanvc.latestRequests"="Mes dernières demandes";
+"homerepairmanvc.noRequest" = "Vous n'avez encore aucune demande";
+
+/*interventions view controller */
+"interventionsvc.user.pageTitle"="Demandes";
+"interventionsvc.user.title"="Mes\nDemandes";
+"interventionsvc.user.subtitle"="Tous les dépanneurs contactés";
+"interventionsvc.repairman.pageTitle"="Dépannages";
+"interventionsvc.repairman.title"="Mes demandes de dépannage";
+"interventionsvc.repairman.subtitle"="Vous trouverez ici toutes vos demandes en attente de traitement";
+"interventionsvc.deleteIntervention"="Etes-vous sûr de vouloir supprimer cette intervention de la liste?";
+"interventionsvc.select"="+ Choisir";
+
+/*meetings view controller */
+"meetingsvc.title"="RDV";
+"meetingsvc.header.title" = "Mes rendez-vous";
+"meetingsvc.header.subtitle" = "Retrouvez ici tous vos rendez-vous";
+"meetingsvc.inProgress" = "Vos interventions en cours";
+"meetingsvc.finished" = "Vos interventions terminées";
+
+/*messages view controller */
+"messagesvc.title"="Messages";
+
+/*favorites view controller */
+"favoritesvc.title"="Favoris";
+"favoritesvc.user.title" = "Mes Dépanneurs";
+"favoritesvc.user.subtitle" = "favoris";
+
+/*Sharing*/
+"ShareHelper.mail.shareText" = "%@ souhaite partager Tynkle avec vous. Participez à l'aventure Tynkle.com : %@";
+"ShareHelper.sms.error" = "Vous ne pouvez pas envoyer de SMS depuis votre appareil.";
+
+/*Home view controller */
+"homeviewcontroller.changecity.button" = "Changer de ville";
+"homeviewcontroller.others.button" = "Voir les dépanneurs autour";
+"homeviewcontroller.titlelabel.repairmen" = "dépanneurs à domicile";
+"homeviewcontroller.titlelabel.requests" = "nouvelles demandes";
+"homeviewcontroller.subtitlelabel.nearYou" = "près de vous";
+"homeviewcontroller.usercontent.title" = "Etape 1/2";
+"homeviewcontroller.usercontent.subtitle" = "Choisissez votre matériel";
+"homeviewcontroller.usercontent.pcTitle"="Ordinateur ou portable <bold>PC</bold>";
+"homeviewcontroller.usercontent.macTitle"="Ordinateur ou portable <bold>Mac</bold>";
+"homeviewcontroller.usercontent.mobileTitle"="Smartphone ou tablette";
+"homeviewcontroller.usercontent.didyouknow"="Conseils pratiques";
+
+/*Login view controller */
+"loginvc.authentication" = "Connexion en cours";
+"loginvc.connectButton" = "Se connecter";
+"loginvc.connectTitle" = "Connexion";
+"loginvc.yourInformations" = "Saisissez vos informations";
+
+/*Select problem view controller */
+"selectproblemviewcontroller.title" = "Etape 2/2";
+"selectproblemviewcontroller.subtitle" = "Quel est votre problème ?";
+
+/*select mobile plateform view controller */
+"selectmobileplateformviewcontroller.title" = "Etape 1/2";
+"selectmobileplateformviewcontroller.subtitle" = "Sélectionnez votre plateforme mobile";
+"selectmobileplateformviewcontroller.iosTitle"="Smartphone ou tablette <bold>iOS</bold>";
+"selectmobileplateformviewcontroller.androidTitle"="Smartphone ou tablette <bold>Android</bold>";
+"selectmobileplateformviewcontroller.windowsTitle"="Smartphone ou tablette <bold>Windows</bold>";
+
+/* RepairmanRequestTableViewCell */
+"repairmanrequestcell.seeDetails" = "Voir la fiche";
+
+/* Repairmen View Controller */
+"repairmenvc.title" = "%d dépanneurs à domicile";
+"repairmenvc.subtitle.user" = "qui peuvent résoudre votre problème";
+"repairmenvc.subtitle.repairman" = "autour de vous";
+"repairmenvc.filter"="Filtrer ces résultats";
+"repairmenvc.selectRepairmen"="Veuillez sélectionner au moins %@ réparateurs";
+"repairmenvc.selectOneRepairmen"="Veuillez sélectionner un réparateur";
+"repairmenvc.tocontinue"="Pour continuer";
+"repairmenvc.norepairman.label" = "Aucun réparateur n'a été trouvé.\nVeuillez vérifier que le service de géolocalisation est activé ou choisir une nouvelle date.";
+"repairmenvc.choose" = "Choisir";
+
+/* Repairman Tableview Cell */
+"repairmantableviewcell.subtitle" = "Moyenne : %.1f";
+"repairmantableviewcell.guarantee" = "Garantie retour";
+"repairmantableviewcell.backup" = "Sauvegarde des données";
+"repairmantableviewcell.grade" = "%@ | %d interventions";
+
+/* Filters Table View Controller */
+"filterstablevc.title" = "Filtres pour";
+"filterstablevc.subtitle" = "liste des dépanneurs";
+"filterstablevc.returnGuarantee" = "Garantie retour";
+"filterstablevc.returnGuarantee.description" = "Une petite explication sur la garantie retour";
+"filterstablevc.savingData" = "Sauvegarde des données";
+"filterstablevc.savingData.description" = "Le réparateur se propose de sauvegarder vos données avant toute intervention";
+"filterstablevc.filterBy" = "Filtrer par";
+"filterstablevc.keySort" = "Choisir un critère";
+
+/* Repairman view controller */
+"repairmanvc.calendar.title" = "Voici les jours disponibles de %@";
+"repairmanvc.aboutme.title" = "%@ se présente en quelques mots";
+"repairmanvc.skills.title" = "Les compétences de %@";
+"repairmanvc.conditions.title" = "Les conditions de %@";
+"repairmanvc.aboutme.default" = "Ce dépanneur n’a pas encore renseigné sa description";
+"repairmanvc.skills.default" = "Aucune compétence mise en avant";
+"repairmanvc.conditions.default" = "Aucune condition particulière";
+"repairmanvc.comments" = "Voir les commentaires";
+
+/* notifications view controller */
+"notificationsvc.title" = "Vos notifications";
+"notificationsvc.subtitle" = "Paramétrez les notifications que vous souhaitez recevoir ici";
+
+/* User Settings Notifications */
+"notifications.user.aboutRequest" = "A propos de votre demande";
+"notifications.user.aboutRequest.description" = "Vous recevrez une alerte quand le dépanneur ne peut répondre à votre demande";
+"notifications.user.confirmIntervention" = "Confirmation de dépannage";
+"notifications.user.confirmIntervention.description" = "Vous recevrez une alerte lorsqu’un dépanneur aura traité votre demande";
+"notifications.user.confirmPaiement" = "Confirmation de paiement";
+"notifications.user.confirmPaiement.description" = "Vous recevrez une alerte pour confirmer le paiement auprès de Tynkle";
+"notifications.user.remindMeeting" = "Rappel de rendez-vous";
+"notifications.user.remindMeeting.description" = "Vous recevrez une alerte avant votre rendez-vous";
+"notifications.user.returnGuarantee" = "Garantie retour";
+"notifications.user.returnGuarantee.description" = "Vous recevrez une alerte lorsque la garantie retour ou garantie retour provisoire a été enclenchée";
+"notifications.user.confirmReturnGuaranteeMeeting" = "Confirmation rendez-vous garantie retour";
+"notifications.user.confirmReturnGuaranteeMeeting.description" = "Vous recevrez une alerte lorsque le second rendez-vous dans le cadre de la garantie retour ou garantie retour provisoire a été pris en compte";
+"notifications.user.remindReturnGuaranteeMeeting" = "Rappel rendez-vous garantie retour";
+"notifications.user.remindReturnGuaranteeMeeting.description" = "Vous recevrez une alerte pour vous rappeler qu’il ne vous reste que 24h pour prendre un nouveau rendez-vous dans le cadre de la garantie retour ou garantie retour provisoire";
+"notifications.user.cancelMeeting" = "Annulation de rendez-vous";
+"notifications.user.cancelMeeting.description" = "Vous recevrez une alerte pour vous confirmer l’annulation d’un rendez-vous";
+"notifications.user.noteRepairman" = "Evaluez votre dépanneur";
+"notifications.user.noteRepairman.description" = "Vous recevrez une alerte pour évaluer les dépannages, choix non modifiable";
+"notifications.user.arrivalTime" = "Heure d’arrivée";
+"notifications.user.arrivalTime.description" = "Vous recevrez une alerte pour attester de l’heure d’arrivée du dépanneur";
+"notifications.user.interventionStatus" = "Heure de départ";
+"notifications.user.interventionStatus.description" = "Vous recevrez une alerte pour attester de l’heure de fin du dépannage ainsi que son statut";
+"notifications.user.help" = "Conseils Pratiques";
+"notifications.user.help.description" = "Vous recevrez des alertes concernant des conseils sur l’utilisation de l’application";
+"notifications.user.email" = "Notifications par email";
+"notifications.user.email.description" = "Vous recevrez les alertes sélectionnées également par email";
+
+/* Repairman Settings Notifications */
+"notifications.repairman.newRequest" = "Nouvelle demande";
+"notifications.repairman.newRequest.description" = "Vous recevrez une alerte lors d’une nouvelle demande de dépannage";
+"notifications.repairman.confirmMeeting" = "Confirmation du rendez-vous";
+"notifications.repairman.confirmMeeting.description" = "Vous recevrez une alerte lorsqu’un demandeur aura effectué son paiement";
+"notifications.repairman.sendPaiement" = "Envoi de paiement";
+"notifications.repairman.sendPaiement.description" = "Vous recevrez une alerte lorsque Tynkle vous a envoyé le paiement";
+"notifications.repairman.remindMeeting" = "Rappel de rendez-vous";
+"notifications.repairman.remindMeeting.description" = "Vous recevrez une alerte avant votre rendez-vous";
+"notifications.repairman.cancelMeeting" = "Annulation de rendez-vous";
+"notifications.repairman.cancelMeeting.description" = "Vous recevrez une alerte pour vous informer de l’annulation d’un rendez- vous";
+"notifications.repairman.returnGuaranteeMeeting" = "Rendez-vous Garantie retour";
+"notifications.repairman.returnGuaranteeMeeting.description" = "Vous recevrez une alerte lorsque le demandeur a choisi une date de second rendez-vous dans le cadre de la Garantie retour";
+"notifications.repairman.aboutRequest" = "A propos de votre demande";
+"notifications.repairman.aboutRequest.description" = "Vous recevrez une alerte lorsqu’un demandeur a apporté une modification sur sa demande";
+"notifications.repairman.help" = "Conseils Pratiques";
+"notifications.repairman.help.description" = "Vous recevrez des alertes concernant des conseils sur l’utilisation de l’application";
+"notifications.repairman.email" = "Notifications par email";
+"notifications.repairman.email.description" = "Vous recevrez les alertes sélectionnées également par email";
+
+/* CitiesViewController */
+"citiesvc.searchbar.placeholder"="Rechercher une ville";
+
+/* InterventionDetails VC */
+"interventiondetailsvc.title" = "Fiche d'intervention";
+"interventiondetailsvc.daymoment" = "Moment de la journée";
+"interventiondetailsvc.material" = "Matériel";
+"interventiondetailsvc.operatingSystem" = "Système d'exploitation";
+"interventiondetailsvc.problemDetails" = "Précisez votre problème";
+"interventiondetailsvc.address.user" = "Mon lieu de rendez-vous";
+"interventiondetailsvc.address.repairman" = "Lieu de rendez-vous";
+"interventiondetailsvc.problem.noDescription" = "Aucun description n'est renseignée";
+"interventiondetailsvc.address.noDescription" = "Aucun adresse n'est renseignée";
+"interventiondetailsvc.selectDayMoment" = "Sélectionnez un moment de la journée";
+"interventiondetailsvc.problemDescription" = "Décrivez le plus précisemment possible votre problème ici";
+"interventiondetailsvc.selectOs" = "Sélectionnez un système d'exploitation";
+"interventiondetailsvc.selectMaterial" = "Sélectionnez un appareil";
+"interventiondetailsvc.selectMaterial.before" = "Veuillez sélectionner un appareil avant le système d'exploitation";
+"interventiondetailsvc.creatingRequest" = "Création de la demande d'intervention";
+"interventiondetailsvc.updateRequest"="Mise à jour de la demande d'intervention";
+"interventiondetailsvc.verify" = "Veuillez vérifier l'ensemble de la fiche avant de continuer";
+"interventiondetailsvc.requestCreated.success" = "Intervention créée avec succès";
+"interventiondetailsvc.cancelWithPenalties" = "Annuler une intervention peut conduire à des pénalités de remboursement";
+"interventiondetailsvc.cancel" = "Etes-vous sur de vouloir annuler cette intervention ?";
+"interventiondetailsvc.accept" = "Etes-vous sur de vouloir accepter cette intervention ?";
+"interventiondetailsvc.refuse" = "Etes-vous sur de vouloir refuser cette intervention ?";
+"interventiondetailsvc.updateRequest" = "Mise à jour de l'intervention";
+"interventiondetailsvc.pay" = "Etes-vous sur de vouloir procéder au paiement de cette intervention ?";
+"interventiondetailsvc.changeDay" = "Veuillez sélectionner une autre date";
+"interventiondetailsvc.chat"="Discuter";
+"interventiondetailsvc.updateIntervention" = "Mettre à jour l'intervention ?";
+
+//mandatory fields
+"interventiondetailsvc.mandatoryFields.platform" = "Veuillez sélectionner le matériel";
+"interventiondetailsvc.mandatoryFields.os" = "Veuillez sélectionner le sytème d'exploitation";
+"interventiondetailsvc.mandatoryFields.address" = "Veuillez remplir le champ adresse";
+"interventiondetailsvc.mandatoryFields.zip" = "Veuillez remplir le champ code postal";
+"interventiondetailsvc.mandatoryFields.city" = "Veuillez remplir le champ ville";
+"interventiondetailsvc.mandatoryFields.country" = "Veuillez remplir le champ pays";
+"interventiondetailsvc.mandatoryFields.daymoment" = "Veuillez sélectionner un moment de la journée";
+//intervention button states
+"interventiondetailsvc.actionbutton.send" = "Envoyer la demande";
+"interventiondetailsvc.actionbutton.cancel" = "Annuler la demande";
+"interventiondetailsvc.actionbutton.pay" = "Payer";
+"interventiondetailsvc.actionbutton.accept" = "Accepter la demande";
+"interventiondetailsvc.actionbutton.refuse" = "Refuser la demande";
+"interventiondetailsvc.actionbutton.score" = "Noter l'intervention";
+"interventiondetailsvc.actionbutton.garanty" = "Passer en garantie";
+"interventiondetailsvc.actionbutton.confirm" = "Confirmer l'intervention";
+"interventiondetailsvc.actionbutton.chat" = "Démarrer un chat";
+"interventiondetailsvc.actionbutton.update" = "Mettre à jour";
+"interventiondetailsvc.actionbutton.start" = "Démarrer l'intervention";
+"interventiondetailsvc.actionbutton.stop" = "Arrêter l'intervention";
+"interventiondetailsvc.actionbutton.contactUs" = "Nous contacter";
+//refunding
+"interventiondetailsvc.refunding.nothing" = "Compte tenu de la date, l'intégralité de la somme vous sera prélevée";
+"interventiondetailsvc.refunding.mid" = "Compte tenu de la date, la moitié de la somme vous sera remboursée";
+"interventiondetailsvc.refunding.full" = "Compte tenu de la date, l'intégralité de la somme vous sera remboursée";
+//canceled
+"interventiondetailsvc.cancel.confirmed"="L'annulation de votre intervention a été prise en compte";
+
+/* Repairmen Header Section */
+"repairmenheadersectionvc.requestDate" = "Date d'intervention";
+
+/* Intervention Progress */
+"interventionprogressvc.repairman.title" = "Dépannage chez\n%@";
+"interventionprogressvc.user.title" = "Dépannage par\n%@";
+"interventionprogressvc.subtitle" = "Matériel : %@";
+"interventionprogressvc.problem" = "Problème : %@\n%@";
+"interventionprogressvc.actionbutton.start" = "Démarrer l'intervention";
+"interventionprogressvc.actionbutton.stop" = "Arrêter l'intervention";
+"interventionprogressvc.actionbutton.resolved" = "Intervention résolue";
+"interventionprogressvc.actionbutton.failed" = "Intervention non résolue";
+"interventionprogressvc.actionbutton.garanty" = "Activer la garantie retour";
+"interventionprogressvc.time" = "Temps : %02dh%02dm%02ds";
+"interventionprogressvc.actionbutton.confirm" = "Confirmer la fin d'intervention";
+"interventionprogressvc.actionbutton.problem" = "Nous signaler un problème";
+"interventionprogressvc.garantie.chatMessage" = "Tynkle vous informe :\nvotre intervention a été placée en garantie, votre rendez-vous aura lieu le %@ %@";
+"interventionprogressvc.changeDate.chatMessage" = "Tynkle vous informe :\nVotre rendez-vous prévu initialement le %@ %@ à été modifié pour le %@ %@";
+"interventionprogressvc.garantie.moment.afternoon" = "dans l'après-midi";
+"interventionprogressvc.garantie.moment.evening" = "en soirée";
+"interventionprogressvc.garantie.moment.morning" = "dans la matinée";
+"repairmanvc.signal"="Signaler";
+"repairmanvc.signal.confirm"="Souhaitez-vous nous signaler un problème avec ce réparateur ?";
+
+/* User Profile */
+"userprofile.lastname"="Nom";
+"userprofile.firstname"="Prénom";
+"userprofile.phone"="Téléphone";
+"userprofile.phone"="Téléphone";
+"userprofile.email"="Email";
+"userprofile.pseudo"="Pseudo";
+"userprofile.password"="Mot de passe";
+"userprofile.address"="Adresse";
+"userprofile.birthday"="Date de naissance";
+"userprofile.coordinates"="Mes coordonnées";
+"userprofile.addPicture"="Ajouter une photo";
+"userprofile.takePicture"="Prendre une photo";
+"userprofile.yourGallery"="Utiliser ma librairie";
+"userprofile.address1" = "Adresse";
+"userprofile.address2" = "Complément d'adresse";
+"userprofile.zipcode" = "Code postal";
+"userprofile.city"="Ville";
+"userprofile.lastname.fill"="Veuillez remplir votre nom";
+"userprofile.firstname.fill"="Veuillez remplir votre prénom";
+"userprofile.deleteAccount"="Êtes-vous sur de vouloir supprimer votre compte ?\nCette opération est irréversible.";
+"userprofile.confirmPassword"="Confirmation";
+"userprofile.confirmPassword.error"="Les mots de passe ne sont pas identiques";
+
+/*messages vc*/
+"messagesvc.headerTitle" = "Boite de réception";
+"messagesvc.headerSubTitle" = "Discussions sur les interventions en cours";
+
+/*account vc*/
+"accountvc.coordinates" = "Coordonnées";
+"accountvc.calendar" = "Calendrier";
+"accountvc.settings" = "Préférences";
+"accountvc.skills" = "Compétences";
+"accountvc.about" = "A propos";
+
+/*countries vc*/
+"countriesvc.title" = "Pays";
+
+/*weeksavailability vc*/
+"weeksavailabilityvc.title" = "Disponibilités";
+
+/*repairmancalendarprofilevc */
+"repairmancalendarprofilevc.calendar.title" = "Sélectionnez spéfiquement les jours non travaillés";
+"repairmancalendarprofilevc.workingweeks"="Disponibilités en semaine";
+"repairmancalendarprofilevc.nonworkingdays"="Jours non travaillés";
+
+/*repairmanpreferencesvc*/
+"repairmanpreferencesvc.priceTitle" = "Prix par intervention";
+"repairmanpreferencesvc.optionsTitle" = "Vos options";
+
+/*paiementvc*/
+"paiementvc.paying" = "Intervention en cours de paiement";
+"paiementvc.titleLabel" = "Paiement";
+"paiementvc.subtitleLabel" = "de votre intervention Tynkle";
+"paiementvc.paiementButton" = "Payer";
+"paiementvc.paid" = "Merci\nVous pouvez maintenant discuter avec votre réparateur";
+"paiementvc.enterYourCardLabel" = "Entrez votre carte de paiement ci-dessous";
+"paiementvc.yourcardLabel" = "Votre carte de paiement ci-dessous";
+"paiementvc.deleteCard" = "Supprimer cette carte de paiement?";
+"paiementvc.savecard" = "Enregistrer votre carte";
+"paiementvc.info" = "Par mesure de sécurité et de gestion, le site conserve les fonds jusqu’à ce que le dépannage soit finalisé";
+"paiementvc.alertToday" = "Vous avez choisi une intervention aujourd’hui pour un dépannage ce même jour. De ce fait, si vous annulez, des frais vous serons prélevés. Afin d’éviter cela, si besoin, vous aurez la possibilité de faire modifier la date de rendez-vous par le dépanneur. Plus d’informations dans l’aide. Merci";
+
+/*pratical advices vc*/
+"praticaladvicesvc.header.title" = "Nos conseils";
+"praticaladvicesvc.header.subtitle" = "pratiques";
+
+/*intervention rating vc*/
+"interventionratingvc.comment.placeholder" = "Entrez un commentaire ici si vous le souhaitez";
+"interventionratingvc.title" = "Notation";
+"interventionratingvc.sendRate" = "Envoyer la note et le commentaire ?";
+"interventionratingvs.comment.title" = "Vos commentaires";
+
+/*repairman about */
+"repairmanaboutvc.descriptiontitle" = "A propos de moi";
+"repairmanaboutvc.conditiontitle" = "Mes conditions";
+
+/*faqlistvc*/
+"faqlistvc.header.user.title" = "Aide pour les demandeurs";
+"faqlistvc.header.repairman.title" = "Aide pour les dépanneurs";
+
+/*ibanvc*/
+"ibanvc.titleLabel"="Vos coordonnées bancaires";
+"ibanvc.subtitleLabel"="Afin de recevoir vos paiements";
+"ibanvc.iban"="Votre IBAN";
+"ibanvc.ibanButton" = "Sauver";
+"ibanvc.invalidiban" = "Merci de bien vouloir vérifier votre IBAN";
+
+/*comments*/
+"commentsvc.title"="Les commentaires";
+"commentsvc.subtitle"="de %@";
+
+/*commentcell*/
+"commentcell.nocomment" = "Aucun commentaire";
+
+/*rootvc*/
+"rootvc.inactive.user" = "Pour pouvoir faire une demande d’intervention, merci de confirmer votre compte via le mail que vous avez reçu. Si besoin, vérifiez vos courriers indésirables.";
+"rootvc.inactive.repairman" = "Pour publier votre profil, merci de confirmer votre compte via le mail que vous avez reçu. Si besoin, vérifiez vos courriers indésirables.";
+"rootvc.mail.sent"="Email renvoyé";
+"rootvc.mail.resend"="Renvoyer un email de confirmation ?";
+"rootvc.notCompletedAdress.user"="Merci de bien vouloir compléter votre adresse personnelle afin de garantir le bon fonctionnement de Tynkle";
+"rootvc.notCompletedAdress.repairman"="Merci de bien vouloir compléter votre adresse personnelle afin de garantir le bon fonctionnement de Tynkle";
+"rootvc.completeAddress"="Completer votre adresse ?";
+"rootvc.later"="Plus tard";
+"rootvc.now"="Maintenant";
+"rootvc.notCompletedIban"="Merci de bien vouloir compléter votre IBAN afin de pouvoir recevoir le paiement de vos prestations";
+"rootvc.completeIban"="Completer votre IBAN ?";
+
+/*contactvc*/
+"contactvc.title"="Envoyez-nous";
+"contactvc.subtitle"="un message";
+"contactvc.description"="Votre message";
+"contactvc.send"="Envoyer";
+"contactvc.subject.title"="Sujet";
+"contactvc.specify.title"="Détail";
+"contactvc.description.alert"="Merci de bien vouloir entrer une description";
+"contactvc.mailsent" = "Votre message a bien été envoyé, nous vous re-contacterons dans les meilleurs délais";
+"contactvc.sendingmail" = "Votre message est en cours d'envoi";
+
+/*help slides*/
+"slide1.title"="<extrabold>Tyn</extrabold>kle";
+"slide1.description"="Bienvenue sur Tynkle !\nUne communauté entre particulier pour être dépanné en toute simplicité";
+"slide2.title"="Utile";
+"slide2.description"="Faites des économies ou un complément de revenu";
+"slide3.title"="Pratique";
+"slide3.description"="Une solution à vos problèmes d'ordinateur, de smartphone ou de tablette";
+"slide4.title"="Rapide";
+"slide4.description"="Ne vous déplacez plus, un service vient à vous";
+
+/*tooltips*/
+"tooltip.profile"="Appuyer sur l'avatar pour voir votre profil";
+"tooltip.continue"="Appuyer sur continuer pour poursuivre";
+"tooltip.choose"="Appuyer sur choisir pour sélectionner un dépanneur";
+"tooltip.selectRepairman"="Appuyer sur un dépanneur pour afficher son profil";
+"tooltip.changeDate"="Appuyez sur la date pour pouvoir modifier un rendez-vous";

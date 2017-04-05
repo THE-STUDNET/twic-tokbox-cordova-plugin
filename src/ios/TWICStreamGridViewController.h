@@ -11,11 +11,13 @@
 
 @protocol TWICStreamGridViewControllerDelegate <NSObject>
 
--(void)TWICStreamGridViewController:(id)sender didSelectData:(id)data;
+-(void)TWICStreamGridViewController:(id)sender didSelectUser:(NSDictionary *)user;
 
 @end
 
 
 @interface TWICStreamGridViewController : UIViewController
 @property(nonatomic, weak)id<TWICStreamGridViewControllerDelegate>delegate;
+
+-(void)configureWithUsers:(NSArray *)users;
 @end

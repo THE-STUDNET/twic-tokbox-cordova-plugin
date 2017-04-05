@@ -14,4 +14,7 @@ static const CGFloat kDefaultAccordionHeaderViewHeight = 60.0;
 
 
 -(void)configureWithUser:(NSDictionary *)user;
+
+-(void)willOpen;
+-(void)willClose;
 @end

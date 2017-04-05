@@ -38,6 +38,11 @@
     [self refreshUI];
 }
 
+- (BOOL)prefersStatusBarHidden
+{
+    return YES;
+}
+
 -(void)refreshData{
     self.users = [NSMutableArray array];
     [self.users addObject:@{TWIC_USER_AVATAR_URL_KEY:@"http://allmygym.wywiwyg.net:5002/1.0/avatar/100/100/1",
@@ -139,6 +144,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if(self.delegate){
         NSDictionary *user = self.users[indexPath.section];
         NSDictionary *action = [user[TWIC_USER_ACTIONS_KEY] objectAtIndex:indexPath.row];
@@ -154,6 +160,16 @@
         return YES;
     }
     return NO;
+}
+
+- (void)tableView:(nonnull FZAccordionTableView *)tableView didOpenSection:(NSInteger)section withHeader:(nullable UITableViewHeaderFooterView *)header
+{
+    [(TWICMenuAccordionHeaderView *)header willOpen];
+}
+
+- (void)tableView:(nonnull FZAccordionTableView *)tableView didCloseSection:(NSInteger)section withHeader:(nullable UITableViewHeaderFooterView *)header
+{
+    [(TWICMenuAccordionHeaderView *)header willClose];
 }
 
 @end
