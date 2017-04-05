@@ -26,15 +26,15 @@
     }
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
-    
+
     //main
     UINavigationController *vc = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[NSString stringWithFormat:@"Navigation%@",[TWICMainViewController description]]];
     [self.viewController presentViewController:vc animated:YES completion:nil];
-    
+
     //firebase configuration
     [[TWICFirebaseClient sharedInstance] configure];
     [[TWICFirebaseClient sharedInstance] writeStringValue:[NSString stringWithFormat:@"Hello world from iOS %@",[NSDate date]]];
-    
+
     //socketio
     [TWICSocketIOClient sharedInstance].delegate = self;
     [[TWICSocketIOClient sharedInstance]connect];
@@ -42,8 +42,7 @@
 
 - (void)configure:(CDVInvokedUrlCommand*)command
 {
-    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK]
-                                callbackId:command.callbackId];
+  [self launchHangout:command];
 }
 
 -(void)twicSocketIOClient:(id)sender didReceiveMessage:(NSDictionary *)messageObject{

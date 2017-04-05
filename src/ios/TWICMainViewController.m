@@ -38,10 +38,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     [NOTIFICATION_CENTER addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-    
+
     [self configureSkin];
     [self configureLocalizable];
     [self refreshData];
@@ -107,7 +107,7 @@
 #pragma mark - Skining
 
 -(void)configureLocalizable{
-    self.messageTextField.text = LOCALIZED_STRING(@"mainvc.placeholder");
+    self.messageTextField.text = @"Type your message";
 }
 -(void)configureSkin{
     self.headerView.backgroundColor = CLEAR_COLOR;
@@ -115,21 +115,21 @@
     self.recordButton.backgroundColor = CLEAR_COLOR;
     self.numberUsersLabel.textColor = [UIColor whiteColor];
     self.messageTextField.textColor = [UIColor whiteColor];
-    
+
     UIView *insetView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 20, self.messageTextField.bounds.size.height)];
     insetView.backgroundColor = CLEAR_COLOR;
     self.messageTextField.leftView = insetView;
     self.messageTextField.leftViewMode = UITextFieldViewModeAlways;
-    
+
     self.disconnectButton.tintColor = [UIColor whiteColor];
     self.usersButton.tintColor = [UIColor whiteColor];
     self.sendButton.tintColor = [UIColor whiteColor];
-    
+
     [self configureView:self.disconnectButton];
     [self configureView:self.usersButton];
     [self configureView:self.sendButton];
     [self configureView:self.messageTextField];
-    
+
     self.currentSpeakerDisplayName.textColor = [UIColor whiteColor];
     self.currentSpeakerDisplayName.alpha = TWIC_ALPHA;
     self.currentSpeakerDisplayName.hidden = YES;
@@ -160,7 +160,7 @@
 - (IBAction)send:(id)sender {
     [self.messageTextField resignFirstResponder];
     //need to send data
-    self.messageTextField.text = LOCALIZED_STRING(@"mainvc.placeholder");
+    self.messageTextField.text = @"Type your message";
 }
 
 - (IBAction)users:(id)sender {
@@ -178,11 +178,11 @@
     if(self.backButton)
     {
         self.backButton = NO;
-        
+
         //remove stream vc
         [self.twicStreamViewController.view removeFromSuperview];
         self.twicStreamViewController = nil;
-        
+
         //add grid
         [self addStreamGridViewControllerForUsers:self.users];
     }
@@ -197,10 +197,10 @@
 {
     [self.twicStreamGridViewController.view removeFromSuperview];
     self.twicStreamGridViewController = nil;
-    
+
     //add stream
     [self addStreamViewControllerForUser:user];
-    
+
     self.backButton = YES;
 }
 
