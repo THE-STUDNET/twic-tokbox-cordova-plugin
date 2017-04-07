@@ -50,7 +50,6 @@
 -(void)configureWithUser:(id)user
 {
     [self.streamViewController configureWithUser:user twicStreamDisplay:TWICStreamDisplayGrid];
-    [self.streamViewController connectSession];
 }
 
 @end

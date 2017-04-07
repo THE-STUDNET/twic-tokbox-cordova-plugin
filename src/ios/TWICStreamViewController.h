@@ -13,12 +13,18 @@ typedef enum : NSUInteger {
     TWICStreamDisplayGrid,
 } TWICStreamDisplay;
 
+
+@protocol TWICStreamViewControllerDelegate <NSObject>
+
+-(void)TWICStreamViewControllerDidTouchPublishedStream:(id)sender;
+
+@end
 @interface TWICStreamViewController : UIViewController
-
+//configure
 -(void)configureWithUser:(id)data twicStreamDisplay:(TWICStreamDisplay)streamDisplay;
-
--(void)connectSession;
+//actions
 -(void)disconnectSession;
--(void)startPublishing;
 -(void)stopPublishing;
+//delegate
+@property (nonatomic, weak)id<TWICStreamViewControllerDelegate>delegate;
 @end

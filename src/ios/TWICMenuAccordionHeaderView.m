@@ -8,7 +8,7 @@
 
 #import "TWICMenuAccordionHeaderView.h"
 #import "TWICConstants.h"
-#import "UIImageView+AFNetworking.h"
+//#import "UIImageView+AFNetworking.h"
 
 @interface TWICMenuAccordionHeaderView()
 @property (weak, nonatomic) IBOutlet UIImageView *avatarImageView;
@@ -38,7 +38,7 @@
 -(void)configureWithUser:(NSDictionary *)user
 {
     self.chevronImageView.image = [UIImage imageNamed:@"down-arrow"];
-    [self.avatarImageView setImageWithURL:[NSURL URLWithString:user[TWIC_USER_AVATAR_URL_KEY]]];
+    //[self.avatarImageView setImageWithURL:[NSURL URLWithString:user[TWIC_USER_AVATAR_URL_KEY]]];
     self.displayNameLabel.text = [NSString stringWithFormat:@"%@ %@",user[TWIC_USER_FIRSTNAME_KEY],user[TWIC_USER_LASTNAME_KEY]];
 }
 

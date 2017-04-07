@@ -9,6 +9,13 @@
 #import "TWICStreamViewController.h"
 #import "TWICConstants.h"
 #import <OpenTok/OpenTok.h>
+#import "GRKBlurView.h"
+
+
+#define PUBLISHER_VIEW_FRAME_WIDTH      120
+#define PUBLISHER_VIEW_FRAME_HEIGHT     140
+#define PUBLISHER_VIEW_FRAME_DEFAULT_Y  10
+#define PUBLISHER_VIEW_FRAME_DEFAULT_X  10
 
 @interface TWICStreamViewController ()<OTSessionDelegate, OTSubscriberKitDelegate, OTPublisherDelegate>
 //TokBox
@@ -17,6 +24,8 @@
 @property (strong, nonatomic) OTSubscriber* subscriber;
 
 @property (nonatomic, assign) TWICStreamDisplay streamDisplay;
+@property (nonatomic, strong) GRKBlurView *blurView;
+@property (nonatomic, strong) NSDictionary *user;
 @end
 
 @implementation TWICStreamViewController
@@ -27,9 +36,11 @@
     self.view.backgroundColor = TWIC_COLOR_GREY;
 }
 
--(void)configureWithUser:(id)data twicStreamDisplay:(TWICStreamDisplay)streamDisplay
+-(void)configureWithUser:(NSDictionary *)user twicStreamDisplay:(TWICStreamDisplay)streamDisplay
 {
     self.streamDisplay = streamDisplay;
+    self.user = user;
+    [self connectSession];
 }
 
 -(void)dealloc{
@@ -40,8 +51,10 @@
 }
 #pragma mark - Actions
 - (void)connectSession {
-    _session = [[OTSession alloc] initWithApiKey:TOK_API_KEY sessionId:TOK_SESSION_ID delegate:self];
-    [_session connectWithToken:TOK_TOKEN error:nil];
+    _session = [[OTSession alloc] initWithApiKey:TOK_API_KEY
+                                       sessionId:TOK_SESSION_ID
+                                        delegate:self];
+    [_session connectWithToken:self.user[TWIC_USER_TOK_TOKEN] error:nil];
 }
 
 - (void)disconnectSession
@@ -76,7 +89,6 @@
 - (void)sessionDidConnect:(OTSession*)session
 {
     self.session = session;
-    
     if(self.streamDisplay == TWICStreamDisplayFullScreen)//add a publisher
     {
         //authorize capture
@@ -87,15 +99,19 @@
              {
                  if (self.session.capabilities.canPublish)
                  {
-                     self.publisher = [[OTPublisher alloc] initWithDelegate:self];
-                     [self.publisher.view setFrame:CGRectMake(10, 10, 120, 120)];
-                     self.publisher.view.layer.borderColor = [UIColor whiteColor].CGColor;
-                     self.publisher.view.layer.cornerRadius = 5.0f;
-                     self.publisher.view.layer.borderWidth = 1.0f;
-                     self.publisher.view.clipsToBounds = YES;
-                     [self.publisher setPublishAudio:YES];
-                     [self.publisher setPublishVideo:YES];
-                     [self.view addSubview:self.publisher.view];
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         self.publisher = [[OTPublisher alloc] initWithDelegate:self];
+                         [self.publisher.view setFrame:CGRectMake(MAIN_SCREEN.bounds.size.width - PUBLISHER_VIEW_FRAME_WIDTH - PUBLISHER_VIEW_FRAME_DEFAULT_X, PUBLISHER_VIEW_FRAME_DEFAULT_Y, PUBLISHER_VIEW_FRAME_WIDTH, PUBLISHER_VIEW_FRAME_HEIGHT)];
+                         self.publisher.view.layer.borderColor = [UIColor whiteColor].CGColor;
+                         self.publisher.view.layer.cornerRadius = 5.0f;
+                         self.publisher.view.layer.borderWidth = 1.0f;
+                         self.publisher.view.clipsToBounds = YES;
+                         UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(publisherTouched:)];
+                         [self.publisher.view addGestureRecognizer:tapAction];
+                         [self.publisher setPublishAudio:YES];
+                         [self.publisher setPublishVideo:YES];
+                         [self.view addSubview:self.publisher.view];
+                     });
                  }
                  else
                  {
@@ -108,6 +124,35 @@
              }
          }];
     }
+}
+
+-(void)publisherTouched:(UIGestureRecognizer*)gesture{
+    if(self.delegate){
+        [self.delegate TWICStreamViewControllerDidTouchPublishedStream:self];
+    }
+    //add blur view
+    [self addBlurView];
+    
+    //configure action view
+    
+}
+
+-(void)addBlurView{
+    if(self.blurView){
+        [self.blurView removeFromSuperview];
+        self.blurView = nil;
+    }
+    self.blurView  = [[GRKBlurView alloc]initWithFrame:self.subscriber.view.frame];
+    [self.blurView setTargetImageFromView:self.subscriber.view];
+    self.blurView.blurRadius = 30.0f;
+    UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(blurviewTouched:)];
+    [self.publisher.view addGestureRecognizer:tapAction];
+    [self.subscriber.view addSubview:self.blurView];
+}
+
+-(void)blurviewTouched:(UIGestureRecognizer*)gesture{
+    [self.blurView removeFromSuperview];
+    self.blurView = nil;
 }
 
 //new ststream created
@@ -151,4 +196,53 @@
 {
     NSLog(@"subscriber %@ didFailWithError %@", subscriber.stream.streamId, error);
 }
+
+
+#pragma mark - Actions
+//animation
+//
+//-(void)openActionView{
+//UIWindow* mainWindow = [APPLICATION keyWindow];
+//self.progressVC.view.frame = CGRectMake(0, 0, mainWindow.bounds.size.width/1.05, mainWindow.bounds.size.height/1.05);
+//self.progressVC.view.layer.cornerRadius = IMAGE_CORNER_RADIUS;
+//self.progressVC.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
+//self.progressVC.view.center = mainWindow.center;
+//[mainWindow addSubview:self.progressVC.view];
+//[UIView animateWithDuration:0.3/1.5 animations:^{
+//    self.progressVC.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.1, 1.1);
+//} completion:^(BOOL finished) {
+//    [UIView animateWithDuration:0.3/2 animations:^{
+//        self.progressVC.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.9, 0.9);
+//    } completion:^(BOOL finished) {
+//        [UIView animateWithDuration:0.3/2 animations:^{
+//            self.progressVC.view.transform = CGAffineTransformIdentity;
+//        }];
+//    }];
+//}];
+//
+//[self addChildViewController:self.progressVC];
+//[self.progressVC didMoveToParentViewController:self];
+//}
+//
+//#pragma mark - Intervention progress delegate
+//-(void)interventionInProgressViewControllerDidClose:(id)sender{
+//    WEAKSELF;
+//    [UIView animateWithDuration:0.3f animations:^
+//     {
+//         weakSelf.progressVC.view.alpha = 0;
+//     }
+//                     completion:^(BOOL finished)
+//     {
+//         [weakSelf.progressVC.view removeFromSuperview];
+//         weakSelf.progressVC = nil;
+//         
+//         //check state
+//         if([weakSelf.intervention.in_status isEqualToString:InterventionStatusConfirmed]){
+//             //open score view
+//             [weakSelf score:nil];
+//         }
+//     }];
+//}
+
+
 @end

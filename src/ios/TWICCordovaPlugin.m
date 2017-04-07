@@ -32,12 +32,12 @@
     [self.viewController presentViewController:vc animated:YES completion:nil];
 
     //firebase configuration
-    [[TWICFirebaseClient sharedInstance] configure];
-    [[TWICFirebaseClient sharedInstance] writeStringValue:[NSString stringWithFormat:@"Hello world from iOS %@",[NSDate date]]];
+    //[[TWICFirebaseClient sharedInstance] configure];
+    //[[TWICFirebaseClient sharedInstance] writeStringValue:[NSString stringWithFormat:@"Hello world from iOS %@",[NSDate date]]];
 
     //socketio
-    [TWICSocketIOClient sharedInstance].delegate = self;
-    [[TWICSocketIOClient sharedInstance]connect];
+    //[TWICSocketIOClient sharedInstance].delegate = self;
+    //[[TWICSocketIOClient sharedInstance]connect];
 }
 
 - (void)configure:(CDVInvokedUrlCommand*)command

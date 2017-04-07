@@ -13,7 +13,7 @@
 #import "TWICStreamViewController.h"
 #import "Masonry.h"
 
-@interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate>
+@interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICStreamViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (weak, nonatomic) IBOutlet UIView *supportView;
 @property (weak, nonatomic) IBOutlet UIView *footerView;
@@ -62,7 +62,7 @@
 }
 
 -(void)refreshData{
-    self.users = [@[@{},@{},@{},@{}]mutableCopy];
+    self.users = [@[@{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"}]mutableCopy];
 }
 
 -(void)refreshUI{
@@ -80,6 +80,7 @@
 -(void)addStreamViewControllerForUser:(NSDictionary *)user
 {
     self.twicStreamViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICStreamViewController description]];
+    self.twicStreamViewController.delegate = self;
     [self addChildViewController:self.twicStreamViewController];
     [self.twicStreamViewController configureWithUser:user twicStreamDisplay:TWICStreamDisplayFullScreen];
 }
@@ -204,4 +205,9 @@
     self.backButton = YES;
 }
 
+#pragma mark - TWICStreamViewController delegate
+-(void)TWICStreamViewControllerDidTouchPublishedStream:(id)sender
+{
+
+}
 @end
