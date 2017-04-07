@@ -62,7 +62,9 @@
 }
 
 -(void)refreshData{
-    self.users = [@[@{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"}]mutableCopy];
+    self.users = [@[@{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"},
+                    @{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"},
+                    @{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"}]mutableCopy];
 }
 
 -(void)refreshUI{

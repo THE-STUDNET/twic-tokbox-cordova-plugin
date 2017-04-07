@@ -145,9 +145,9 @@
     self.blurView  = [[GRKBlurView alloc]initWithFrame:self.subscriber.view.frame];
     [self.blurView setTargetImageFromView:self.subscriber.view];
     self.blurView.blurRadius = 30.0f;
-    UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(blurviewTouched:)];
-    [self.publisher.view addGestureRecognizer:tapAction];
     [self.subscriber.view addSubview:self.blurView];
+    UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(blurviewTouched:)];
+    [self.blurView addGestureRecognizer:tapAction];
 }
 
 -(void)blurviewTouched:(UIGestureRecognizer*)gesture{

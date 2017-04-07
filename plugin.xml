@@ -60,57 +60,57 @@
         <header-file src="src/ios/TWICMenuAccordionHeaderView.h" />
         <source-file src="src/ios/TWICMenuAccordionHeaderView.m" />
         <!--resources files-->
-        <resource-file src="src/ios/TWICCordovaPlugin.storyboard" />
-        <resource-file src="src/ios/TWICMenuAccordionHeaderView.xib" />
+        <resource-file src="src/ios/Resources/TWICCordovaPlugin.storyboard" />
+        <resource-file src="src/ios/Resources/TWICMenuAccordionHeaderView.xib" />
         <!--media files-->
-        <resource-file src="src/ios/TWICMedia.xcassets/camera.imageset/camera.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/camera.imageset/camera@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/camera.imageset/camera@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/chat.imageset/chat.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/chat.imageset/chat@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/chat.imageset/chat@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/disconnect.imageset/disconnect.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/disconnect.imageset/disconnect@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/disconnect.imageset/disconnect@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/microphone.imageset/microphone.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/microphone.imageset/microphone@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/microphone.imageset/microphone@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/record.imageset/record.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/record.imageset/record@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/record.imageset/record@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/rotate.imageset/rotate.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/rotate.imageset/rotate@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/rotate.imageset/rotate@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/screen.imageset/screen.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/screen.imageset/screen@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/screen.imageset/screen@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/send.imageset/send.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/send.imageset/send@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/send.imageset/send@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/stop.imageset/stop.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/stop.imageset/stop@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/stop.imageset/stop@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/user.imageset/user.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/user.imageset/user@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/user.imageset/user@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/cross.imageset/cross.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/cross.imageset/cross@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/cross.imageset/cross@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/up-arrow.imageset/up-arrow.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/up-arrow.imageset/up-arrow@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/up-arrow.imageset/up-arrow@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/down-arrow.imageset/down-arrow.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/down-arrow.imageset/down-arrow@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/down-arrow.imageset/down-arrow@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/microphone-green.imageset/microphone-green.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/microphone-green.imageset/microphone-green@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/microphone-green.imageset/microphone-green@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/screen-green.imageset/screen-green.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/screen-green.imageset/screen-green@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/screen-green.imageset/screen-green@3x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/speaking.imageset/speaking.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/speaking.imageset/speaking@2x.png" />
-        <resource-file src="src/ios/TWICMedia.xcassets/speaking.imageset/speaking@3x.png" />
+        <resource-file src="src/ios/Resources/camera.png" />
+        <resource-file src="src/ios/Resources/camera@2x.png" />
+        <resource-file src="src/ios/Resources/camera@3x.png" />
+        <resource-file src="src/ios/Resources/chat.png" />
+        <resource-file src="src/ios/Resources/chat@2x.png" />
+        <resource-file src="src/ios/Resources/chat@3x.png" />
+        <resource-file src="src/ios/Resources/disconnect.png" />
+        <resource-file src="src/ios/Resources/disconnect@2x.png" />
+        <resource-file src="src/ios/Resources/disconnect@3x.png" />
+        <resource-file src="src/ios/Resources/microphone.png" />
+        <resource-file src="src/ios/Resources/microphone@2x.png" />
+        <resource-file src="src/ios/Resources/microphone@3x.png" />
+        <resource-file src="src/ios/Resources/record.png" />
+        <resource-file src="src/ios/Resources/record@2x.png" />
+        <resource-file src="src/ios/Resources/record@3x.png" />
+        <resource-file src="src/ios/Resources/rotate.png" />
+        <resource-file src="src/ios/Resources/rotate@2x.png" />
+        <resource-file src="src/ios/Resources/rotate@3x.png" />
+        <resource-file src="src/ios/Resources/screen.png" />
+        <resource-file src="src/ios/Resources/screen@2x.png" />
+        <resource-file src="src/ios/Resources/screen@3x.png" />
+        <resource-file src="src/ios/Resources/send.png" />
+        <resource-file src="src/ios/Resources/send@2x.png" />
+        <resource-file src="src/ios/Resources/send@3x.png" />
+        <resource-file src="src/ios/Resources/stop.png" />
+        <resource-file src="src/ios/Resources/stop@2x.png" />
+        <resource-file src="src/ios/Resources/stop@3x.png" />
+        <resource-file src="src/ios/Resources/user.png" />
+        <resource-file src="src/ios/Resources/user@2x.png" />
+        <resource-file src="src/ios/Resources/user@3x.png" />
+        <resource-file src="src/ios/Resources/cross.png" />
+        <resource-file src="src/ios/Resources/cross@2x.png" />
+        <resource-file src="src/ios/Resources/cross@3x.png" />
+        <resource-file src="src/ios/Resources/up-arrow.png" />
+        <resource-file src="src/ios/Resources/up-arrow@2x.png" />
+        <resource-file src="src/ios/Resources/up-arrow@3x.png" />
+        <resource-file src="src/ios/Resources/down-arrow.png" />
+        <resource-file src="src/ios/Resources/down-arrow@2x.png" />
+        <resource-file src="src/ios/Resources/down-arrow@3x.png" />
+        <resource-file src="src/ios/Resources/microphone-green.png" />
+        <resource-file src="src/ios/Resources/microphone-green@2x.png" />
+        <resource-file src="src/ios/Resources/microphone-green@3x.png" />
+        <resource-file src="src/ios/Resources/screen-green.png" />
+        <resource-file src="src/ios/Resources/screen-green@2x.png" />
+        <resource-file src="src/ios/Resources/screen-green@3x.png" />
+        <resource-file src="src/ios/Resources/speaking.png" />
+        <resource-file src="src/ios/Resources/speaking@2x.png" />
+        <resource-file src="src/ios/Resources/speaking@3x.png" />
         <!-- Cocoapods -->
         <pods-config ios-min-version="9.0" use-frameworks="true"/>
         <pod id="Firebase/Database" version="~> 3.1" />
@@ -124,5 +124,6 @@
         <pod id="FZAccordionTableView" />
         <pod id="AFNetworking" version="~> 3.1" />
         <pod id="Masonry" version="~> 1.0" />
+        <pod id="GRKBlurView" />
     </platform>
 </plugin>
