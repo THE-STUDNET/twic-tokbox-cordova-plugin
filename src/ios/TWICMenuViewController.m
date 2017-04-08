@@ -77,7 +77,7 @@
 }
 
 -(void)refreshUI{
-    self.titleLabel.text = [NSString stringWithFormat:@"%d Members",self.users.count];
+    self.titleLabel.text = [NSString stringWithFormat:@"%d Members",(int)self.users.count];
 }
 
 -(void)configureSkin{

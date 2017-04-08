@@ -10,6 +10,7 @@
 #import "TWICConstants.h"
 #import <OpenTok/OpenTok.h>
 #import "GRKBlurView.h"
+#import "TWICUserActionsViewController.h"
 
 
 #define PUBLISHER_VIEW_FRAME_WIDTH      120
@@ -17,7 +18,7 @@
 #define PUBLISHER_VIEW_FRAME_DEFAULT_Y  10
 #define PUBLISHER_VIEW_FRAME_DEFAULT_X  10
 
-@interface TWICStreamViewController ()<OTSessionDelegate, OTSubscriberKitDelegate, OTPublisherDelegate>
+@interface TWICStreamViewController ()<OTSessionDelegate, OTSubscriberKitDelegate, OTPublisherDelegate,TWICUserActionsViewControllerDelegate>
 //TokBox
 @property (strong, nonatomic) OTSession* session;
 @property (strong, nonatomic) OTPublisher* publisher;
@@ -26,6 +27,7 @@
 @property (nonatomic, assign) TWICStreamDisplay streamDisplay;
 @property (nonatomic, strong) GRKBlurView *blurView;
 @property (nonatomic, strong) NSDictionary *user;
+@property (nonatomic, strong) TWICUserActionsViewController *userActionsViewController;
 @end
 
 @implementation TWICStreamViewController
@@ -125,35 +127,7 @@
          }];
     }
 }
-
--(void)publisherTouched:(UIGestureRecognizer*)gesture{
-    if(self.delegate){
-        [self.delegate TWICStreamViewControllerDidTouchPublishedStream:self];
-    }
-    //add blur view
-    [self addBlurView];
-    
-    //configure action view
-    
-}
-
--(void)addBlurView{
-    if(self.blurView){
-        [self.blurView removeFromSuperview];
-        self.blurView = nil;
-    }
-    self.blurView  = [[GRKBlurView alloc]initWithFrame:self.subscriber.view.frame];
-    [self.blurView setTargetImageFromView:self.subscriber.view];
-    self.blurView.blurRadius = 30.0f;
-    [self.subscriber.view addSubview:self.blurView];
-    UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(blurviewTouched:)];
-    [self.blurView addGestureRecognizer:tapAction];
-}
-
--(void)blurviewTouched:(UIGestureRecognizer*)gesture{
-    [self.blurView removeFromSuperview];
-    self.blurView = nil;
-}
+#pragma mark - Session callbacks
 
 //new ststream created
 - (void)session:(OTSession*)session streamCreated:(OTStream*)stream
@@ -180,6 +154,11 @@
 
 - (void)sessionDidDisconnect:(OTSession*)session
 {
+    if(self.subscriber)
+    {
+        [self.subscriber.view removeFromSuperview];
+        self.subscriber = nil;
+    }
     [self.publisher.view removeFromSuperview];
     self.publisher = nil;
 }
@@ -197,52 +176,79 @@
     NSLog(@"subscriber %@ didFailWithError %@", subscriber.stream.streamId, error);
 }
 
+#pragma mark - View events
 
-#pragma mark - Actions
-//animation
-//
-//-(void)openActionView{
-//UIWindow* mainWindow = [APPLICATION keyWindow];
-//self.progressVC.view.frame = CGRectMake(0, 0, mainWindow.bounds.size.width/1.05, mainWindow.bounds.size.height/1.05);
-//self.progressVC.view.layer.cornerRadius = IMAGE_CORNER_RADIUS;
-//self.progressVC.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
-//self.progressVC.view.center = mainWindow.center;
-//[mainWindow addSubview:self.progressVC.view];
-//[UIView animateWithDuration:0.3/1.5 animations:^{
-//    self.progressVC.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.1, 1.1);
-//} completion:^(BOOL finished) {
-//    [UIView animateWithDuration:0.3/2 animations:^{
-//        self.progressVC.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.9, 0.9);
-//    } completion:^(BOOL finished) {
-//        [UIView animateWithDuration:0.3/2 animations:^{
-//            self.progressVC.view.transform = CGAffineTransformIdentity;
-//        }];
-//    }];
-//}];
-//
-//[self addChildViewController:self.progressVC];
-//[self.progressVC didMoveToParentViewController:self];
-//}
-//
-//#pragma mark - Intervention progress delegate
-//-(void)interventionInProgressViewControllerDidClose:(id)sender{
-//    WEAKSELF;
-//    [UIView animateWithDuration:0.3f animations:^
-//     {
-//         weakSelf.progressVC.view.alpha = 0;
-//     }
-//                     completion:^(BOOL finished)
-//     {
-//         [weakSelf.progressVC.view removeFromSuperview];
-//         weakSelf.progressVC = nil;
-//         
-//         //check state
-//         if([weakSelf.intervention.in_status isEqualToString:InterventionStatusConfirmed]){
-//             //open score view
-//             [weakSelf score:nil];
-//         }
-//     }];
-//}
+-(void)publisherTouched:(UIGestureRecognizer*)gesture{
+    if(self.delegate){
+        [self.delegate TWICStreamViewControllerDidTouchPublishedStream:self];
+    }
 
+    //configure action view
+    [self addActionsView];
+}
 
+-(void)addActionsView{
+    
+    if(self.userActionsViewController)//already presented !
+        return;
+    //actions
+    self.userActionsViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICUserActionsViewController description]];
+    self.userActionsViewController.delegate = self;
+    UPDATE_VIEW_FRAME_SIZE(self.userActionsViewController.view, CGSizeMake(300*MAIN_SCREEN.bounds.size.width/414, 260*MAIN_SCREEN.bounds.size.height/736));
+    self.userActionsViewController.view.clipsToBounds = YES;
+    self.userActionsViewController.view.layer.cornerRadius = TWIC_CORNER_RADIUS;
+    self.userActionsViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
+    [self.view addSubview:self.userActionsViewController.view];
+    self.userActionsViewController.view.center = self.view.center;
+    [self.userActionsViewController didMoveToParentViewController:self];
+    [self addChildViewController:self.userActionsViewController];
+    
+    //blur
+    self.blurView  = [[GRKBlurView alloc]initWithFrame:self.subscriber.view.frame];
+    self.blurView.alpha = 0;
+    [self.blurView setTargetImageFromView:self.subscriber.view];
+    self.blurView.blurRadius = 30.0f;
+    [self.subscriber.view addSubview:self.blurView];
+    UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(blurviewTouched:)];
+    [self.blurView addGestureRecognizer:tapAction];
+    
+    //animate the display !
+    [UIView animateWithDuration:0.3/1.5 animations:^{
+        self.userActionsViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.1, 1.1);
+        self.blurView.alpha = 1.0f;
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.3/2 animations:^{
+            self.userActionsViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.9, 0.9);
+        } completion:^(BOOL finished) {
+            [UIView animateWithDuration:0.3/2 animations:^{
+                self.userActionsViewController.view.transform = CGAffineTransformIdentity;
+            }];
+        }];
+    }];
+}
+
+-(void)TWICUserActionsViewController:(id)sender didTouchAction:(UserActionType)actionType
+{
+    //do something with the action !
+    [self removeActionView];
+}
+
+-(void)blurviewTouched:(UIGestureRecognizer*)gesture{
+    [self removeActionView];
+}
+
+-(void)removeActionView{
+    [UIView animateWithDuration:0.3f animations:^
+     {
+         self.userActionsViewController.view.alpha = 0;
+         self.blurView.alpha = 0;
+     }
+                     completion:^(BOOL finished)
+     {
+         [self.userActionsViewController.view removeFromSuperview];
+         self.userActionsViewController = nil;
+         [self.blurView removeFromSuperview];
+         self.blurView = nil;
+     }];
+}
 @end
