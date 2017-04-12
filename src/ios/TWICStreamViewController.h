@@ -7,24 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TWICConstants.h"
 
-typedef enum : NSUInteger {
-    TWICStreamDisplayFullScreen,
-    TWICStreamDisplayGrid,
-} TWICStreamDisplay;
-
-
-@protocol TWICStreamViewControllerDelegate <NSObject>
-
--(void)TWICStreamViewControllerDidTouchPublishedStream:(id)sender;
-
-@end
 @interface TWICStreamViewController : UIViewController
+
+@property (nonatomic, strong) OTStream *stream;
+
 //configure
--(void)configureWithUser:(id)data twicStreamDisplay:(TWICStreamDisplay)streamDisplay;
-//actions
--(void)disconnectSession;
--(void)stopPublishing;
-//delegate
-@property (nonatomic, weak)id<TWICStreamViewControllerDelegate>delegate;
+-(void)configureWithStream:(OTStream*)stream;
+
+-(void)disconnect;
+-(void)connectStream;
+-(void)startPublishing;
 @end

@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TWICConstants.h"
+#import "TWICStreamViewController.h"
 
 @interface TWICStreamCollectionViewCell : UICollectionViewCell
--(void)configureWithUser:(id)user;
+
+-(void)configureWithStreamViewController:(TWICStreamViewController*)streamViewController;
+
 @end

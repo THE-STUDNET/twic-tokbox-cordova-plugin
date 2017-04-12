@@ -12,6 +12,7 @@
 #import "GONMacros_all.h"
 #import "NSString+Color.h"
 #import "SVProgressHUD.h"
+#import <OpenTok/OpenTok.h>
 
 #define TWIC_COLOR_RED          [@"#DF5656" representedColor]
 #define TWIC_COLOR_GREY         [@"#494C56" representedColor]
@@ -32,6 +33,12 @@
 #define TWIC_USER_ACTION_IS_ADMIN_KEY   @"action_isAdmin"
 #define TWIC_USER_TOK_TOKEN             @"tok_token"
 
+//Notifications
+#define TWIC_NOTIFICATION_SESSION_CONNECTED      @"tok_session_connected"
+#define TWIC_NOTIFICATION_SESSION_DISCONNECTED   @"tok_session_disconnected"
+#define TWIC_NOTIFICATION_STREAM_CREATED         @"tok_stream_created"
+#define TWIC_NOTIFICATION_STREAM_DESTROYED       @"tok_stream_destroyed"
+#define TWIC_NOTIFICATION_TOUCH_PUBLISHED_STREAM @"tok_touch_publised_stream"
 //TOK
 #define TOK_API_KEY @"45720402"
 
