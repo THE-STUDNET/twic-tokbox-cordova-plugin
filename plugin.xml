@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="com-thestudnet-plugins-twiccordovaplugin" version="0.0.2" xmlns="http://apache.org/cordova/ns/plugins/1.0"
+<plugin id="com-thestudnet-plugins-twiccordovaplugin" version="0.0.3" xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android">
 
     <name>TWICCordovaPlugin</name>
@@ -47,8 +47,6 @@
         <source-file src="src/ios/TWICSocketIOClient.m" />
         <header-file src="src/ios/TWICMainViewController.h" />
         <source-file src="src/ios/TWICMainViewController.m" />
-        <header-file src="src/ios/TWICStreamViewController.h" />
-        <source-file src="src/ios/TWICStreamViewController.m" />
         <header-file src="src/ios/TWICStreamGridViewController.h" />
         <source-file src="src/ios/TWICStreamGridViewController.m" />
         <header-file src="src/ios/TWICStreamCollectionViewCell.h" />

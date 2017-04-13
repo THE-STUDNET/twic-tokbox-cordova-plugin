@@ -10,7 +10,6 @@
 #import "TWICConstants.h"
 #import "TWICMenuViewController.h"
 #import "TWICStreamGridViewController.h"
-#import "TWICStreamViewController.h"
 #import "Masonry.h"
 #import "TWICTokClient.h"
 #import "GRKBlurView.h"
@@ -38,10 +37,8 @@
 
 
 @property (nonatomic, strong)TWICStreamGridViewController *twicStreamGridViewController;
-@property (nonatomic, strong)TWICStreamViewController *twicStreamViewController;
-@property (nonatomic, strong)TWICStreamViewController *twicStreamPublisherViewController;
 @property (nonatomic, strong) NSMutableArray *users;
-@property (nonatomic, strong) NSMutableArray *streams;
+@property (nonatomic, copy) NSString *currentSubcriberStreamID;
 @property (nonatomic, assign) BOOL backButton;
 
 @property (nonatomic, strong) GRKBlurView *blurView;
@@ -56,18 +53,17 @@
     [NOTIFICATION_CENTER addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     
-    [NOTIFICATION_CENTER addObserver:self selector:@selector(streamCreated:) name:TWIC_NOTIFICATION_STREAM_CREATED object:nil];
-    [NOTIFICATION_CENTER addObserver:self selector:@selector(streamDestroyed:) name:TWIC_NOTIFICATION_STREAM_DESTROYED object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(sessionConnected:) name:TWIC_NOTIFICATION_SESSION_CONNECTED object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(sessionDisconnected:) name:TWIC_NOTIFICATION_SESSION_DISCONNECTED object:nil];
-    [NOTIFICATION_CENTER addObserver:self selector:@selector(touchPublishedStream:) name:TWIC_NOTIFICATION_TOUCH_PUBLISHED_STREAM object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(subscriberConnected:) name:TWIC_NOTIFICATION_SUBSCRIBER_CONNECTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(subscriberDisconnected:) name:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:nil];
+    
 
     [self configureSkin];
     [self configureLocalizable];
     [self refreshData];
     
     //connect the session
-    self.streams = [NSMutableArray array];
     [[TWICTokClient sharedInstance] connectToSession:TOK_SESSION_ID withUser:self.users[0]];
 }
 
@@ -78,59 +74,6 @@
 - (BOOL)prefersStatusBarHidden
 {
     return YES;
-}
-
--(void)refreshData{
-    self.users = [@[@{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"},
-                    @{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"},
-                    @{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"}]mutableCopy];
-    self.numberUsersLabel.text = [NSString stringWithFormat:@"%d",(int)self.users.count];
-}
-
--(void)addSingleStreamViewControllerForStream:(OTStream *)stream
-{
-    //subscriber
-    self.twicStreamViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICStreamViewController description]];
-    [self addChildViewController:self.twicStreamViewController];
-    [self.twicStreamViewController configureWithStream:stream];
-    [self.twicStreamViewController connectStream];
-    
-    //add a publisher view if possible
-    if ([TWICTokClient sharedInstance].session.capabilities.canPublish)
-    {
-        self.twicStreamPublisherViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICStreamViewController description]];
-        [self.twicStreamPublisherViewController.view setFrame:CGRectMake(MAIN_SCREEN.bounds.size.width - PUBLISHER_VIEW_FRAME_WIDTH - PUBLISHER_VIEW_FRAME_DEFAULT_X, PUBLISHER_VIEW_FRAME_DEFAULT_Y, PUBLISHER_VIEW_FRAME_WIDTH, PUBLISHER_VIEW_FRAME_HEIGHT)];
-        self.twicStreamPublisherViewController.view.layer.borderColor = [UIColor whiteColor].CGColor;
-        self.twicStreamPublisherViewController.view.layer.cornerRadius = 5.0f;
-        self.twicStreamPublisherViewController.view.layer.borderWidth = 1.0f;
-        self.twicStreamPublisherViewController.view.clipsToBounds = YES;
-        [self.view addSubview:self.twicStreamPublisherViewController.view];
-        [super addChildViewController:self.twicStreamPublisherViewController];
-        [self.twicStreamPublisherViewController didMoveToParentViewController:self];
-        [self.twicStreamPublisherViewController startPublishing];
-    }
-}
-
--(void)addStreamGridViewController
-{
-    self.twicStreamGridViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICStreamGridViewController description]];
-    self.twicStreamGridViewController.delegate = self;
-    [self addChildViewController:self.twicStreamGridViewController];
-    [self.twicStreamGridViewController addStreams:self.streams];
-}
-
--(void)addChildViewController:(UIViewController *)childController
-{
-    [self.supportView addSubview:childController.view];
-    [childController.view mas_makeConstraints:^(MASConstraintMaker *make)
-    {
-        make.top.equalTo(self.supportView.mas_top);
-        make.bottom.equalTo(self.supportView.mas_bottom);
-        make.left.equalTo(self.supportView.mas_left);
-        make.right.equalTo(self.supportView.mas_right);
-    }];
-    [super addChildViewController:childController];
-    [childController didMoveToParentViewController:self];
 }
 
 #pragma mark - Skining
@@ -145,21 +88,21 @@
     self.recordButton.backgroundColor = CLEAR_COLOR;
     self.numberUsersLabel.textColor = [UIColor whiteColor];
     self.messageTextField.textColor = [UIColor whiteColor];
-
+    
     UIView *insetView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 20, self.messageTextField.bounds.size.height)];
     insetView.backgroundColor = CLEAR_COLOR;
     self.messageTextField.leftView = insetView;
     self.messageTextField.leftViewMode = UITextFieldViewModeAlways;
-
+    
     self.disconnectButton.tintColor = [UIColor whiteColor];
     self.usersButton.tintColor = [UIColor whiteColor];
     self.sendButton.tintColor = [UIColor whiteColor];
-
+    
     [self configureView:self.disconnectButton];
     [self configureView:self.usersButton];
     [self configureView:self.sendButton];
     [self configureView:self.messageTextField];
-
+    
     self.currentSpeakerDisplayName.textColor = [UIColor whiteColor];
     self.currentSpeakerDisplayName.alpha = TWIC_ALPHA;
     self.currentSpeakerDisplayName.hidden = YES;
@@ -171,6 +114,67 @@
     view.alpha = TWIC_ALPHA;
     view.layer.cornerRadius = TWIC_CORNER_RADIUS;
     view.clipsToBounds = YES;
+}
+
+-(void)refreshData{
+    self.users = [@[@{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"},
+                    @{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"},
+                    @{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"}]mutableCopy];
+    self.numberUsersLabel.text = [NSString stringWithFormat:@"%d",(int)self.users.count];
+}
+
+-(void)presentFullScreenSubscriberWithID:(NSString *)subscriberID{
+    //store the current subscriber id
+    self.currentSubcriberStreamID = subscriberID;
+    
+    //add subscriber view
+    OTSubscriber *subscriber = [[TWICTokClient sharedInstance] subscriberForStreamID:subscriberID];
+    [self.supportView addSubview:subscriber.view];
+    [subscriber.view mas_makeConstraints:^(MASConstraintMaker *make)
+     {
+         make.top.equalTo(self.supportView.mas_top);
+         make.bottom.equalTo(self.supportView.mas_bottom);
+         make.left.equalTo(self.supportView.mas_left);
+         make.right.equalTo(self.supportView.mas_right);
+     }];
+    
+    //add publisher view
+    [self addPublisherView];
+}
+
+-(void)addPublisherView{
+    if([TWICTokClient sharedInstance].publisher)
+    {
+        [[TWICTokClient sharedInstance].publisher.view setFrame:CGRectMake(MAIN_SCREEN.bounds.size.width - PUBLISHER_VIEW_FRAME_WIDTH - PUBLISHER_VIEW_FRAME_DEFAULT_X, PUBLISHER_VIEW_FRAME_DEFAULT_Y, PUBLISHER_VIEW_FRAME_WIDTH, PUBLISHER_VIEW_FRAME_HEIGHT)];
+        [TWICTokClient sharedInstance].publisher.view.layer.borderColor = [UIColor whiteColor].CGColor;
+        [TWICTokClient sharedInstance].publisher.view.layer.cornerRadius = 5.0f;
+        [TWICTokClient sharedInstance].publisher.view.layer.borderWidth = 1.0f;
+        [TWICTokClient sharedInstance].publisher.view.clipsToBounds = YES;
+        [self.view addSubview:[TWICTokClient sharedInstance].publisher.view];
+        UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(publisherTouched:)];
+        [[TWICTokClient sharedInstance].publisher.view addGestureRecognizer:tapAction];
+    }
+}
+
+-(void)publisherTouched:(UIGestureRecognizer *)recognizer{
+    //add actions view
+    [self addActionsView];
+}
+
+-(void)addStreamGridViewController
+{
+    self.twicStreamGridViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICStreamGridViewController description]];
+    self.twicStreamGridViewController.delegate = self;
+    [self.supportView addSubview:self.twicStreamGridViewController.view];
+    [self.twicStreamGridViewController.view mas_makeConstraints:^(MASConstraintMaker *make)
+     {
+         make.top.equalTo(self.supportView.mas_top);
+         make.bottom.equalTo(self.supportView.mas_bottom);
+         make.left.equalTo(self.supportView.mas_left);
+         make.right.equalTo(self.supportView.mas_right);
+     }];
+    [super addChildViewController:self.twicStreamGridViewController];
+    [self.twicStreamGridViewController didMoveToParentViewController:self];
 }
 
 #pragma mark - Keyboard Management
@@ -209,15 +213,12 @@
     {
         self.backButton = NO;
 
-        //remove stream vc
-        [self.twicStreamViewController disconnect];
-        [self.twicStreamViewController.view removeFromSuperview];
-        self.twicStreamViewController = nil;
+        //remove the current subscriber
+        OTSubscriber *currentSubscriber = [[TWICTokClient sharedInstance] subscriberForStreamID:self.currentSubcriberStreamID];
+        [currentSubscriber.view removeFromSuperview];
         
         //remove the publisher view
-        [self.twicStreamViewController disconnect];
-        [self.twicStreamPublisherViewController.view removeFromSuperview];
-        self.twicStreamPublisherViewController = nil;
+        [[TWICTokClient sharedInstance].publisher.view removeFromSuperview];
 
         //add grid
         [self addStreamGridViewController];
@@ -238,54 +239,51 @@
 -(void)sessionDisconnected:(NSNotification *)notification
 {
     //disconnect
+    [self.twicStreamGridViewController.view removeFromSuperview];
+    [self.twicStreamGridViewController removeFromParentViewController];
+    self.twicStreamGridViewController = nil;
+}
+
+#pragma mark - Tok Subscribers Management
+-(void)subscriberConnected:(NSNotification *)notification{
+    if(self.twicStreamGridViewController)
+    {
+        [self.twicStreamGridViewController refresh];
+    }
+}
+
+-(void)subscriberDisconnected:(NSNotification *)notification{
+    if(self.twicStreamGridViewController)
+    {
+        [self.twicStreamGridViewController refresh];
+    }
+    else
+    {
+        //check if it's the current stream ?
+        OTSubscriber *subscriber = notification.object;
+        if([subscriber.stream.streamId isEqualToString:self.currentSubcriberStreamID]){
+            [self disconnect:nil];
+        }
+    }
 }
 
 #pragma mark -TWICStreamGridViewController delegate
--(void)TWICStreamGridViewController:(id)sender didSelectStream:(OTStream *)stream
+
+-(void)TWICStreamGridViewController:(id)sender didSelectSubscriberID:(NSString *)subscriberID
 {
-    //need to disconnect all streams
-    [self.twicStreamGridViewController removeAllStreams];
-    [self.twicStreamGridViewController.view removeFromSuperview];
-    self.twicStreamGridViewController = nil;
-
-    //add stream
-    [self addSingleStreamViewControllerForStream:stream];
-
-    self.backButton = YES;
-}
-
--(void)TWICStreamGridViewControllerDidSelectPublisherStream:(id)sender
-{
-    [self addActionsView];
-}
-
-#pragma mark - TWICStreamViewController Notifications
--(void)touchPublishedStream:(NSNotification*)notification
-{
-    //add actions
-    [self addActionsView];
-}
-
-#pragma mark - Tok Stream Management
--(void)streamCreated:(NSNotification *)notification
-{
-    [self.streams addObject:notification.object];
-    if(self.twicStreamGridViewController)
-    {
-        [self.twicStreamGridViewController addStream:notification.object];
+    //check if the subscriber is the published
+    if([[TWICTokClient sharedInstance].publisher.stream.streamId isEqualToString:subscriberID]){
+        [self addActionsView];
     }
-}
-
--(void)streamDestroyed:(NSNotification *)notification
-{
-    [self.streams removeObject:notification.object];
-    if(self.twicStreamGridViewController)
+    else
     {
-        [self.twicStreamGridViewController removeStream:notification.object];
-    }
-    else if(self.twicStreamViewController)
-    {
-        //something to do...
+        [self.twicStreamGridViewController.view removeFromSuperview];
+        self.twicStreamGridViewController = nil;
+        
+        //present the subscriber in fullscreen
+        [self presentFullScreenSubscriberWithID:subscriberID];
+        
+        self.backButton = YES;
     }
 }
 
@@ -334,6 +332,27 @@
 {
     //do something with the action !
     [self removeActionView];
+    
+    switch (actionType) {
+        case UserActionTypeStop:
+            [TWICTokClient sharedInstance].publisher.publishVideo = NO;
+            [TWICTokClient sharedInstance].publisher.publishAudio = NO;
+            break;
+        case UserActionTypeCamera:
+            [TWICTokClient sharedInstance].publisher.publishVideo = ![TWICTokClient sharedInstance].publisher.publishVideo;
+            break;
+        case UserActionTypeRotate:
+            if([TWICTokClient sharedInstance].publisher.cameraPosition == AVCaptureDevicePositionFront)
+            {
+                [TWICTokClient sharedInstance].publisher.cameraPosition = AVCaptureDevicePositionBack;
+            }else{
+                [TWICTokClient sharedInstance].publisher.cameraPosition = AVCaptureDevicePositionFront;
+            }
+            break;
+        case UserActionTypeMicrophone:
+            [TWICTokClient sharedInstance].publisher.publishAudio = ![TWICTokClient sharedInstance].publisher.publishAudio;
+            break;
+    }
 }
 
 -(void)blurviewTouched:(UIGestureRecognizer*)gesture{

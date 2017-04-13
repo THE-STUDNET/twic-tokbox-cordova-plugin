@@ -8,21 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import "TWICConstants.h"
-#import "TWICStreamViewController.h"
 
 @protocol TWICStreamGridViewControllerDelegate <NSObject>
 
--(void)TWICStreamGridViewController:(id)sender didSelectStream:(OTStream *)stream;
--(void)TWICStreamGridViewControllerDidSelectPublisherStream:(id)sender;
+-(void)TWICStreamGridViewController:(id)sender didSelectSubscriberID:(NSString *)subscriberID;
 
 @end
 
 
 @interface TWICStreamGridViewController : UIViewController
 @property(nonatomic, weak)id<TWICStreamGridViewControllerDelegate>delegate;
-
--(void)addStreams:(NSMutableArray*)streams;
--(void)addStream:(OTStream*)stream;
--(void)removeStream:(OTStream*)stream;
--(void)removeAllStreams;
+-(void)refresh;
 @end

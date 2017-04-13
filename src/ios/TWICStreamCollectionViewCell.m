@@ -14,7 +14,7 @@
 @property (weak, nonatomic) IBOutlet UIView *streamSupportView;
 @property (weak, nonatomic) IBOutlet UILabel *streamTitleLabel;
 
-@property (nonatomic, weak) TWICStreamViewController *streamViewController;
+//@property (nonatomic, weak) TWICStreamViewController *streamViewController;
 
 @end
 
@@ -30,17 +30,16 @@
     self.contentView.backgroundColor = CLEAR_COLOR;
 }
 
--(void)configureWithStreamViewController:(TWICStreamViewController*)streamViewController
+-(void)configureWithSubscriber:(OTSubscriber*)subscriber
 {
-    self.streamViewController = streamViewController;
-    [self.contentView insertSubview:self.streamViewController.view atIndex:0];
-    [self.streamViewController.view mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.contentView insertSubview:subscriber.view atIndex:0];
+    [subscriber.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.contentView.mas_top);
         make.bottom.equalTo(self.contentView.mas_bottom);
         make.left.equalTo(self.contentView.mas_left);
         make.right.equalTo(self.contentView.mas_right);
     }];
-    self.streamViewController.view.clipsToBounds = YES;
-    self.streamViewController.view.layer.cornerRadius = TWIC_CORNER_RADIUS;
+    subscriber.view.clipsToBounds = YES;
+    subscriber.view.layer.cornerRadius = TWIC_CORNER_RADIUS;
 }
 @end

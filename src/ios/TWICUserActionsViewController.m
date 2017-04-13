@@ -8,6 +8,7 @@
 
 #import "TWICUserActionsViewController.h"
 #import "TWICConstants.h"
+#import "TWICTokClient.h"
 
 @interface TWICUserActionsViewController ()
 @property (weak, nonatomic) IBOutlet UIView *microphoneView;
@@ -67,8 +68,20 @@
     self.rotateTitleLabel.text = @"Rotate";
     self.rotateSubtitleLabel.text = @"Front Camera";
     
-    self.stopTitleLabel.text = @"Rotate";
+    self.stopTitleLabel.text = @"Stop";
     self.stopSubtitleLabel.text = @"Your Stream";
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    self.microphoneSubtitleLabel.text = [TWICTokClient sharedInstance].publisher.publishAudio ? @"Turn Off" : @"Turn On";
+    self.cameraSubtitleLabel.text = [TWICTokClient sharedInstance].publisher.publishVideo ? @"Turn Off" : @"Turn On";
+    if([TWICTokClient sharedInstance].publisher.cameraPosition == AVCaptureDevicePositionFront)
+    {
+        self.rotateSubtitleLabel.text = @"Back Camera";
+    }else{
+        self.rotateSubtitleLabel.text = @"Front Camera";
+    }
 }
 
 - (IBAction)microphone:(id)sender {

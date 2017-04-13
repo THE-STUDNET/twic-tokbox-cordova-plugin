@@ -8,10 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "TWICConstants.h"
-#import "TWICStreamViewController.h"
 
 @interface TWICStreamCollectionViewCell : UICollectionViewCell
-
--(void)configureWithStreamViewController:(TWICStreamViewController*)streamViewController;
-
+-(void)configureWithSubscriber:(OTSubscriber*)subscriber;
 @end

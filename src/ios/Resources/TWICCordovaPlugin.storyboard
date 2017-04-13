@@ -172,25 +172,6 @@
             </objects>
             <point key="canvasLocation" x="-1458.4000000000001" y="381.85907046476763"/>
         </scene>
-        <!--Stream View Controller-->
-        <scene sceneID="zPC-Ff-vMa">
-            <objects>
-                <viewController storyboardIdentifier="TWICStreamViewController" id="9zs-8U-eTz" customClass="TWICStreamViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="GbR-vJ-pge"/>
-                        <viewControllerLayoutGuide type="bottom" id="PNl-gm-NUC"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="0Wb-r7-syD">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                    <nil key="simulatedStatusBarMetrics"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="3Gv-vn-CBz" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-639" y="721"/>
-        </scene>
         <!--User Actions View Controller-->
         <scene sceneID="Agl-Y1-gPW">
             <objects>
