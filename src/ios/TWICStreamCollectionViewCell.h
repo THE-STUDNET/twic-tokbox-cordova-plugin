@@ -11,4 +11,5 @@
 
 @interface TWICStreamCollectionViewCell : UICollectionViewCell
 -(void)configureWithSubscriber:(OTSubscriber*)subscriber;
+-(void)configureWithPublisher:(OTPublisher*)publisher;
 @end

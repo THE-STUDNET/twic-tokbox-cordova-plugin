@@ -47,7 +47,7 @@
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return [TWICTokClient sharedInstance].orderedSubscriberIDs.count;
+    return [TWICTokClient sharedInstance].orderedSubscriberIDs.count + 1 ; //the publisher
 }
 
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -59,18 +59,31 @@
 
 -(void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *subscriberID = [TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row];    
-    [(TWICStreamCollectionViewCell*)cell configureWithSubscriber:[[TWICTokClient sharedInstance]subscriberForStreamID:subscriberID]];
+    if(indexPath.row == 0){
+        [(TWICStreamCollectionViewCell*)cell configureWithPublisher:[TWICTokClient sharedInstance].publisher];
+    }
+    else
+    {
+        NSString *subscriberID = [TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row-1];
+        [(TWICStreamCollectionViewCell*)cell configureWithSubscriber:[[TWICTokClient sharedInstance]subscriberForStreamID:subscriberID]];
+    }
 }
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.delegate TWICStreamGridViewController:self didSelectSubscriberID:[TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row]];
+    if(indexPath.row == 0)
+    {
+        [self.delegate TWICStreamGridViewControllerDidSelectPublisher:self];
+    }
+    else
+    {
+        [self.delegate TWICStreamGridViewController:self didSelectSubscriberID:[TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row-1]];
+    }
 }
 
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
 {
-    if([TWICTokClient sharedInstance].orderedSubscriberIDs.count==1){
+    if([TWICTokClient sharedInstance].orderedSubscriberIDs.count+1==1){
         return UIEdgeInsetsMake(0, 0, 0, 0);
     }else{
         return UIEdgeInsetsMake(50, 10, 50, 10);
@@ -80,15 +93,16 @@
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     //change display following numbers
-    if([TWICTokClient sharedInstance].orderedSubscriberIDs.count == 1)
+    NSUInteger viewsCount = [TWICTokClient sharedInstance].orderedSubscriberIDs.count + 1;
+    if(viewsCount == 1)
     {
         return CGSizeMake(MAIN_SCREEN.bounds.size.width, MAIN_SCREEN.bounds.size.height);
     }
-    else if([TWICTokClient sharedInstance].orderedSubscriberIDs.count == 2)
+    else if(viewsCount == 2)
     {
         return CGSizeMake(MAIN_SCREEN.bounds.size.width-20, (MAIN_SCREEN.bounds.size.height-100)/2);
     }
-    else if([TWICTokClient sharedInstance].orderedSubscriberIDs.count == 3)
+    else if(viewsCount == 3)
     {
         if(indexPath.row == 2)
         {
@@ -96,7 +110,7 @@
         }
         return CGSizeMake((MAIN_SCREEN.bounds.size.width-30)/2, (MAIN_SCREEN.bounds.size.height-100)/2);
     }
-    else if([TWICTokClient sharedInstance].orderedSubscriberIDs.count == 4)
+    else if(viewsCount == 4)
     {
         return CGSizeMake((MAIN_SCREEN.bounds.size.width-30)/2, (MAIN_SCREEN.bounds.size.height-100)/2);
     }

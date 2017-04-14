@@ -19,7 +19,7 @@
 #define PUBLISHER_VIEW_FRAME_WIDTH      120
 #define PUBLISHER_VIEW_FRAME_HEIGHT     140
 #define PUBLISHER_VIEW_FRAME_DEFAULT_Y  10
-#define PUBLISHER_VIEW_FRAME_DEFAULT_X  10
+#define PUBLISHER_VIEW_FRAME_DEFAULT_X  -10
 
 @interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIView *headerView;
@@ -117,9 +117,7 @@
 }
 
 -(void)refreshData{
-    self.users = [@[@{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"},
-                    @{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"},
-                    @{TWIC_USER_TOK_TOKEN:TOK_TOKEN_PAUL,TWIC_USER_FIRSTNAME_KEY:@"PAUL"}]mutableCopy];
+    self.users = [@[@{TWIC_USER_TOK_TOKEN:TOK_TOKEN_USER,TWIC_USER_FIRSTNAME_KEY:@"PAUL"}]mutableCopy];
     self.numberUsersLabel.text = [NSString stringWithFormat:@"%d",(int)self.users.count];
 }
 
@@ -145,12 +143,21 @@
 -(void)addPublisherView{
     if([TWICTokClient sharedInstance].publisher)
     {
-        [[TWICTokClient sharedInstance].publisher.view setFrame:CGRectMake(MAIN_SCREEN.bounds.size.width - PUBLISHER_VIEW_FRAME_WIDTH - PUBLISHER_VIEW_FRAME_DEFAULT_X, PUBLISHER_VIEW_FRAME_DEFAULT_Y, PUBLISHER_VIEW_FRAME_WIDTH, PUBLISHER_VIEW_FRAME_HEIGHT)];
+        [self.supportView addSubview:[TWICTokClient sharedInstance].publisher.view];
+        [[TWICTokClient sharedInstance].publisher.view mas_makeConstraints:^(MASConstraintMaker *make)
+         {
+             make.top.equalTo(self.supportView.mas_top).offset(PUBLISHER_VIEW_FRAME_DEFAULT_Y);
+             make.right.equalTo(self.supportView.mas_right).offset(PUBLISHER_VIEW_FRAME_DEFAULT_X);
+             make.width.mas_equalTo(PUBLISHER_VIEW_FRAME_WIDTH);
+             make.height.mas_equalTo(PUBLISHER_VIEW_FRAME_HEIGHT);
+         }];
+
+        
+        
         [TWICTokClient sharedInstance].publisher.view.layer.borderColor = [UIColor whiteColor].CGColor;
         [TWICTokClient sharedInstance].publisher.view.layer.cornerRadius = 5.0f;
         [TWICTokClient sharedInstance].publisher.view.layer.borderWidth = 1.0f;
         [TWICTokClient sharedInstance].publisher.view.clipsToBounds = YES;
-        [self.view addSubview:[TWICTokClient sharedInstance].publisher.view];
         UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(publisherTouched:)];
         [[TWICTokClient sharedInstance].publisher.view addGestureRecognizer:tapAction];
     }
@@ -269,22 +276,19 @@
 
 #pragma mark -TWICStreamGridViewController delegate
 
+-(void)TWICStreamGridViewControllerDidSelectPublisher:(id)sender{
+    [self addActionsView];
+}
+
 -(void)TWICStreamGridViewController:(id)sender didSelectSubscriberID:(NSString *)subscriberID
 {
-    //check if the subscriber is the published
-    if([[TWICTokClient sharedInstance].publisher.stream.streamId isEqualToString:subscriberID]){
-        [self addActionsView];
-    }
-    else
-    {
-        [self.twicStreamGridViewController.view removeFromSuperview];
-        self.twicStreamGridViewController = nil;
-        
-        //present the subscriber in fullscreen
-        [self presentFullScreenSubscriberWithID:subscriberID];
-        
-        self.backButton = YES;
-    }
+    [self.twicStreamGridViewController.view removeFromSuperview];
+    self.twicStreamGridViewController = nil;
+    
+    //present the subscriber in fullscreen
+    [self presentFullScreenSubscriberWithID:subscriberID];
+    
+    self.backButton = YES;
 }
 
 #pragma mark - ActionsView Management
@@ -292,6 +296,7 @@
     
     if(self.userActionsViewController)//already presented !
         return;
+    
     //actions
     self.userActionsViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICUserActionsViewController description]];
     self.userActionsViewController.delegate = self;
@@ -316,7 +321,7 @@
     //animate the display !
     [UIView animateWithDuration:0.3/1.5 animations:^{
         self.userActionsViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.1, 1.1);
-        self.blurView.alpha = 1.0f;
+        self.blurView.alpha = 1;
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:0.3/2 animations:^{
             self.userActionsViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.9, 0.9);

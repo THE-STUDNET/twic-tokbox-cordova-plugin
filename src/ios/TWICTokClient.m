@@ -58,22 +58,30 @@
                                         delegate:self];
     
     [self.session connectWithToken:user[TWIC_USER_TOK_TOKEN] error:nil];
+    
+    //now publish
+    [self setupPublisher];
 }
 
 -(void)setupPublisher
 {
-    // create one time publisher and style publisher
-    if ([TWICTokClient sharedInstance].session.capabilities.canPublish)
+    self.publisher = [[OTPublisher alloc] initWithDelegate:self];
+    self.publisher.view.userInteractionEnabled = YES;
+}
+
+#pragma mark - Session events
+- (void)sessionDidConnect:(OTSession*)session
+{
+    if (self.session.capabilities.canPublish)
     {
+        // create one time publisher and style publisher
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
                                  completionHandler:^(BOOL granted)
          {
              if(granted)
              {
-                 self.publisher = [[OTPublisher alloc] initWithDelegate:self];
                  self.publisher.publishAudio = YES;
                  self.publisher.publishVideo = YES;
-                 self.publisher.view.userInteractionEnabled = YES;
                  OTError *error = nil;
                  [self.session publish:self.publisher error:nil];
                  if(error){
@@ -86,13 +94,6 @@
              }
          }];
     }
-}
-
-#pragma mark - Session events
-- (void)sessionDidConnect:(OTSession*)session
-{
-    //now publish
-    [self setupPublisher];
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SESSION_CONNECTED object:session];
 }
 
@@ -106,7 +107,7 @@
         [subscriber.view removeFromSuperview];
     }
     
-    [_publisher.view removeFromSuperview];
+    [self.publisher.view removeFromSuperview];
     
     [self.allSubscribers removeAllObjects];
     [self.allConnectionsIds removeAllObjects];
@@ -161,7 +162,7 @@
 - (void)publisher:(OTPublisherKit *)publisher streamCreated:(OTStream *)stream
 {
     // create self subscriber
-    [self createSubscriber:stream];
+    //[self createSubscriber:stream];
 }
 
 #pragma mark - Subscriber events
