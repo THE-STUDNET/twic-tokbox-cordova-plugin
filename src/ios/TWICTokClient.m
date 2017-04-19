@@ -8,6 +8,7 @@
 
 #import "TWICTokClient.h"
 #import <OpenTok/OpenTok.h>
+#import "TWICSettingsManager.h"
 
 @interface TWICTokClient()<OTSessionDelegate,OTPublisherKitDelegate,OTSubscriberKitDelegate>
 @property (strong, nonatomic) NSDictionary *user;
@@ -53,7 +54,7 @@
 -(void)connectToSession:(NSString *)sessionID withUser:(NSDictionary *)user
 {
     self.user = user;
-    self.session = [[OTSession alloc] initWithApiKey:TOK_API_KEY
+    self.session = [[OTSession alloc] initWithApiKey:[[TWICSettingsManager sharedInstance]settingsForKey:SettingsTokboxApiKey]
                                        sessionId:TOK_SESSION_ID
                                         delegate:self];
     

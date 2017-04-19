@@ -38,9 +38,12 @@
 #define TWIC_NOTIFICATION_SESSION_DISCONNECTED      @"tok_session_disconnected"
 #define TWIC_NOTIFICATION_SUBSCRIBER_CONNECTED      @"tok_subscriber_connected"
 #define TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED   @"tok_subscriber_disconnected"
-//TOK
-#define TOK_API_KEY @"45720402"
 
+
+//TWICPlaftform
+#define ERROR_DOMAIN                    @"com.twicplatform.error"
+
+//TOK
 #define TOK_SESSION_ID @"1_MX40NTcyMDQwMn5-MTQ5MTU1NzI2NzU1OH54Y0lZOXAzbDhOMnFIQUJISzE3Z29NTUZ-UH4"
 
 #if !DEBUG

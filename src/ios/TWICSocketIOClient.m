@@ -8,6 +8,7 @@
 
 #import "TWICSocketIOClient.h"
 #import "SVProgressHUD.h"
+#import "TWICSettingsManager.h"
 
 @import SocketIO;
 
@@ -16,9 +17,6 @@
 @end
 
 @implementation TWICSocketIOClient
-
-static NSString *_auth_token = @"2437e141f8ed03a110e3292ce54c741eff6164d5";
-static NSString *_domain     = @"ws-new.thestudnet.com";
 
 static NSString *event_connect              = @"connect";
 static NSString *event_authenticated        = @"authenticated";
@@ -40,14 +38,16 @@ static NSString *action_authentify           = @"authentify";
 -(SocketIOClient*)socket{
     if(!_socket)
     {
-        NSURL* url = [[NSURL alloc] initWithString:[NSString stringWithFormat:@"wss://%@",_domain]];
+        NSDictionary *wssettings = [[TWICSettingsManager sharedInstance] settingsForKey:SettingsWSKey];
+        
+        NSURL* url = [[NSURL alloc] initWithString:[NSString stringWithFormat:@"wss://%@",wssettings[SettingsDomainKey]]];
         _socket = [[SocketIOClient alloc] initWithSocketURL:url
                                                      config:@{@"log": @YES,
                                                               @"selfSigned":@YES,
                                                               @"forceWebsockets":@NO,
                                                               @"doubleEncodeUTF8":@NO,
                                                               @"forceNew":@YES,
-                                                              @"secure":@YES}];
+                                                              @"secure":wssettings[SettingsSecureKey]}];
     }
     return _socket;
 }
@@ -60,9 +60,10 @@ static NSString *action_authentify           = @"authentify";
     [self.socket on:@"connect" callback:^(NSArray* data, SocketAckEmitter* ack) {
         NSUUID  *UUID = [NSUUID UUID];
         NSString* stringUUID = [UUID UUIDString];
+        NSDictionary *wssettings = [[TWICSettingsManager sharedInstance] settingsForKey:SettingsWSKey];
         
         NSDictionary *dataToSend = @{@"id":@(1),
-                                     @"authentification":_auth_token,
+                                     @"authentification":wssettings[SettingsAuthTokenKey],
                                      @"connection_token":stringUUID};
         
         [weakSelf.socket emit:action_authentify with:@[dataToSend]];
@@ -86,5 +87,9 @@ static NSString *action_authentify           = @"authentify";
     [self.socket on:@"connect_error" callback:^(NSArray* data, SocketAckEmitter* ack) {
         NSLog(@"connect_error");
     }];
+}
+
+-(void)sendEvent:(NSString *)event data:(id)data{
+
 }
 @end

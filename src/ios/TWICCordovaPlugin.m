@@ -5,6 +5,8 @@
 #import "TWICMainViewController.h"
 #import "TWICFirebaseClient.h"
 #import "TWICSocketIOClient.h"
+#import "TWICSettingsManager.h"
+#import "TWICPlatformClient.h"
 
 @interface TWICCordovaPlugin()<TWICSocketIOClientDelegate>
 
@@ -27,6 +29,23 @@
     [self.commandDelegate sendPluginResult:pluginResult
                                 callbackId:command.callbackId];
 
+    //settings
+    if(command.arguments.count > 0)
+    {
+        NSData *argumentsData = [[command.arguments firstObject] dataUsingEncoding:NSUTF8StringEncoding];
+        NSError *error;
+        NSDictionary *jsonArguments = [NSJSONSerialization JSONObjectWithData:argumentsData
+                                                                     options:NSJSONReadingMutableContainers
+                                                                       error:&error];
+        if(error){
+            NSLog(@"%@",error);
+        }
+        [[TWICSettingsManager  sharedInstance] configureWithSettings:jsonArguments];
+    }else{
+        [[TWICSettingsManager  sharedInstance] configureWithDefaultSettings];
+    }
+    
+    
     //main
     UINavigationController *vc = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[NSString stringWithFormat:@"Navigation%@",[TWICMainViewController description]]];
     [self.viewController presentViewController:vc animated:YES completion:nil];
@@ -38,6 +57,16 @@
     //socketio
     //[TWICSocketIOClient sharedInstance].delegate = self;
     //[[TWICSocketIOClient sharedInstance]connect];
+    
+    //twic platform
+    [[TWICPlatformClient sharedInstance]handgoutDataWithCompletionBlock:^(NSDictionary *data)
+    {
+        
+    }
+                                                           failureBlock:^(NSError *error)
+    {
+        [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+    }];
 }
 
 - (void)configure:(CDVInvokedUrlCommand*)command

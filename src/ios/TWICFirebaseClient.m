@@ -9,6 +9,7 @@
 #import "TWICFirebaseClient.h"
 #import <FirebaseDatabase/FirebaseDatabase.h>
 #import <FirebaseCore/FirebaseCore.h>
+#import "TWICSettingsManager.h"
 
 @interface TWICFirebaseClient()
 
@@ -23,7 +24,6 @@ static NSString *_GoogleAppID = @"1:1027767631440:ios:442ff72b0311e807";
 static NSString *_GCMSenderID = @"1027767631440";
 static NSString *_APIKey = @"AIzaSyBiIbGIY5W6eyB8mXNfrZ8ZvVY1vuVRPnQ";
 static NSString *_ClientID = @"1027767631440-vdq1lfsj0kop3lp7fr1stc53ubof7tma.apps.googleusercontent.com";
-static NSString *_DatabaseURL = @"https://twicapp-c6710.firebaseio.com";
 
 + (TWICFirebaseClient *)sharedInstance
 {
@@ -38,6 +38,7 @@ static NSString *_DatabaseURL = @"https://twicapp-c6710.firebaseio.com";
 
 -(void)configure
 {
+    NSDictionary *firebaseSettings = [[TWICSettingsManager sharedInstance]settingsForKey:SettingsFirebaseKey];
     [self configureWithGoogleAppID:_GoogleAppID
                           bundleID:[[NSBundle mainBundle] bundleIdentifier]
                        GCMSenderID:_GCMSenderID
@@ -45,8 +46,9 @@ static NSString *_DatabaseURL = @"https://twicapp-c6710.firebaseio.com";
                           clientID:_ClientID
                         trackingID:nil
                    androidClientID:nil
-                       databaseURL:_DatabaseURL
-                     storageBucket:nil deepLinkURLScheme:nil];
+                       databaseURL:firebaseSettings[SettingsUrlKey]
+                     storageBucket:nil
+                 deepLinkURLScheme:nil];
 }
 
 - (void)configureWithGoogleAppID:(NSString *)googleAppID
