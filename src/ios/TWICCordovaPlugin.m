@@ -59,14 +59,34 @@
     //[[TWICSocketIOClient sharedInstance]connect];
     
     //twic platform
-    [[TWICPlatformClient sharedInstance]handgoutDataWithCompletionBlock:^(NSDictionary *data)
+    [[TWICPlatformClient sharedInstance]hangoutDataWithCompletionBlock:^(NSDictionary *data)
     {
-        
+        [[TWICPlatformClient sharedInstance] detailForUsers:data[@"users"]
+                                            completionBlock:^(NSArray *data)
+        {
+            
+        }
+                                               failureBlock:^(NSError *error)
+        {
+            [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+        }];
     }
                                                            failureBlock:^(NSError *error)
     {
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
+    
+    [[TWICPlatformClient sharedInstance]tokboxDataWithCompletionBlock:^(NSDictionary *data)
+     {
+/*
+ session = "1_MX40NTcyMDQwMn5-MTQ5MjYxNzQ0MjQ0Mn4vZlNNY2NRM1QvWWNCNFg0a2pwaEhOSW5-UH4";
+ token = "T1==cGFydG5lcl9pZD00NTcyMDQwMiZzaWc9MTEwNGQ5MTk5OTlmYWQ0YTc5M2Q1NGViZjVmZWZmZTNmNTcxMTU0ZDpzZXNzaW9uX2lkPTFfTVg0ME5UY3lNRFF3TW41LU1UUTVNall4TnpRME1qUTBNbjR2WmxOTlkyTlJNMVF2V1dOQ05GZzBhMnB3YUVoT1NXNS1VSDQmY3JlYXRlX3RpbWU9MTQ5MjYyMDU0MCZyb2xlPW1vZGVyYXRvciZub25jZT0xNDkyNjIwNTQwLjg2MTExOTcxMTgwOTUxJmV4cGlyZV90aW1lPTE0OTUyMTI1NDAmY29ubmVjdGlvbl9kYXRhPSU3QiUyMmlkJTIyJTNBNiU3RA==";
+ */
+     }
+                                                          failureBlock:^(NSError *error)
+     {
+         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+     }];
 }
 
 - (void)configure:(CDVInvokedUrlCommand*)command

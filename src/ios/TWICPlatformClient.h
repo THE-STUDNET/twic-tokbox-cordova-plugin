@@ -15,7 +15,14 @@
 /*Error convenience method*/
 - (NSError *)errorWithCode:(NSInteger)code message:(NSString *)message;
 
--(void)handgoutDataWithCompletionBlock:(void(^)(NSDictionary *data))completionBlock
-                          failureBlock:(void (^)(NSError *error))failureBlock;
+-(void)hangoutDataWithCompletionBlock:(void(^)(NSDictionary *data))completionBlock
+                         failureBlock:(void (^)(NSError *error))failureBlock;
+
+-(void)tokboxDataWithCompletionBlock:(void(^)(NSDictionary *data))completionBlock
+                        failureBlock:(void (^)(NSError *error))failureBlock;
+
+-(void)detailForUsers:(NSArray*)userIds
+      completionBlock:(void(^)(NSArray *data))completionBlock
+         failureBlock:(void (^)(NSError *error))failureBlock;
 
 @end

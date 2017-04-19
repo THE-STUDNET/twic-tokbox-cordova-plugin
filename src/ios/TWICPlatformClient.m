@@ -10,11 +10,12 @@
 #import "TWICConstants.h"
 #import "TWICSettingsManager.h"
 
-#define TWICTimeStamp [NSString stringWithFormat:@"%.0f",[[NSDate date] timeIntervalSince1970] * 1000]
+#define TWICTimeStamp [NSString stringWithFormat:@"%f",[[NSDate date] timeIntervalSince1970] * 1000]
 
 
 static NSString *TWICConversationGetPath = @"conversation.get";
 static NSString *TWICConversationGetTokenPath = @"conversation.getToken";
+static NSString *TWICUserGetPath = @"user.get";
 
 @implementation TWICPlatformClient
 
@@ -100,42 +101,70 @@ static NSString *TWICConversationGetTokenPath = @"conversation.getToken";
 }
 
 -(NSDictionary *)buildRequestParametersForMethod:(NSString *)method methodParameters:(NSDictionary *)methodParameters{
-    return @{@"json-rpc":@"2.0",
+    
+    NSDictionary *parameters = @{@"json-rpc":@"2.0",
              @"params":methodParameters,
              @"method":method,
              @"id":TWICTimeStamp};
+    return parameters;
 }
 
-#pragma mark - Public API
--(void)handgoutDataWithCompletionBlock:(void(^)(NSDictionary *data))completionBlock
-                          failureBlock:(void (^)(NSError *error))failureBlock
+-(void)jsonRequestForMethodName:(NSString *)methodName
+               methodParameters:(NSDictionary *)methodParameters
+                completionBlock:(void(^)(NSDictionary *data))completionBlock
+                   failureBlock:(void (^)(NSError *error))failureBlock
 {
     [self buildHeaders];
     
-    NSMutableArray *parameters = [NSMutableArray array];
-    [parameters addObject:[self buildRequestParametersForMethod:TWICConversationGetPath
-                                       methodParameters:@{@"id":[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]}]];
-    [parameters addObject:[self buildRequestParametersForMethod:TWICConversationGetTokenPath
-                                       methodParameters:@{@"id":[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]}]];
     NSURLSessionDataTask *task = [self POST:[self hostName]
-                                 parameters:parameters
-                                  progress:nil
-                                   success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
+                                 parameters:[self buildRequestParametersForMethod:methodName methodParameters:methodParameters]
+                                   progress:nil
+                                    success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
                                   {
-                                      //NSString *string = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
-                                      //{"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request"}, "id": null}
                                       if(responseObject[@"error"]){
                                           failureBlock(responseObject[@"error"][@"message"]);
-                                      }else{
-                                          completionBlock([responseObject firstObject]);
+                                      }
+                                      else{
+                                          completionBlock(responseObject[@"result"]);
                                       }
                                   }
-                                   failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error)
+                                    failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error)
                                   {
                                       [self processError:error failureBlock:failureBlock];
                                   }];
     [task resume];
+}
 
+#pragma mark - Public API
+-(void)hangoutDataWithCompletionBlock:(void(^)(NSDictionary *data))completionBlock
+                          failureBlock:(void (^)(NSError *error))failureBlock
+{
+    return [self jsonRequestForMethodName:TWICConversationGetPath
+                         methodParameters:@{@"id":[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]}
+                          completionBlock:completionBlock
+                             failureBlock:failureBlock];
+}
+
+-(void)tokboxDataWithCompletionBlock:(void(^)(NSDictionary *data))completionBlock
+                        failureBlock:(void (^)(NSError *error))failureBlock
+{
+    return [self jsonRequestForMethodName:TWICConversationGetTokenPath
+                         methodParameters:@{@"id":[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]}
+                          completionBlock:completionBlock
+                             failureBlock:failureBlock];
+}
+
+-(void)detailForUsers:(NSArray*)userIds
+      completionBlock:(void(^)(NSArray *data))completionBlock
+         failureBlock:(void (^)(NSError *error))failureBlock
+{
+    return [self jsonRequestForMethodName:TWICUserGetPath
+                         methodParameters:@{@"id":userIds}
+                         completionBlock:^(NSDictionary *data)
+    {
+        completionBlock([data allValues]);
+    }
+                             failureBlock:failureBlock];
 }
 
 @end
