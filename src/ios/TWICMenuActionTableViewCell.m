@@ -8,6 +8,7 @@
 
 #import "TWICMenuActionTableViewCell.h"
 #import "TWICConstants.h"
+#import "TWICUserManager.h"
 
 @interface TWICMenuActionTableViewCell()
 @property (weak, nonatomic) IBOutlet UIImageView *actionImageView;
@@ -35,13 +36,13 @@
 
 -(void)configureWithAction:(NSDictionary *)action user:(NSDictionary *)user
 {
-    if(action[TWIC_USER_ACTION_IS_ADMIN_KEY]){
-        self.adminActionTitleLabel.text = action[TWIC_USER_ACTION_TITLE_KEY];
+    if(action[UserActionIsAdminKey]){
+        self.adminActionTitleLabel.text = action[UserActionTitleKey];
     }
     else
     {
-        self.actionImageView.image = [UIImage imageNamed:action[TWIC_USER_ACTION_IMAGE_KEY]];
-        self.actionTitleLabel.text = action[TWIC_USER_ACTION_TITLE_KEY];
+        self.actionImageView.image = [UIImage imageNamed:action[UserActionImageKey]];
+        self.actionTitleLabel.text = action[UserActionTitleKey];
     }    
 }
 @end

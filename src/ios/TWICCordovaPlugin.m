@@ -7,7 +7,8 @@
 #import "TWICSocketIOClient.h"
 #import "TWICSettingsManager.h"
 #import "TWICPlatformClient.h"
-#import "TWICUserManagement.h"
+#import "TWICUserManager.h"
+#import "TWICHangoutManager.h"
 
 @interface TWICCordovaPlugin()<TWICSocketIOClientDelegate>
 
@@ -47,23 +48,23 @@
     
     //retrieve hangoud data
     [SVProgressHUD showWithStatus:@"Loading..."];
-    [[TWICPlatformClient sharedInstance]hangoutDataWithCompletionBlock:^(NSDictionary *data)
-     {
-         [[TWICUserManagement sharedInstance]configureWithUserIds:data[@"users"] completionBlock:^
+    [[TWICHangoutManager sharedInstance] configureHangoutDataWithCompletionBlock:^
+    {
+        [[TWICUserManager sharedInstance]configureWithUserIds:[TWICHangoutManager sharedInstance].hangoutData[@"users"]
+                                              completionBlock:^
          {
              [SVProgressHUD dismiss];
              [self launchMainViewController];
          }
-                                                     failureBlock:^(NSError *error)
+                                                 failureBlock:^(NSError *error)
          {
              [SVProgressHUD showErrorWithStatus:error.localizedDescription];
          }];
-     }
-                                                          failureBlock:^(NSError *error)
-     {
-         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
-     }];
-    
+    }
+                                                                    failureBlock:^(NSError *error)
+    {
+        [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+    }];
 
     //firebase configuration
     //[[TWICFirebaseClient sharedInstance] configure];

@@ -23,12 +23,6 @@
 
 #define TWIC_STORYBOARD         [UIStoryboard storyboardWithName:@"TWICCordovaPlugin" bundle:nil]
 
-//User data
-#define TWIC_USER_ACTIONS_KEY           @"actions"
-#define TWIC_USER_ACTION_TITLE_KEY      @"action_title"
-#define TWIC_USER_ACTION_IMAGE_KEY      @"action_image"
-#define TWIC_USER_ACTION_IS_ADMIN_KEY   @"action_isAdmin"
-
 //Notifications
 #define TWIC_NOTIFICATION_SESSION_CONNECTED         @"tok_session_connected"
 #define TWIC_NOTIFICATION_SESSION_DISCONNECTED      @"tok_session_disconnected"

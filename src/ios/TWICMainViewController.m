@@ -14,7 +14,7 @@
 #import "TWICTokClient.h"
 #import "GRKBlurView.h"
 #import "TWICUserActionsViewController.h"
-#import "TWICUserManagement.h"
+#import "TWICUserManager.h"
 
 #define PUBLISHER_VIEW_FRAME_WIDTH      120
 #define PUBLISHER_VIEW_FRAME_HEIGHT     140
@@ -117,7 +117,7 @@
 }
 
 -(void)refreshData{
-    self.numberUsersLabel.text = [NSString stringWithFormat:@"%d",(int)[[TWICUserManagement sharedInstance]allUsers].count];
+    self.numberUsersLabel.text = [NSString stringWithFormat:@"%d",(int)[TWICUserManager sharedInstance].users.count];
 }
 
 -(void)presentFullScreenSubscriberWithID:(NSString *)subscriberID{
