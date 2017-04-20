@@ -40,6 +40,9 @@
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="up-arrow" translatesAutoresizingMaskIntoConstraints="NO" id="elM-Uo-HAD">
                             <rect key="frame" x="392" y="25.5" width="14" height="8"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="14" id="uwF-cu-mhz"/>
+                            </constraints>
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="screen-green" translatesAutoresizingMaskIntoConstraints="NO" id="TlI-vK-qye">
                             <rect key="frame" x="343" y="22.5" width="15" height="15"/>

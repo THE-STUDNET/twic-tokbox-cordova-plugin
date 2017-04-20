@@ -13,7 +13,7 @@
 
 + (TWICTokClient *)sharedInstance;
 
--(void)connectToSession:(NSString *)sessionID withUser:(NSDictionary *)user;
+-(void)connect;
 
 //session object that is used in stream view
 @property (strong, nonatomic) OTPublisher*  publisher;

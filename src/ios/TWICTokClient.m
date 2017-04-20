@@ -9,9 +9,9 @@
 #import "TWICTokClient.h"
 #import <OpenTok/OpenTok.h>
 #import "TWICSettingsManager.h"
+#import "TWICPlatformClient.h"
 
 @interface TWICTokClient()<OTSessionDelegate,OTPublisherKitDelegate,OTSubscriberKitDelegate>
-@property (strong, nonatomic) NSDictionary *user;
 
 @property(strong, nonatomic) NSMutableDictionary *allStreams;
 @property(strong, nonatomic) NSMutableDictionary *allSubscribers;
@@ -51,14 +51,25 @@
 }
 
 #pragma mark - Session Management
--(void)connectToSession:(NSString *)sessionID withUser:(NSDictionary *)user
+-(void)connect{
+    [[TWICPlatformClient sharedInstance]tokboxDataWithCompletionBlock:^(NSDictionary *data)
+     {
+         [self connectToSession:data[@"session"] withUserToken:data[@"token"]];
+     }
+                                                         failureBlock:^(NSError *error)
+     {
+         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+     }];
+
+}
+
+-(void)connectToSession:(NSString *)sessionID withUserToken:(NSString *)userToken
 {
-    self.user = user;
     self.session = [[OTSession alloc] initWithApiKey:[[TWICSettingsManager sharedInstance]settingsForKey:SettingsTokboxApiKey]
-                                       sessionId:TOK_SESSION_ID
+                                       sessionId:sessionID
                                         delegate:self];
     
-    [self.session connectWithToken:user[TWIC_USER_TOK_TOKEN] error:nil];
+    [self.session connectWithToken:userToken error:nil];
     
     //now publish
     [self setupPublisher];

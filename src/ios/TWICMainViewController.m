@@ -14,7 +14,7 @@
 #import "TWICTokClient.h"
 #import "GRKBlurView.h"
 #import "TWICUserActionsViewController.h"
-
+#import "TWICUserManagement.h"
 
 #define PUBLISHER_VIEW_FRAME_WIDTH      120
 #define PUBLISHER_VIEW_FRAME_HEIGHT     140
@@ -37,7 +37,7 @@
 
 
 @property (nonatomic, strong)TWICStreamGridViewController *twicStreamGridViewController;
-@property (nonatomic, strong) NSMutableArray *users;
+//@property (nonatomic, strong) NSMutableArray *users;
 @property (nonatomic, copy) NSString *currentSubcriberStreamID;
 @property (nonatomic, assign) BOOL backButton;
 
@@ -64,7 +64,7 @@
     [self refreshData];
     
     //connect the session
-    [[TWICTokClient sharedInstance] connectToSession:TOK_SESSION_ID withUser:self.users[0]];
+    [[TWICTokClient sharedInstance] connect];
 }
 
 -(void)dealloc{
@@ -117,8 +117,7 @@
 }
 
 -(void)refreshData{
-    self.users = [@[@{TWIC_USER_TOK_TOKEN:TOK_TOKEN_USER,TWIC_USER_FIRSTNAME_KEY:@"PAUL"}]mutableCopy];
-    self.numberUsersLabel.text = [NSString stringWithFormat:@"%d",(int)self.users.count];
+    self.numberUsersLabel.text = [NSString stringWithFormat:@"%d",(int)[[TWICUserManagement sharedInstance]allUsers].count];
 }
 
 -(void)presentFullScreenSubscriberWithID:(NSString *)subscriberID{

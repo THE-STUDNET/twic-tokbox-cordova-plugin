@@ -65,6 +65,8 @@
         <source-file src="src/ios/TWICSettingsManager.m" />
         <header-file src="src/ios/TWICPlatformClient.h" />
         <source-file src="src/ios/TWICPlatformClient.m" />
+        <header-file src="src/ios/TWICUserManagement.h" />
+        <source-file src="src/ios/TWICUserManagement.m" />
         <!--resources files-->
         <resource-file src="src/ios/Resources/TWICCordovaPlugin.storyboard" />
         <resource-file src="src/ios/Resources/TWICMenuAccordionHeaderView.xib" />

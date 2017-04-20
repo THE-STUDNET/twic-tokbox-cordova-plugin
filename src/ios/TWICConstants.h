@@ -24,14 +24,10 @@
 #define TWIC_STORYBOARD         [UIStoryboard storyboardWithName:@"TWICCordovaPlugin" bundle:nil]
 
 //User data
-#define TWIC_USER_AVATAR_URL_KEY        @"avatar_url"
-#define TWIC_USER_FIRSTNAME_KEY         @"firstname"
-#define TWIC_USER_LASTNAME_KEY          @"lastname"
 #define TWIC_USER_ACTIONS_KEY           @"actions"
 #define TWIC_USER_ACTION_TITLE_KEY      @"action_title"
 #define TWIC_USER_ACTION_IMAGE_KEY      @"action_image"
 #define TWIC_USER_ACTION_IS_ADMIN_KEY   @"action_isAdmin"
-#define TWIC_USER_TOK_TOKEN             @"tok_token"
 
 //Notifications
 #define TWIC_NOTIFICATION_SESSION_CONNECTED         @"tok_session_connected"
@@ -43,15 +39,5 @@
 //TWICPlaftform
 #define ERROR_DOMAIN                    @"com.twicplatform.error"
 
-//TOK
-#define TOK_SESSION_ID @"1_MX40NTcyMDQwMn5-MTQ5MTU1NzI2NzU1OH54Y0lZOXAzbDhOMnFIQUJISzE3Z29NTUZ-UH4"
-
-#if !DEBUG
-//PAUL
-#define TOK_TOKEN_USER @"T1==cGFydG5lcl9pZD00NTcyMDQwMiZzaWc9YTU2MzQxYmUxMTIzMzY2NWQxMjg5OTMxMDllMWFkMGM4YzZhODI1ZTpzZXNzaW9uX2lkPTFfTVg0ME5UY3lNRFF3TW41LU1UUTVNVFUxTnpJMk56VTFPSDU0WTBsWk9YQXpiRGhPTW5GSVFVSklTekUzWjI5TlRVWi1VSDQmY3JlYXRlX3RpbWU9MTQ5MTU1NzI2NyZyb2xlPXB1Ymxpc2hlciZub25jZT0xNDkxNTU3MjY3Ljg2MTEyMTM4MDUyNTI4JmV4cGlyZV90aW1lPTE0OTQxNDkyNjcmY29ubmVjdGlvbl9kYXRhPSU3QiUyMmlkJTIyJTNBMSU3RA=="
-#else
-//CROBERT
-#define TOK_TOKEN_USER @"T1==cGFydG5lcl9pZD00NTcyMDQwMiZzaWc9MjRlOTAyZGZmNTliYjlkZTI0Y2JkNjE2MzMzNTE1MTJkMDdlMzY3ZTpzZXNzaW9uX2lkPTFfTVg0ME5UY3lNRFF3TW41LU1UUTRPREkzTkRjeU5UYzRNbjVTZEVwQldYRmtObVJGVHlzclptZzBZbkp3U25sbGJtaC1VSDQmY3JlYXRlX3RpbWU9MTQ5MTU1NjczOSZub25jZT0wLjAzODA1MTY4MDQxMjE4NjQzJnJvbGU9cHVibGlzaGVyJmV4cGlyZV90aW1lPTE0OTQxNDg3MzYmY29ubmVjdGlvbl9kYXRhPSU3QiUyMmlkJTIyJTNBMSU3RA=="
-#endif
 
 #endif /* TWICConstants_h */

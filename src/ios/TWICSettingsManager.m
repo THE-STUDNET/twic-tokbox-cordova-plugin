@@ -59,7 +59,7 @@
                               },
                       SettingsTokboxApiKey:@"45720402",
                       SettingsUserIdKey:@(6),
-                      SettingsHangoutIdKey:@(21)};
+                      SettingsHangoutIdKey:@(13)};
 }
 
 -(id)settingsForKey:(NSString *)key{
