@@ -7,7 +7,7 @@
 //
 
 #import "TWICHangoutManager.h"
-#import "TWICPlatformClient.h"
+#import "TWICAPIClient.h"
 #import "TWICUserManager.h"
 
 @interface TWICHangoutManager()
@@ -28,12 +28,12 @@
 -(void)configureHangoutDataWithCompletionBlock:(void(^)())completionBlock
                                   failureBlock:(void (^)(NSError *error))failureBlock
 {
-    [[TWICPlatformClient sharedInstance]hangoutDataWithCompletionBlock:^(NSDictionary *data)
+    [[TWICAPIClient sharedInstance]hangoutDataWithCompletionBlock:^(NSDictionary *data)
     {
         self.hangoutData = data;
         completionBlock();
     }
-                                                          failureBlock:^(NSError *error)
+                                                     failureBlock:^(NSError *error)
     {
         failureBlock(error);
     }];
@@ -49,7 +49,7 @@
     if([option isKindOfClass:[NSDictionary class]]){
         return [option containsValueForKey:userRoleKey];
     }
-    return option;
+    return [option boolValue];
 }
 
 

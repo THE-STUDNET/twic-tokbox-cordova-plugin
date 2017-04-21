@@ -9,7 +9,16 @@
 #import "TWICTokClient.h"
 #import <OpenTok/OpenTok.h>
 #import "TWICSettingsManager.h"
-#import "TWICPlatformClient.h"
+#import "TWICAPIClient.h"
+
+
+static NSString *SignalCameraAuthorization = @"hgt_camera_authorization";
+static NSString *SignalCancelCameraAuthorization = @"hgt_cancel_camera_authorization";
+static NSString *SignalCancelMicrophoneAuthorization = @"hgt_cancel_microphone_authorization";
+static NSString *SignalCancelCameraRequested = @"hgt_cancel_camera_requested";
+static NSString *SignalCancelMicrophoneRequested = @"hgt_cancel_microphone_requested";
+static NSString *SignalForceMuteStream = @"hgt_force_mute_stream";
+static NSString *SignalForceUnmuteStream = @"hgt_force_unmute_stream";
 
 @interface TWICTokClient()<OTSessionDelegate,OTPublisherKitDelegate,OTSubscriberKitDelegate>
 
@@ -52,11 +61,11 @@
 
 #pragma mark - Session Management
 -(void)connect{
-    [[TWICPlatformClient sharedInstance]tokboxDataWithCompletionBlock:^(NSDictionary *data)
+    [[TWICAPIClient sharedInstance]tokboxDataWithCompletionBlock:^(NSDictionary *data)
      {
          [self connectToSession:data[@"session"] withUserToken:data[@"token"]];
      }
-                                                         failureBlock:^(NSError *error)
+                                                    failureBlock:^(NSError *error)
      {
          [SVProgressHUD showErrorWithStatus:error.localizedDescription];
      }];
@@ -84,6 +93,11 @@
 #pragma mark - Session events
 - (void)sessionDidConnect:(OTSession*)session
 {
+    //register hangout.join on API
+    [[TWICAPIClient sharedInstance]registerEventName:HangoutEventJoin
+                                     completionBlock:^() {}
+                                        failureBlock:^(NSError *error) {}];
+    
     if (self.session.capabilities.canPublish)
     {
         // create one time publisher and style publisher
@@ -106,6 +120,7 @@
              }
          }];
     }
+    
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SESSION_CONNECTED object:session];
 }
 
@@ -131,11 +146,13 @@
 - (void)session:(OTSession *)session connectionDestroyed:(OTConnection *)connection
 {
     NSLog(@"connectionDestroyed: %@", connection);
+    //update user interface with the user disconnected
 }
 
 - (void)session:(OTSession *)session connectionCreated:(OTConnection *)connection
 {
     NSLog(@"addConnection: %@", connection);
+    //check if user exist, if not retrieve data from API
 }
 
 - (void)session:(OTSession*)session didFailWithError:(OTError*)error
@@ -163,6 +180,36 @@
     
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:subscriber];
 }
+
+- (void)session:(nonnull OTSession*)session receivedSignalType:(NSString* _Nullable)type fromConnection:(OTConnection* _Nullable)connection withString:(NSString* _Nullable)string
+{
+    if([type isEqualToString:SignalCameraAuthorization]){
+        
+    }else if([type isEqualToString:SignalCancelCameraAuthorization]){
+        
+    }else if([type isEqualToString:SignalCancelMicrophoneAuthorization]){
+        
+    }else if([type isEqualToString:SignalCancelCameraRequested]){
+        
+    }else if([type isEqualToString:SignalCancelMicrophoneRequested]){
+    
+    }else if([type isEqualToString:SignalForceMuteStream]){
+        
+    }else if([type isEqualToString:SignalForceUnmuteStream]){
+        
+    }
+}
+
+- (void)session:(nonnull OTSession*)session archiveStartedWithId:(nonnull NSString*)archiveId name:(NSString* _Nullable)name
+{
+    //raise event to update ui
+}
+
+- (void)session:(nonnull OTSession*)session archiveStoppedWithId:(nonnull NSString *)archiveId
+{
+    //raise event to update ui
+}
+
 
 #pragma mark - Publisher events
 -(void)publisher:(OTPublisherKit *)publisher didFailWithError:(OTError *)error

@@ -6,7 +6,7 @@
 #import "TWICFirebaseClient.h"
 #import "TWICSocketIOClient.h"
 #import "TWICSettingsManager.h"
-#import "TWICPlatformClient.h"
+#import "TWICAPIClient.h"
 #import "TWICUserManager.h"
 #import "TWICHangoutManager.h"
 

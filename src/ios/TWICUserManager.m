@@ -7,7 +7,7 @@
 //
 
 #import "TWICUserManager.h"
-#import "TWICPlatformClient.h"
+#import "TWICAPIClient.h"
 #import "TWICSettingsManager.h"
 #import "TWICHangoutManager.h"
 
@@ -32,8 +32,8 @@
             completionBlock:(void (^)())completionBlock
                failureBlock:(void (^)(NSError *))failureBlock
 {
-    [[TWICPlatformClient sharedInstance] detailForUsers:userIds
-                                        completionBlock:^(NSArray *data)
+    [[TWICAPIClient sharedInstance] detailForUsers:userIds
+                                   completionBlock:^(NSArray *data)
     {
         //build user actions
         for(NSDictionary *user in data)

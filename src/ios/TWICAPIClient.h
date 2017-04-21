@@ -9,8 +9,17 @@
 #import <Foundation/Foundation.h>
 #import <AFNetworking/AFNetworking.h>
 
-@interface TWICPlatformClient : AFHTTPSessionManager
-+ (TWICPlatformClient *)sharedInstance;
+
+static NSString *HangoutEventJoin            = @"hangout.join";
+static NSString *HangoutEventUsersPoke       = @"hangout.userspoke";
+static NSString *HangoutEventShareCamera     = @"hangout.sharecamera";
+static NSString *HangoutEventShareMicrophone = @"hangout.sharemicrophone";
+static NSString *HangoutEventMessage         = @"hangout.message";
+static NSString *HangoutEventStartRecord     = @"hangout.startrecord";
+static NSString *HangoutEventStopRecord      = @"hangout.stoprecord";
+
+@interface TWICAPIClient : AFHTTPSessionManager
++ (TWICAPIClient *)sharedInstance;
 
 /*Error convenience method*/
 - (NSError *)errorWithCode:(NSInteger)code message:(NSString *)message;
@@ -25,4 +34,7 @@
       completionBlock:(void(^)(NSArray *data))completionBlock
          failureBlock:(void (^)(NSError *error))failureBlock;
 
+-(void)registerEventName:(NSString *)eventName
+         completionBlock:(void(^)())completionBlock
+            failureBlock:(void (^)(NSError *error))failureBlock;
 @end

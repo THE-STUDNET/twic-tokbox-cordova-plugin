@@ -6,7 +6,7 @@
 //
 //
 
-#import "TWICPlatformClient.h"
+#import "TWICAPIClient.h"
 #import "TWICConstants.h"
 #import "TWICSettingsManager.h"
 
@@ -16,16 +16,23 @@
 static NSString *TWICConversationGetPath = @"conversation.get";
 static NSString *TWICConversationGetTokenPath = @"conversation.getToken";
 static NSString *TWICUserGetPath = @"user.get";
+static NSString *TWICActivityAddPath = @"activity.add";
 
-@implementation TWICPlatformClient
+@interface TWICAPIClient()
+@property (nonatomic, strong) NSDateFormatter *serverDateFormatter;
+@end
 
-+ (TWICPlatformClient *)sharedInstance
+@implementation TWICAPIClient
+
++ (TWICAPIClient *)sharedInstance
 {
-    static TWICPlatformClient *_sharedClient = nil;
+    static TWICAPIClient *_sharedClient = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSURL *baseURL = [NSURL URLWithString:@""];
-        _sharedClient = [[TWICPlatformClient alloc] initWithBaseURL:baseURL];
+        _sharedClient = [[TWICAPIClient alloc] initWithBaseURL:baseURL];
+        _sharedClient.serverDateFormatter = [[NSDateFormatter alloc]init];
+        [_sharedClient.serverDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
         
         //queue count
         _sharedClient.operationQueue.maxConcurrentOperationCount = 3;
@@ -135,6 +142,26 @@ static NSString *TWICUserGetPath = @"user.get";
     [task resume];
 }
 
+-(void)registerEventName:(NSString *)eventName
+               hangoutId:(NSString*)hangoutId
+         completionBlock:(void(^)())completionBlock
+            failureBlock:(void (^)(NSError *error))failureBlock
+{
+    [self jsonRequestForMethodName:TWICActivityAddPath methodParameters:@{@"activities":@[@{@"date":[self.serverDateFormatter stringFromDate:[NSDate date]],
+                                                                                            @"event":eventName,
+                                                                                            @"object":@{@"id":hangoutId,
+                                                                                                        @"name":@"hangout"}}]}
+                   completionBlock:^(NSDictionary *data)
+     {
+         completionBlock();
+     }
+                      failureBlock:^(NSError *error)
+     {
+         failureBlock(error);
+     }];
+
+}
+
 #pragma mark - Public API
 -(void)hangoutDataWithCompletionBlock:(void(^)(NSDictionary *data))completionBlock
                           failureBlock:(void (^)(NSError *error))failureBlock
@@ -166,5 +193,16 @@ static NSString *TWICUserGetPath = @"user.get";
     }
                              failureBlock:failureBlock];
 }
+
+-(void)registerEventName:(NSString *)eventName
+         completionBlock:(void(^)())completionBlock
+            failureBlock:(void (^)(NSError *error))failureBlock
+{
+    [self registerEventName:eventName
+                  hangoutId:[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]
+            completionBlock:completionBlock
+               failureBlock:failureBlock];
+}
+
 
 @end
