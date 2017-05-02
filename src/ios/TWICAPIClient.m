@@ -129,9 +129,12 @@ static NSString *TWICActivityAddPath = @"activity.add";
                                     success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
                                   {
                                       if(responseObject[@"error"]){
-                                          failureBlock(responseObject[@"error"][@"message"]);
+                                          NSDictionary *errorData = responseObject[@"error"];
+                                          NSError *error = [self errorWithCode:(int)errorData[@"code"] message:errorData[@"message"]];
+                                          failureBlock(error);
                                       }
-                                      else{
+                                      else
+                                      {
                                           completionBlock(responseObject[@"result"]);
                                       }
                                   }
@@ -178,6 +181,19 @@ static NSString *TWICActivityAddPath = @"activity.add";
     return [self jsonRequestForMethodName:TWICConversationGetTokenPath
                          methodParameters:@{@"id":[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]}
                           completionBlock:completionBlock
+                             failureBlock:failureBlock];
+}
+
+-(void)detailForUser:(NSNumber*)userId
+     completionBlock:(void(^)(NSDictionary *data))completionBlock
+        failureBlock:(void (^)(NSError *error))failureBlock
+{
+    return [self jsonRequestForMethodName:TWICUserGetPath
+                         methodParameters:@{@"id":userId}
+                          completionBlock:^(NSDictionary *data)
+            {
+                completionBlock(data);
+            }
                              failureBlock:failureBlock];
 }
 

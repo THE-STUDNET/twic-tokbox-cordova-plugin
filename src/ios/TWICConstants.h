@@ -24,11 +24,19 @@
 #define TWIC_STORYBOARD         [UIStoryboard storyboardWithName:@"TWICCordovaPlugin" bundle:nil]
 
 //Notifications
-#define TWIC_NOTIFICATION_SESSION_CONNECTED         @"tok_session_connected"
-#define TWIC_NOTIFICATION_SESSION_DISCONNECTED      @"tok_session_disconnected"
-#define TWIC_NOTIFICATION_SUBSCRIBER_CONNECTED      @"tok_subscriber_connected"
-#define TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED   @"tok_subscriber_disconnected"
-
+#define TWIC_NOTIFICATION_SESSION_CONNECTED               @"tok_session_connected"
+#define TWIC_NOTIFICATION_SESSION_DISCONNECTED            @"tok_session_disconnected"
+#define TWIC_NOTIFICATION_SUBSCRIBER_CONNECTED            @"tok_subscriber_connected"
+#define TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED         @"tok_subscriber_disconnected"
+#define TWIC_NOTIFICATION_USER_CONNECTED                  @"tok_user_connected"
+#define TWIC_NOTIFICATION_USER_DISCONNECTED               @"tok_user_disconnected"
+#define TWIC_NOTIFICATION_USER_ASKPERMISSION_UPDATED      @"tok_user_askpermission_updated"
+#define NOTIFICATION_USER_ASK_CAMERA_AUTHORIZATION        @"tok_user_askcamera_authorization"
+#define NOTIFICATION_USER_CANCEL_CAMERA_AUTHORIZATION     @"tok_user_cancelcamera_authorization"
+#define NOTIFICATION_USER_ASK_MICROPHONE_AUTHORIZATION    @"tok_user_askmicrophone_authorization"
+#define NOTIFICATION_USER_CANCEL_MICROPHONE_AUTHORIZATION @"tok_user_cancelmicrophone_authorization"
+#define NOTIFICATION_USER_MICROPHONE_REQUESTED            @"tok_user_microphone_request"
+#define NOTIFICATION_USER_CAMERA_REQUESTED                @"tok_user_camera_request"
 
 //TWICPlaftform
 #define ERROR_DOMAIN                    @"com.twicplatform.error"

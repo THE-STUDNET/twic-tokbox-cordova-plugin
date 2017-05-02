@@ -19,13 +19,21 @@
 @property (weak, nonatomic) IBOutlet UIImageView *chevronImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *microphoneImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *screenImageView;
+
+@property (nonatomic, weak) NSDictionary *user;
 @end
 
 @implementation TWICMenuAccordionHeaderView
 
 - (void)awakeFromNib {
     [super awakeFromNib];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(userConnected:) name:TWIC_NOTIFICATION_USER_CONNECTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(userDisconnected:) name:TWIC_NOTIFICATION_USER_DISCONNECTED object:nil];
     [self configureSkin];
+}
+
+-(void)dealloc{
+    NOTIFICATION_CENTER_REMOVE;
 }
 
 -(void)configureSkin{
@@ -38,9 +46,15 @@
 
 -(void)configureWithUser:(NSDictionary *)user
 {
+    self.user = user;
     self.chevronImageView.image = [UIImage imageNamed:@"down-arrow"];
     [self.avatarImageView setImageWithURL:[NSURL URLWithString:[[TWICUserManager sharedInstance]avatarURLStringForUser:user]]];
     self.displayNameLabel.text = [NSString stringWithFormat:@"%@ %@",user[UserFirstnameKey],user[UserLastnameKey]];
+    if([user[UserConnectionStateKey]integerValue] == UserConnectionStateConnected){
+        self.connectionStatusView.backgroundColor = TWIC_COLOR_GREEN;
+    }else{
+        self.connectionStatusView.backgroundColor = TWIC_COLOR_RED;
+    }
 }
 
 -(void)willOpen
@@ -52,4 +66,20 @@
 {
     self.chevronImageView.image = [UIImage imageNamed:@"down-arrow"];
 }
+
+-(void)userConnected:(NSNotification *)notification{
+    NSDictionary *user = notification.object;
+    if([user[UserIdKey] isEqualToNumber:self.user[UserIdKey]])
+    {
+        self.connectionStatusView.backgroundColor = TWIC_COLOR_GREEN;
+    }
+}
+-(void)userDisconnected:(NSNotification *)notification{
+    NSDictionary *user = notification.object;
+    if([user[UserIdKey] isEqualToNumber:self.user[UserIdKey]])
+    {
+        self.connectionStatusView.backgroundColor = TWIC_COLOR_RED;
+    }
+}
+
 @end

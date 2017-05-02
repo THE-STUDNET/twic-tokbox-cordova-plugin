@@ -21,7 +21,7 @@
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 
 //data
-//@property (strong, nonatomic) NSMutableArray <NSDictionary *> *users;
+@property (strong, nonatomic) NSMutableArray <NSDictionary *> *users;
 @end
 
 @implementation TWICMenuViewController
@@ -34,6 +34,8 @@
     
     [self configureSkin];
     
+    [self refreshData];
+    
     [self refreshUI];
 }
 
@@ -42,9 +44,18 @@
     return YES;
 }
 
+-(void)refreshData{
+    //remove the current user from the list
+    self.users = [NSMutableArray arrayWithCapacity:[TWICUserManager sharedInstance].users.count -1];
+    for(NSDictionary *user in [TWICUserManager sharedInstance].users){
+        if([[TWICUserManager sharedInstance]isCurrentUser:user] == NO){
+            [self.users addObject:user];
+        }
+    }
+}
+
 -(void)refreshUI{
-//    self.titleLabel.text = [NSString stringWithFormat:@"%d Members",(int)self.users.count];
-    self.titleLabel.text = [NSString stringWithFormat:@"%d Members",(int)[TWICUserManager sharedInstance].users.count];
+    self.titleLabel.text = [NSString stringWithFormat:@"%d Members",(int)self.users.count];
 }
 
 -(void)configureSkin{
@@ -64,12 +75,12 @@
 #pragma TableView Management
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSDictionary *user = [TWICUserManager sharedInstance].users[section];
+    NSDictionary *user = self.users[section];
     return [user[UserActionsKey] count];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [TWICUserManager sharedInstance].users.count;
+    return self.users.count - 1;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -89,7 +100,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSDictionary *user = [TWICUserManager sharedInstance].users[indexPath.section];
+    NSDictionary *user = self.users[indexPath.section];
     NSDictionary *action = [user[UserActionsKey] objectAtIndex:indexPath.row];
     TWICMenuActionTableViewCell *cell = nil;
     if(action[UserActionIsAdminKey]){
@@ -104,7 +115,7 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     TWICMenuAccordionHeaderView *headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:[TWICMenuAccordionHeaderView description]];
-    NSDictionary *user = [TWICUserManager sharedInstance].users[section];
+    NSDictionary *user = self.users[section];
     [headerView configureWithUser:user];
     return headerView;
 }
@@ -121,7 +132,7 @@
 
 - (BOOL)tableView:(FZAccordionTableView *)tableView canInteractWithHeaderAtSection:(NSInteger)section {
     //has actions ?
-    NSDictionary *user = [TWICUserManager sharedInstance].users[section];    
+    NSDictionary *user = self.users[section];
     if([user[UserActionsKey] count] > 0)
     {
         return YES;

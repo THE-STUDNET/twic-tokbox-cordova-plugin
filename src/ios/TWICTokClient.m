@@ -10,15 +10,8 @@
 #import <OpenTok/OpenTok.h>
 #import "TWICSettingsManager.h"
 #import "TWICAPIClient.h"
-
-
-static NSString *SignalCameraAuthorization = @"hgt_camera_authorization";
-static NSString *SignalCancelCameraAuthorization = @"hgt_cancel_camera_authorization";
-static NSString *SignalCancelMicrophoneAuthorization = @"hgt_cancel_microphone_authorization";
-static NSString *SignalCancelCameraRequested = @"hgt_cancel_camera_requested";
-static NSString *SignalCancelMicrophoneRequested = @"hgt_cancel_microphone_requested";
-static NSString *SignalForceMuteStream = @"hgt_force_mute_stream";
-static NSString *SignalForceUnmuteStream = @"hgt_force_unmute_stream";
+#import "TWICUserManager.h"
+#import "TWICHangoutManager.h"
 
 @interface TWICTokClient()<OTSessionDelegate,OTPublisherKitDelegate,OTSubscriberKitDelegate>
 
@@ -70,6 +63,10 @@ static NSString *SignalForceUnmuteStream = @"hgt_force_unmute_stream";
          [SVProgressHUD showErrorWithStatus:error.localizedDescription];
      }];
 
+}
+
+-(void)disconnect{
+    [self.session disconnect:nil];
 }
 
 -(void)connectToSession:(NSString *)sessionID withUserToken:(NSString *)userToken
@@ -143,17 +140,59 @@ static NSString *SignalForceUnmuteStream = @"hgt_force_unmute_stream";
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SESSION_DISCONNECTED object:session];
 }
 
-- (void)session:(OTSession *)session connectionDestroyed:(OTConnection *)connection
-{
-    NSLog(@"connectionDestroyed: %@", connection);
-    //update user interface with the user disconnected
-}
-
 - (void)session:(OTSession *)session connectionCreated:(OTConnection *)connection
 {
-    NSLog(@"addConnection: %@", connection);
-    //check if user exist, if not retrieve data from API
+    //connection du user
+    
+    //check if the user is in the list of existing users
+    NSData *data = [connection.data dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
+                                                             options:NSJSONReadingMutableContainers
+                                                               error:nil];
+    //register new or existing user
+    __block NSDictionary *user = [[TWICUserManager sharedInstance] userWithUserID:dataJson[UserIdKey]];
+    if(user==nil)
+    {
+        //retrieve the details for this user
+        [[TWICUserManager sharedInstance] loadDetailsForUserID:dataJson[UserIdKey]
+                                            completionBlock:^()
+         {
+             user = [[TWICUserManager sharedInstance] userWithUserID:dataJson[UserIdKey]];
+             [self processUserConnected:user connection:connection];
+         }
+                                               failureBlock:^(NSError *error) {}];
+    }
+    else
+    {
+        if([[TWICUserManager sharedInstance]isCurrentUser:user] == NO){
+            [self processUserConnected:user connection:connection];
+        }
+    }
 }
+
+-(void)processUserConnected:(NSDictionary *)user connection:(OTConnection*)connection{
+    //update user connection state
+    [[TWICUserManager sharedInstance] setConnectedUserStateForUserID:user[UserIdKey]];
+    
+    //check if he was asking for permissions
+    if([user[UserAskScreen]boolValue]){
+        [self.session signalWithType:SignalTypeCameraAuthorization string:nil connection:connection retryAfterReconnect:YES error:nil];
+    }
+    if([user[UserAskMicrophone]boolValue]){
+        [self.session signalWithType:SignalTypeCancelMicrophoneAuthorization string:nil connection:connection retryAfterReconnect:YES error:nil];
+    }
+}
+
+- (void)session:(OTSession *)session connectionDestroyed:(OTConnection *)connection
+{
+    //update user interface with the user disconnected
+    NSData *data = [connection.data dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
+                                                             options:NSJSONReadingMutableContainers
+                                                               error:nil];
+    [[TWICUserManager sharedInstance] setConnectedUserStateForUserID:dataJson[UserIdKey]];
+}
+
 
 - (void)session:(OTSession*)session didFailWithError:(OTError*)error
 {
@@ -181,23 +220,102 @@ static NSString *SignalForceUnmuteStream = @"hgt_force_unmute_stream";
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:subscriber];
 }
 
+#pragma mark - Signal Management
+
 - (void)session:(nonnull OTSession*)session receivedSignalType:(NSString* _Nullable)type fromConnection:(OTConnection* _Nullable)connection withString:(NSString* _Nullable)string
 {
-    if([type isEqualToString:SignalCameraAuthorization]){
-        
-    }else if([type isEqualToString:SignalCancelCameraAuthorization]){
-        
-    }else if([type isEqualToString:SignalCancelMicrophoneAuthorization]){
-        
-    }else if([type isEqualToString:SignalCancelCameraRequested]){
-        
-    }else if([type isEqualToString:SignalCancelMicrophoneRequested]){
+    //retrieve the current user
+    NSDictionary *currentUser = [TWICUserManager sharedInstance].currentUser;
+    //retrieve the signaled user
+    NSData *data = [connection.data dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
+                                                             options:NSJSONReadingMutableContainers
+                                                               error:nil];
+    NSDictionary *signaledUser = [[TWICUserManager sharedInstance] userWithUserID:dataJson[UserIdKey]];
+    BOOL isCurrentUser = [[TWICUserManager sharedInstance]isCurrentUser:signaledUser];
     
-    }else if([type isEqualToString:SignalForceMuteStream]){
-        
-    }else if([type isEqualToString:SignalForceUnmuteStream]){
-        
+    if([type isEqualToString:SignalTypeCameraAuthorization])
+    {
+        //can the current user process the request
+        if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
+            [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_ASK_CAMERA_AUTHORIZATION object:signaledUser];
+        }
     }
+    else if([type isEqualToString:SignalTypeCancelCameraAuthorization])
+    {
+        //can the current user process the request
+        if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
+            [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_CANCEL_CAMERA_AUTHORIZATION object:signaledUser];
+        }
+        //does the user is the current user and was asking for permission
+        if(isCurrentUser && [signaledUser[UserAskCamera]boolValue]){
+            [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:signaledUser[UserIdKey] toValue:NO];
+        }
+    }
+    else if([type isEqualToString:SignalTypeCancelMicrophoneAuthorization])
+    {
+        //can the current user process the request
+        if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
+            [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_CANCEL_MICROPHONE_AUTHORIZATION object:signaledUser];
+        }
+        //does the user is the current user and was asking for permission
+        if(isCurrentUser && [signaledUser[UserAskMicrophone]boolValue]){
+            [[TWICUserManager sharedInstance]setAskPermission:UserAskMicrophone forUserID:signaledUser[UserIdKey] toValue:NO];
+        }
+    }
+    else if([type isEqualToString:SignalTypeMicrophoneAuthorization])
+    {
+        //can the current user process the request
+        if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
+            [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_ASK_MICROPHONE_AUTHORIZATION object:signaledUser];
+            [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:signaledUser[UserIdKey] toValue:YES];
+        }
+    }
+    else if([type isEqualToString:SignalTypeCameraRequested])//only received for me
+    {
+        if([currentUser[UserAskCamera]boolValue]){
+            [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:currentUser[UserIdKey] toValue:NO];
+            //signal cancel for other users
+            [self.session signalWithType:SignalTypeCancelCameraAuthorization string:nil connection:connection error:nil];
+            //publish camera
+            self.publisher.publishVideo = YES;
+            self.publisher.publishAudio = YES;
+        }
+        else
+        {
+            [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_CAMERA_REQUESTED object:currentUser];
+        }
+    }
+    else if([type isEqualToString:SignalTypeMicrophoneRequested])//only received for me
+    {
+        if([currentUser[UserAskMicrophone]boolValue]){
+            [[TWICUserManager sharedInstance]setAskPermission:UserAskMicrophone forUserID:currentUser[UserIdKey] toValue:NO];
+            //signal cancel for other users
+            [self.session signalWithType:SignalTypeCancelMicrophoneAuthorization string:nil connection:connection error:nil];
+            //publish audio
+            self.publisher.publishAudio = YES;
+        }
+        else
+        {
+            [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_MICROPHONE_REQUESTED object:currentUser];
+        }
+    }
+    else if([type isEqualToString:SignalTypeForceMuteStream])
+    {
+        //flag my user or the stream that he was forcemute !
+        [TWICTokClient sharedInstance].publisher.publishAudio = NO;
+    }
+    else if([type isEqualToString:SignalTypeForceUnmuteStream])
+    {
+        [TWICTokClient sharedInstance].publisher.publishAudio = YES;
+    }
+}
+
+-(OTError *)sendSignalType:(NSString *)signalType connection:(OTConnection *)connection
+{
+    OTError *error = nil;
+    [self.session signalWithType:signalType string:nil connection:connection error:&error];
+    return error;
 }
 
 - (void)session:(nonnull OTSession*)session archiveStartedWithId:(nonnull NSString*)archiveId name:(NSString* _Nullable)name

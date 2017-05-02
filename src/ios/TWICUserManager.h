@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+//API Attributes
 static NSString *UserAmbassadorKey       = @"ambassador";
 static NSString *UserAvatarKey           = @"avatar";
 static NSString *UserBackgroundKey       = @"background";
@@ -29,10 +30,22 @@ static NSString *UserOriginKey           = @"origin";
 static NSString *UserPositionKey         = @"position";
 static NSString *UserRolesKey            = @"roles";
 
+//LOCAL Attributes
+static NSString *UserConnectionStateKey  = @"connection_state";
+static NSString *UserAskCamera           = @"ask_camera";
+static NSString *UserAskMicrophone       = @"ask_microphone";
+static NSString *UserAskScreen           = @"ask_screen";
+
 static NSString *UserActionsKey          = @"actions";
 static NSString *UserActionTitleKey      = @"action_title";
 static NSString *UserActionImageKey      = @"action_image";
 static NSString *UserActionIsAdminKey    = @"is_admin";
+
+typedef enum : NSUInteger {
+    UserConnectionStateUknown,
+    UserConnectionStateConnected,
+    UserConnectionStateDisconnected,
+} UserConnectionState;
 
 @interface TWICUserManager : NSObject
 + (TWICUserManager *)sharedInstance;
@@ -41,9 +54,22 @@ static NSString *UserActionIsAdminKey    = @"is_admin";
             completionBlock:(void(^)())completionBlock
                failureBlock:(void (^)(NSError *error))failureBlock;
 
-@property (nonatomic, strong) NSMutableArray *users;
-
 -(NSString *)avatarURLStringForUser:(NSDictionary *)user;
 
 -(NSDictionary *)currentUser;
+
+-(NSDictionary *)userWithUserID:(NSNumber *)userID;
+
+-(BOOL)isCurrentUser:(NSDictionary *)user;
+
+-(void)loadDetailsForUserID:(NSNumber*)userID
+            completionBlock:(void (^)())completionBlock
+               failureBlock:(void (^)(NSError *))failureBlock;
+
+-(void)setConnectedUserStateForUserID:(NSNumber *)userID;
+-(void)setDisconnectedUserStateForUserID:(NSNumber *)userID;
+-(void)setAskPermission:(NSString *)askPermission forUserID:(NSNumber *)userID toValue:(BOOL)value;
+
+-(NSInteger)connectedUsersCount;
+-(NSInteger)usersCount;
 @end

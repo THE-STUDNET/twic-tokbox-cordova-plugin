@@ -15,6 +15,7 @@
 #import "GRKBlurView.h"
 #import "TWICUserActionsViewController.h"
 #import "TWICUserManager.h"
+#import "TWICAPIClient.h"
 
 #define PUBLISHER_VIEW_FRAME_WIDTH      120
 #define PUBLISHER_VIEW_FRAME_HEIGHT     140
@@ -58,10 +59,15 @@
     [NOTIFICATION_CENTER addObserver:self selector:@selector(subscriberConnected:) name:TWIC_NOTIFICATION_SUBSCRIBER_CONNECTED object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(subscriberDisconnected:) name:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:nil];
     
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(userConnected:) name:TWIC_NOTIFICATION_USER_CONNECTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(userDisconnected:) name:TWIC_NOTIFICATION_USER_DISCONNECTED object:nil];
+    
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(userCameraRequested:) name:NOTIFICATION_USER_CAMERA_REQUESTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(userMicrophoneRequested:) name:NOTIFICATION_USER_MICROPHONE_REQUESTED object:nil];
 
     [self configureSkin];
     [self configureLocalizable];
-    [self refreshData];
+    [self refreshUI];
     
     //connect the session
     [[TWICTokClient sharedInstance] connect];
@@ -116,8 +122,8 @@
     view.clipsToBounds = YES;
 }
 
--(void)refreshData{
-    self.numberUsersLabel.text = [NSString stringWithFormat:@"%d",(int)[TWICUserManager sharedInstance].users.count];
+-(void)refreshUI{
+    self.numberUsersLabel.text = [NSString stringWithFormat:@"%d",(int)[TWICUserManager sharedInstance].usersCount - 1];
 }
 
 -(void)presentFullScreenSubscriberWithID:(NSString *)subscriberID{
@@ -151,8 +157,6 @@
              make.height.mas_equalTo(PUBLISHER_VIEW_FRAME_HEIGHT);
          }];
 
-        
-        
         [TWICTokClient sharedInstance].publisher.view.layer.borderColor = [UIColor whiteColor].CGColor;
         [TWICTokClient sharedInstance].publisher.view.layer.cornerRadius = 5.0f;
         [TWICTokClient sharedInstance].publisher.view.layer.borderWidth = 1.0f;
@@ -212,6 +216,7 @@
 }
 
 - (IBAction)record:(id)sender {
+    
 }
 
 - (IBAction)disconnect:(id)sender {
@@ -231,7 +236,14 @@
     }
     else
     {
-        //disconnect
+        //disconnect, register disconnect event
+        [[TWICAPIClient sharedInstance]registerEventName:HangoutEventLeave completionBlock:^{} failureBlock:^(NSError *error) {}];
+        
+        //disconnect tokbox
+        [[TWICTokClient sharedInstance]disconnect];
+        
+        //hide display
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
@@ -271,6 +283,16 @@
             [self disconnect:nil];
         }
     }
+}
+
+#pragma mark - Tok Users Management
+-(void)userConnected:(NSNotification *)notification{
+    //update the number of connected users
+    [self refreshUI];
+}
+-(void)userDisconnected:(NSNotification*)notification{
+    //update the number of connected users
+    [self refreshUI];
 }
 
 #pragma mark -TWICStreamGridViewController delegate
@@ -377,4 +399,31 @@
          self.blurView = nil;
      }];
 }
+
+-(void)userCameraRequested:(NSNotification*)notification
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:[NSString stringWithFormat:@"Do you want to share your video"]
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"ACCEPT" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action)
+    {
+        [TWICTokClient sharedInstance].publisher.publishVideo = YES;
+        [TWICTokClient sharedInstance].publisher.publishAudio = YES;
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"DECLINE" style:UIAlertActionStyleDefault handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+-(void)userMicrophoneRequested:(NSNotification*)notification
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:[NSString stringWithFormat:@"Do you want to share your audio"]
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"ACCEPT" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action)
+                      {
+                          [TWICTokClient sharedInstance].publisher.publishAudio = YES;
+                      }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"DECLINE" style:UIAlertActionStyleDefault handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
 @end
