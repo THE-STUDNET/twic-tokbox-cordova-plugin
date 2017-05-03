@@ -33,6 +33,7 @@ static NSString *HangoutActionKick                  = @"kick";
 
 -(BOOL)canUser:(NSDictionary *)user doAction:(NSString *)actionName;
 @end
+
 /*
  {
  "autoPublishCamera":[{"roles":["academic","instructor"]}],

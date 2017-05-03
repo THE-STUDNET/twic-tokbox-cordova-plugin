@@ -16,13 +16,14 @@
 #import "TWICUserActionsViewController.h"
 #import "TWICUserManager.h"
 #import "TWICAPIClient.h"
+#import "TWICAlertViewController.h"
 
 #define PUBLISHER_VIEW_FRAME_WIDTH      120
 #define PUBLISHER_VIEW_FRAME_HEIGHT     140
 #define PUBLISHER_VIEW_FRAME_DEFAULT_Y  10
 #define PUBLISHER_VIEW_FRAME_DEFAULT_X  -10
 
-@interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate>
+@interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate,TWICAlertViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (weak, nonatomic) IBOutlet UIView *supportView;
 @property (weak, nonatomic) IBOutlet UIView *footerView;
@@ -44,6 +45,8 @@
 
 @property (nonatomic, strong) GRKBlurView *blurView;
 @property (nonatomic, strong) TWICUserActionsViewController *userActionsViewController;
+@property (nonatomic, strong) TWICAlertViewController *alertViewController;
+@property (nonatomic, strong) UIViewController *popupViewController;
 @end
 
 @implementation TWICMainViewController
@@ -62,9 +65,12 @@
     [NOTIFICATION_CENTER addObserver:self selector:@selector(userConnected:) name:TWIC_NOTIFICATION_USER_CONNECTED object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(userDisconnected:) name:TWIC_NOTIFICATION_USER_DISCONNECTED object:nil];
     
-    [NOTIFICATION_CENTER addObserver:self selector:@selector(userCameraRequested:) name:NOTIFICATION_USER_CAMERA_REQUESTED object:nil];
-    [NOTIFICATION_CENTER addObserver:self selector:@selector(userMicrophoneRequested:) name:NOTIFICATION_USER_MICROPHONE_REQUESTED object:nil];
-
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(currentUserCameraRequested:) name:NOTIFICATION_USER_CAMERA_REQUESTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(currentUserMicrophoneRequested:) name:NOTIFICATION_USER_MICROPHONE_REQUESTED object:nil];
+    
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(userAskMicrophoneAuthorization:) name:NOTIFICATION_USER_ASK_MICROPHONE_AUTHORIZATION object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(userAskCameraAuthorization:) name:NOTIFICATION_USER_ASK_CAMERA_AUTHORIZATION object:nil];
+    
     [self configureSkin];
     [self configureLocalizable];
     [self refreshUI];
@@ -295,7 +301,7 @@
     [self refreshUI];
 }
 
-#pragma mark -TWICStreamGridViewController delegate
+#pragma mark - TWICStreamGridViewController delegate
 
 -(void)TWICStreamGridViewControllerDidSelectPublisher:(id)sender{
     [self addActionsView];
@@ -312,23 +318,16 @@
     self.backButton = YES;
 }
 
-#pragma mark - ActionsView Management
--(void)addActionsView{
-    
-    if(self.userActionsViewController)//already presented !
-        return;
-    
-    //actions
-    self.userActionsViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICUserActionsViewController description]];
-    self.userActionsViewController.delegate = self;
-    UPDATE_VIEW_FRAME_SIZE(self.userActionsViewController.view, CGSizeMake(300*MAIN_SCREEN.bounds.size.width/414, 260*MAIN_SCREEN.bounds.size.height/736));
-    self.userActionsViewController.view.clipsToBounds = YES;
-    self.userActionsViewController.view.layer.cornerRadius = TWIC_CORNER_RADIUS;
-    self.userActionsViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
-    [self.view addSubview:self.userActionsViewController.view];
-    self.userActionsViewController.view.center = self.view.center;
-    [self.userActionsViewController didMoveToParentViewController:self];
-    [super addChildViewController:self.userActionsViewController];
+#pragma mark - Popup views management
+-(void)showPopupView{
+    UPDATE_VIEW_FRAME_SIZE(self.popupViewController.view, CGSizeMake(300*MAIN_SCREEN.bounds.size.width/414, 260*MAIN_SCREEN.bounds.size.height/736));
+    self.popupViewController.view.clipsToBounds = YES;
+    self.popupViewController.view.layer.cornerRadius = TWIC_CORNER_RADIUS;
+    self.popupViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
+    [self.view addSubview:self.popupViewController.view];
+    self.popupViewController.view.center = self.view.center;
+    [self.popupViewController didMoveToParentViewController:self];
+    [super addChildViewController:self.popupViewController];
     
     //blur
     self.blurView  = [[GRKBlurView alloc]initWithFrame:self.supportView.frame];
@@ -341,23 +340,51 @@
     
     //animate the display !
     [UIView animateWithDuration:0.3/1.5 animations:^{
-        self.userActionsViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.1, 1.1);
+        self.popupViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.1, 1.1);
         self.blurView.alpha = 1;
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:0.3/2 animations:^{
-            self.userActionsViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.9, 0.9);
+            self.popupViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.9, 0.9);
         } completion:^(BOOL finished) {
             [UIView animateWithDuration:0.3/2 animations:^{
-                self.userActionsViewController.view.transform = CGAffineTransformIdentity;
+                self.popupViewController.view.transform = CGAffineTransformIdentity;
             }];
         }];
     }];
 }
 
+-(void)removePopupView{
+    [UIView animateWithDuration:0.3f animations:^
+     {
+         self.popupViewController.view.alpha = 0;
+         self.blurView.alpha = 0;
+     }
+                     completion:^(BOOL finished)
+     {
+         [self.popupViewController.view removeFromSuperview];
+         self.popupViewController = nil;
+         [self.blurView removeFromSuperview];
+         self.blurView = nil;
+     }];
+}
+
+#pragma mark - ActionsView Management
+-(void)addActionsView{
+    if(self.popupViewController)//already presented !
+        return;
+    
+    //actions
+    self.popupViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICUserActionsViewController description]];
+    ((TWICUserActionsViewController*)self.popupViewController).delegate = self;
+    
+    //show the popup
+    [self showPopupView];
+}
+
 -(void)TWICUserActionsViewController:(id)sender didTouchAction:(UserActionType)actionType
 {
     //do something with the action !
-    [self removeActionView];
+    [self removePopupView];
     
     switch (actionType) {
         case UserActionTypeStop:
@@ -382,48 +409,58 @@
 }
 
 -(void)blurviewTouched:(UIGestureRecognizer*)gesture{
-    [self removeActionView];
+    [self removePopupView];
 }
 
--(void)removeActionView{
-    [UIView animateWithDuration:0.3f animations:^
-     {
-         self.userActionsViewController.view.alpha = 0;
-         self.blurView.alpha = 0;
-     }
-                     completion:^(BOOL finished)
-     {
-         [self.userActionsViewController.view removeFromSuperview];
-         self.userActionsViewController = nil;
-         [self.blurView removeFromSuperview];
-         self.blurView = nil;
-     }];
-}
-
--(void)userCameraRequested:(NSNotification*)notification
+#pragma mark - Camera - Microphone requests
+-(void)currentUserCameraRequested:(NSNotification*)notification
 {
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                   message:[NSString stringWithFormat:@"Do you want to share your video"]
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"ACCEPT" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action)
-    {
+    self.popupViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICAlertViewController description]];
+    [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleCamera title:[NSString stringWithFormat:@"Do you want to share your video"]];
+    ((TWICAlertViewController*)self.popupViewController).delegate = self;
+    [self showPopupView];
+}
+-(void)currentUserMicrophoneRequested:(NSNotification*)notification
+{
+    self.popupViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICAlertViewController description]];
+    [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleCamera title:[NSString stringWithFormat:@"Do you want to share your microphone"]];
+    ((TWICAlertViewController*)self.popupViewController).delegate = self;
+}
+
+-(void)twicAlertViewControllerDidCancel:(id)sender{
+    if(((TWICAlertViewController*)sender).style == TWICAlertViewStyleCamera){
+        [TWICTokClient sharedInstance].publisher.publishVideo = NO;
+        [TWICTokClient sharedInstance].publisher.publishAudio = NO;
+    }else if(((TWICAlertViewController*)sender).style == TWICAlertViewStyleMicrophone){
+        [TWICTokClient sharedInstance].publisher.publishAudio = NO;
+    }
+    [self removePopupView];
+}
+
+-(void)twicAlertViewControllerDidAccept:(id)sender{
+    if(((TWICAlertViewController*)sender).style == TWICAlertViewStyleCamera){
         [TWICTokClient sharedInstance].publisher.publishVideo = YES;
         [TWICTokClient sharedInstance].publisher.publishAudio = YES;
-    }]];
-    [alert addAction:[UIAlertAction actionWithTitle:@"DECLINE" style:UIAlertActionStyleDefault handler:nil]];
-    [self presentViewController:alert animated:YES completion:nil];
-}
--(void)userMicrophoneRequested:(NSNotification*)notification
-{
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
-                                                                   message:[NSString stringWithFormat:@"Do you want to share your audio"]
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    [alert addAction:[UIAlertAction actionWithTitle:@"ACCEPT" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action)
-                      {
-                          [TWICTokClient sharedInstance].publisher.publishAudio = YES;
-                      }]];
-    [alert addAction:[UIAlertAction actionWithTitle:@"DECLINE" style:UIAlertActionStyleDefault handler:nil]];
-    [self presentViewController:alert animated:YES completion:nil];
+    }else if(((TWICAlertViewController*)sender).style == TWICAlertViewStyleMicrophone){
+        [TWICTokClient sharedInstance].publisher.publishAudio = YES;
+    }
+    [self removePopupView];
 }
 
+#pragma mark - Camera Microphone User Authorizations
+-(void)userAskMicrophoneAuthorization:(id)sender{
+    if(self.twicStreamGridViewController){//grid
+        
+    }else{//fullscreen
+        //display popup when full screen
+    }
+}
+
+-(void)userAskCameraAuthorization:(id)sender{
+    if(self.twicStreamGridViewController){//grid
+        
+    }else{//fullscreen
+        //display popup when full screen
+    }
+}
 @end

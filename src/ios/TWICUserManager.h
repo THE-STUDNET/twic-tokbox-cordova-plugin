@@ -72,4 +72,5 @@ typedef enum : NSUInteger {
 
 -(NSInteger)connectedUsersCount;
 -(NSInteger)usersCount;
+-(NSArray *)allUsers;
 @end

@@ -46,8 +46,8 @@
 
 -(void)refreshData{
     //remove the current user from the list
-    self.users = [NSMutableArray arrayWithCapacity:[TWICUserManager sharedInstance].users.count -1];
-    for(NSDictionary *user in [TWICUserManager sharedInstance].users){
+    self.users = [NSMutableArray arrayWithCapacity:[TWICUserManager sharedInstance].allUsers.count -1];
+    for(NSDictionary *user in [TWICUserManager sharedInstance].allUsers){
         if([[TWICUserManager sharedInstance]isCurrentUser:user] == NO){
             [self.users addObject:user];
         }
@@ -123,7 +123,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if(self.delegate){
-        NSDictionary *user = [TWICUserManager sharedInstance].users[indexPath.section];
+        NSDictionary *user = [TWICUserManager sharedInstance].allUsers[indexPath.section];
         NSDictionary *action = [user[UserActionsKey] objectAtIndex:indexPath.row];
         [self.delegate TWICMenuViewController:self didSelectAction:action forUser:user];
     }

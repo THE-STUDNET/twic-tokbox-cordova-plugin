@@ -161,4 +161,8 @@
     return self.users.count;
 }
 
+-(NSArray *)allUsers
+{
+    return self.users;
+}
 @end

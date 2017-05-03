@@ -239,6 +239,7 @@
         //can the current user process the request
         if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
             [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_ASK_CAMERA_AUTHORIZATION object:signaledUser];
+            [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:signaledUser[UserIdKey] toValue:YES];
         }
     }
     else if([type isEqualToString:SignalTypeCancelCameraAuthorization])
@@ -268,7 +269,7 @@
         //can the current user process the request
         if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
             [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_ASK_MICROPHONE_AUTHORIZATION object:signaledUser];
-            [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:signaledUser[UserIdKey] toValue:YES];
+            [[TWICUserManager sharedInstance]setAskPermission:UserAskMicrophone forUserID:signaledUser[UserIdKey] toValue:YES];
         }
     }
     else if([type isEqualToString:SignalTypeCameraRequested])//only received for me
@@ -389,6 +390,7 @@
 
 - (void)leavingBackgroundMode:(NSNotification*)notification
 {
+#warning TO BE CHANGED ==> CAN I AUTO-PUBLISH ??
     self.publisher.publishVideo = YES;
     
     //now subscribe to any background connected streams
