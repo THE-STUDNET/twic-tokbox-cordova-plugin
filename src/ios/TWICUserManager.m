@@ -69,8 +69,10 @@
 
 -(NSArray *)actionsForUser:(NSDictionary *)user
 {
+#warning //TODO check for user status => speaking / video    
+    
     NSMutableArray *actions = [NSMutableArray array];
-    [actions addObject:@{UserActionTitleKey:@"Send a direct message to Marc",UserActionImageKey:@"chat"}];//chat is available for everybody
+    [actions addObject:@{UserActionTitleKey:@"Send a direct message",UserActionImageKey:@"chat"}];//chat is available for everybody
     if([[TWICHangoutManager sharedInstance]canUser:user doAction:HangoutActionAskDevice]){
         [actions addObject:@{UserActionTitleKey:@"Send a request for the camera",UserActionImageKey:@"camera"}];
         [actions addObject:@{UserActionTitleKey:@"Send a request for the microphone",UserActionImageKey:@"microphone-white"}];
@@ -78,6 +80,8 @@
     if([[TWICHangoutManager sharedInstance]canUser:user doAction:HangoutActionKick]){
         [actions addObject:@{UserActionTitleKey:@"Kick Marc from the live",UserActionIsAdminKey:@(1)}];
     }
+    
+    
     return actions;
 }
 

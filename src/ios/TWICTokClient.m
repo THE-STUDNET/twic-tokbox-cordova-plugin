@@ -76,15 +76,67 @@
                                         delegate:self];
     
     [self.session connectWithToken:userToken error:nil];
-    
-    //now publish
-    [self setupPublisher];
 }
 
--(void)setupPublisher
+-(void)setupPublisherWithCompletionBlock:(void(^)())completionBlock
+                            failureBlock:(void (^)(NSError *error))failureBlock
 {
-    self.publisher = [[OTPublisher alloc] initWithDelegate:self];
-    self.publisher.view.userInteractionEnabled = YES;
+    // create one time publisher and style publisher
+    [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
+                             completionHandler:^(BOOL granted)
+     {
+         dispatch_async(dispatch_get_main_queue(), ^{
+             self.canPublish = granted;
+             if(granted)
+             {
+                 OTError *error = nil;
+                 self.publisher = [[OTPublisher alloc] initWithDelegate:self];
+                 self.publisher.view.userInteractionEnabled = YES;
+                 
+                 if(error){
+                     failureBlock(error);
+                 }
+                 else{
+                     completionBlock();
+                 }
+             }
+             else
+             {
+                 failureBlock([self errorWithCode:0 message:@"iOS Authorization failed"]);
+             }
+         });
+     }];
+}
+
+-(void)unpublish
+{
+    [self.session unpublish:self.publisher error:nil];
+    self.publisher = nil;
+    
+    [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_PUBLISHER_DESTROYED object:nil];
+}
+
+-(void)publishVideo:(BOOL)video audio:(BOOL)audio
+{
+    if(!self.publisher){
+        [self setupPublisherWithCompletionBlock:^
+        {
+            self.publisher.publishVideo = video;
+            self.publisher.publishAudio = audio;
+
+            [self.session publish:self.publisher error:nil];
+            [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_PUBLISHER_PUBLISHING object:nil];
+        }
+                                   failureBlock:^(NSError *error)
+        {
+            [self showAlert:error.localizedDescription];
+        }];
+    }else{
+        self.publisher.publishVideo = video;
+        self.publisher.publishAudio = audio;
+        [self.session publish:self.publisher error:nil];
+        [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_PUBLISHER_PUBLISHING object:nil];
+    }
 }
 
 #pragma mark - Session events
@@ -94,29 +146,6 @@
     [[TWICAPIClient sharedInstance]registerEventName:HangoutEventJoin
                                      completionBlock:^() {}
                                         failureBlock:^(NSError *error) {}];
-    
-    if (self.session.capabilities.canPublish)
-    {
-        // create one time publisher and style publisher
-        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
-                                 completionHandler:^(BOOL granted)
-         {
-             if(granted)
-             {
-                 self.publisher.publishAudio = YES;
-                 self.publisher.publishVideo = YES;
-                 OTError *error = nil;
-                 [self.session publish:self.publisher error:nil];
-                 if(error){
-                     [self showAlert:error.localizedDescription];
-                 }
-             }
-             else
-             {
-                 [self showAlert:@"iOS Authorization failed"];
-             }
-         }];
-    }
     
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SESSION_CONNECTED object:session];
 }
@@ -171,6 +200,8 @@
 }
 
 -(void)processUserConnected:(NSDictionary *)user connection:(OTConnection*)connection{
+    //store the connection id for the user, the user can have multiple connection ids
+    
     //update user connection state
     [[TWICUserManager sharedInstance] setConnectedUserStateForUserID:user[UserIdKey]];
     
@@ -255,6 +286,7 @@
     }
     else if([type isEqualToString:SignalTypeCancelMicrophoneAuthorization])
     {
+        //check if this user has already send this request
         //can the current user process the request
         if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
             [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_CANCEL_MICROPHONE_AUTHORIZATION object:signaledUser];
@@ -266,6 +298,7 @@
     }
     else if([type isEqualToString:SignalTypeMicrophoneAuthorization])
     {
+        //check if this user has already send this request
         //can the current user process the request
         if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
             [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_ASK_MICROPHONE_AUTHORIZATION object:signaledUser];
@@ -312,6 +345,11 @@
     }
 }
 
+-(void)broadcastSignal:(NSString *)signalName{
+    //signal cancel for other users
+    [self.session signalWithType:signalName string:nil connection:nil error:nil];
+}
+
 -(OTError *)sendSignalType:(NSString *)signalType connection:(OTConnection *)connection
 {
     OTError *error = nil;
@@ -342,7 +380,6 @@
     // create self subscriber
     //[self createSubscriber:stream];
 }
-
 #pragma mark - Subscriber events
 - (void)subscriberDidConnectToStream:(OTSubscriberKit *)subscriber
 {
@@ -439,5 +476,10 @@
 -(NSArray *)orderedSubscriberIDs
 {
     return self.allConnectionsIds;
+}
+
+- (NSError *)errorWithCode:(NSInteger)code message:(NSString *)message
+{
+    return [NSError errorWithDomain:ERROR_DOMAIN code:code userInfo:@{NSLocalizedDescriptionKey:message}];
 }
 @end

@@ -141,6 +141,12 @@
         <resource-file src="src/ios/Resources/user-request-microphone.png" />
         <resource-file src="src/ios/Resources/user-request-microphone@2x.png" />
         <resource-file src="src/ios/Resources/user-request-microphone@3x.png" />
+        <resource-file src="src/ios/Resources/user-request-camera.png" />
+        <resource-file src="src/ios/Resources/user-request-camera@2x.png" />
+        <resource-file src="src/ios/Resources/user-request-camera@3x.png" />
+        <resource-file src="src/ios/Resources/user-request-background.png" />
+        <resource-file src="src/ios/Resources/user-request-background@2x.png" />
+        <resource-file src="src/ios/Resources/user-request-background@3x.png" />
         <!-- Cocoapods -->
         <pods-config ios-min-version="9.0" use-frameworks="true"/>
         <pod id="Firebase/Database" version="~> 3.1" />

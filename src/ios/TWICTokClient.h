@@ -25,9 +25,18 @@ static NSString *SignalTypeForceUnmuteStream             = @"hgt_force_unmute_st
 -(void)connect;
 -(void)disconnect;
 
+//publish/unpublish publisher stream
+-(void)unpublish;
+-(void)publishVideo:(BOOL)video audio:(BOOL)audio;
+@property(nonatomic, assign)BOOL canPublish;//is user authorized to publish
+
+//signaling
+-(void)broadcastSignal:(NSString *)signalName;
+
 //session object that is used in stream view
 @property (strong, nonatomic) OTPublisher*  publisher;
 
+//streams
 -(OTSubscriber *)subscriberForStreamID:(NSString *)streamID;
 -(NSArray *)orderedSubscriberIDs;
 @end

@@ -37,6 +37,8 @@
 #define NOTIFICATION_USER_CANCEL_MICROPHONE_AUTHORIZATION @"tok_user_cancelmicrophone_authorization"
 #define NOTIFICATION_USER_MICROPHONE_REQUESTED            @"tok_user_microphone_request"
 #define NOTIFICATION_USER_CAMERA_REQUESTED                @"tok_user_camera_request"
+#define TWIC_NOTIFICATION_PUBLISHER_DESTROYED             @"tok_publisher_destroyed"
+#define TWIC_NOTIFICATION_PUBLISHER_PUBLISHING            @"tok_publisher_publishing"
 
 //TWICPlaftform
 #define ERROR_DOMAIN                    @"com.twicplatform.error"

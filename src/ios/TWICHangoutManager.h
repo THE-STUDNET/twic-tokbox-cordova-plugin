@@ -26,10 +26,10 @@ static NSString *HangoutActionKick                  = @"kick";
 
 + (TWICHangoutManager *)sharedInstance;
 
+@property (nonatomic, strong) NSDictionary *hangoutData;
+
 -(void)configureHangoutDataWithCompletionBlock:(void(^)())completionBlock
                                   failureBlock:(void (^)(NSError *error))failureBlock;
-
-@property (nonatomic, strong) NSDictionary *hangoutData;
 
 -(BOOL)canUser:(NSDictionary *)user doAction:(NSString *)actionName;
 @end

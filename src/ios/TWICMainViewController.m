@@ -17,6 +17,8 @@
 #import "TWICUserManager.h"
 #import "TWICAPIClient.h"
 #import "TWICAlertViewController.h"
+#import "TWICHangoutManager.h"
+#import "UIImageView+AFNetworking.h"
 
 #define PUBLISHER_VIEW_FRAME_WIDTH      120
 #define PUBLISHER_VIEW_FRAME_HEIGHT     140
@@ -24,29 +26,39 @@
 #define PUBLISHER_VIEW_FRAME_DEFAULT_X  -10
 
 @interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate,TWICAlertViewControllerDelegate>
-@property (weak, nonatomic) IBOutlet UIView *headerView;
-@property (weak, nonatomic) IBOutlet UIView *supportView;
-@property (weak, nonatomic) IBOutlet UIView *footerView;
-@property (weak, nonatomic) IBOutlet UIButton *disconnectButton;
-@property (weak, nonatomic) IBOutlet UIButton *recordButton;
-@property (weak, nonatomic) IBOutlet UILabel *numberUsersLabel;
-@property (weak, nonatomic) IBOutlet UIButton *usersButton;
-@property (weak, nonatomic) IBOutlet UIButton *sendButton;
-@property (weak, nonatomic) IBOutlet UITextField *messageTextField;
+@property (weak, nonatomic) IBOutlet UIView             *headerView;
+@property (weak, nonatomic) IBOutlet UIView             *supportView;
+@property (weak, nonatomic) IBOutlet UIView             *footerView;
+@property (weak, nonatomic) IBOutlet UIButton           *disconnectButton;
+@property (weak, nonatomic) IBOutlet UIButton           *recordButton;
+@property (weak, nonatomic) IBOutlet UILabel            *numberUsersLabel;
+@property (weak, nonatomic) IBOutlet UIButton           *usersButton;
+@property (weak, nonatomic) IBOutlet UIButton           *sendButton;
+@property (weak, nonatomic) IBOutlet UITextField        *messageTextField;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomConstraint;
-@property (weak, nonatomic) IBOutlet UIImageView *speakingImageView;
-@property (weak, nonatomic) IBOutlet UILabel *currentSpeakerDisplayName;
+@property (weak, nonatomic) IBOutlet UIImageView        *speakingImageView;
+@property (weak, nonatomic) IBOutlet UILabel            *currentSpeakerDisplayName;
 
 
-@property (nonatomic, strong)TWICStreamGridViewController *twicStreamGridViewController;
-//@property (nonatomic, strong) NSMutableArray *users;
-@property (nonatomic, copy) NSString *currentSubcriberStreamID;
-@property (nonatomic, assign) BOOL backButton;
+@property (nonatomic, strong) TWICStreamGridViewController *twicStreamGridViewController;
+@property (nonatomic, copy  ) NSString                     *currentSubcriberStreamID;
+@property (nonatomic, assign) BOOL                         backButton;
 
-@property (nonatomic, strong) GRKBlurView *blurView;
-@property (nonatomic, strong) TWICUserActionsViewController *userActionsViewController;
-@property (nonatomic, strong) TWICAlertViewController *alertViewController;
+@property (nonatomic, strong) GRKBlurView      *blurView;
 @property (nonatomic, strong) UIViewController *popupViewController;
+
+//current user buttons
+@property (weak, nonatomic) IBOutlet UIView             *currentUserButtonsView;
+@property (weak, nonatomic) IBOutlet UIButton           *currentUserCameraButton;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *currentUserButtonsViewTopConstraint;
+@property (weak, nonatomic) IBOutlet UIButton           *currentUserMicrophoneButton;
+
+//users ask permissions
+@property (weak, nonatomic) IBOutlet UIView      *userAuthorizationView;
+@property (weak, nonatomic) IBOutlet UILabel     *userAuthorizationNumberLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *userAuthorizationAvatarImageView;
+@property (weak, nonatomic) IBOutlet UIButton    *userAuthorizationButton;
+@property (weak, nonatomic) IBOutlet UIImageView *userAuthorizationTypeImageView;
 @end
 
 @implementation TWICMainViewController
@@ -61,6 +73,9 @@
     [NOTIFICATION_CENTER addObserver:self selector:@selector(sessionDisconnected:) name:TWIC_NOTIFICATION_SESSION_DISCONNECTED object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(subscriberConnected:) name:TWIC_NOTIFICATION_SUBSCRIBER_CONNECTED object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(subscriberDisconnected:) name:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:nil];
+    
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(publisherDestroyed:) name:TWIC_NOTIFICATION_PUBLISHER_DESTROYED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(publisherPublishing:) name:TWIC_NOTIFICATION_PUBLISHER_PUBLISHING object:nil];
     
     [NOTIFICATION_CENTER addObserver:self selector:@selector(userConnected:) name:TWIC_NOTIFICATION_USER_CONNECTED object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(userDisconnected:) name:TWIC_NOTIFICATION_USER_DISCONNECTED object:nil];
@@ -119,6 +134,19 @@
     self.currentSpeakerDisplayName.alpha = TWIC_ALPHA;
     self.currentSpeakerDisplayName.hidden = YES;
     self.speakingImageView.hidden = YES;
+    
+    self.currentUserButtonsView.hidden = YES;
+    self.currentUserButtonsView.backgroundColor = CLEAR_COLOR;
+    self.currentUserCameraButton.backgroundColor = CLEAR_COLOR;
+    self.currentUserMicrophoneButton.backgroundColor = CLEAR_COLOR;
+    
+    self.userAuthorizationView.hidden = YES;
+    self.userAuthorizationView.backgroundColor = CLEAR_COLOR;
+    self.userAuthorizationButton.backgroundColor = CLEAR_COLOR;
+    self.userAuthorizationNumberLabel.backgroundColor = CLEAR_COLOR;
+    self.userAuthorizationTypeImageView.backgroundColor = CLEAR_COLOR;
+    self.userAuthorizationAvatarImageView.backgroundColor = CLEAR_COLOR;
+    self.userAuthorizationAvatarImageView.layer.cornerRadius = self.userAuthorizationAvatarImageView.frame.size.width / 2;
 }
 
 -(void)configureView:(UIView*)view{
@@ -130,6 +158,20 @@
 
 -(void)refreshUI{
     self.numberUsersLabel.text = [NSString stringWithFormat:@"%d",(int)[TWICUserManager sharedInstance].usersCount - 1];
+    
+    //publish or requests buttons
+    if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionPublish])
+    {
+        self.currentUserButtonsViewTopConstraint.constant = -8;
+        [self.currentUserMicrophoneButton setImage:[UIImage imageNamed:@"publish-microphone"] forState:UIControlStateNormal];
+        [self.currentUserCameraButton setImage:[UIImage imageNamed:@"publish-camera"] forState:UIControlStateNormal];
+    }
+    else
+    {
+        self.currentUserButtonsViewTopConstraint.constant = 8;
+        [self.currentUserMicrophoneButton setImage:[UIImage imageNamed:@"request-microphone"] forState:UIControlStateNormal];
+        [self.currentUserCameraButton setImage:[UIImage imageNamed:@"request-camera"] forState:UIControlStateNormal];
+    }
 }
 
 -(void)presentFullScreenSubscriberWithID:(NSString *)subscriberID{
@@ -253,11 +295,30 @@
     }
 }
 
-
 #pragma mark - TokSession Management
 -(void)sessionConnected:(NSNotification *)notification
 {
     [self addStreamGridViewController];
+    
+    //auto publishing ?
+    if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionAutoPublishMicrophone] ||
+       [[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionAutoPublishCamera])
+    {
+        
+        if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionAutoPublishCamera])
+        {
+            [[TWICTokClient sharedInstance]publishVideo:YES audio:YES];
+        }
+        else if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionAutoPublishCamera])
+        {
+            [[TWICTokClient sharedInstance]publishVideo:NO audio:YES];
+        }
+    }
+    else
+    {
+        //display request or publishing buttons
+        self.currentUserButtonsView.hidden = NO;
+    }
 }
 
 -(void)sessionDisconnected:(NSNotification *)notification
@@ -274,6 +335,26 @@
     {
         [self.twicStreamGridViewController refresh];
     }
+}
+
+-(void)publisherDestroyed:(NSNotification *)notification{
+    
+    if(self.twicStreamGridViewController)
+    {
+        [self.twicStreamGridViewController refresh];
+    }
+    [self.view setNeedsDisplay];
+    //add current user action buttons
+    self.currentUserButtonsView.hidden = NO;
+}
+
+-(void)publisherPublishing:(NSNotification *)notification{
+    if(self.twicStreamGridViewController)
+    {
+        [self.twicStreamGridViewController refresh];
+    }
+    //remove current user action buttons
+    self.currentUserButtonsView.hidden = YES;
 }
 
 -(void)subscriberDisconnected:(NSNotification *)notification{
@@ -320,6 +401,15 @@
 
 #pragma mark - Popup views management
 -(void)showPopupView{
+    //blur
+    self.blurView  = [[GRKBlurView alloc]initWithFrame:self.supportView.frame];
+    self.blurView.alpha = 0;
+    [self.blurView setTargetImageFromView:self.view];
+    self.blurView.blurRadius = 30.0f;
+    [self.view addSubview:self.blurView];
+    UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(blurviewTouched:)];
+    [self.blurView addGestureRecognizer:tapAction];
+    
     UPDATE_VIEW_FRAME_SIZE(self.popupViewController.view, CGSizeMake(300*MAIN_SCREEN.bounds.size.width/414, 260*MAIN_SCREEN.bounds.size.height/736));
     self.popupViewController.view.clipsToBounds = YES;
     self.popupViewController.view.layer.cornerRadius = TWIC_CORNER_RADIUS;
@@ -328,16 +418,7 @@
     self.popupViewController.view.center = self.view.center;
     [self.popupViewController didMoveToParentViewController:self];
     [super addChildViewController:self.popupViewController];
-    
-    //blur
-    self.blurView  = [[GRKBlurView alloc]initWithFrame:self.supportView.frame];
-    self.blurView.alpha = 0;
-    [self.blurView setTargetImageFromView:self.supportView];
-    self.blurView.blurRadius = 30.0f;
-    [self.supportView addSubview:self.blurView];
-    UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(blurviewTouched:)];
-    [self.blurView addGestureRecognizer:tapAction];
-    
+
     //animate the display !
     [UIView animateWithDuration:0.3/1.5 animations:^{
         self.popupViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.1, 1.1);
@@ -388,8 +469,7 @@
     
     switch (actionType) {
         case UserActionTypeStop:
-            [TWICTokClient sharedInstance].publisher.publishVideo = NO;
-            [TWICTokClient sharedInstance].publisher.publishAudio = NO;
+            [[TWICTokClient sharedInstance] unpublish];
             break;
         case UserActionTypeCamera:
             [TWICTokClient sharedInstance].publisher.publishVideo = ![TWICTokClient sharedInstance].publisher.publishVideo;
@@ -425,6 +505,8 @@
     self.popupViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICAlertViewController description]];
     [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleCamera title:[NSString stringWithFormat:@"Do you want to share your microphone"]];
     ((TWICAlertViewController*)self.popupViewController).delegate = self;
+    //show the popup
+    [self showPopupView];
 }
 
 -(void)twicAlertViewControllerDidCancel:(id)sender{
@@ -448,19 +530,74 @@
 }
 
 #pragma mark - Camera Microphone User Authorizations
--(void)userAskMicrophoneAuthorization:(id)sender{
-    if(self.twicStreamGridViewController){//grid
-        
-    }else{//fullscreen
-        //display popup when full screen
+-(void)userAskMicrophoneAuthorization:(NSNotification*)notification{
+    [self showUserAuthorizationViewForUser:notification.object type:SignalTypeMicrophoneAuthorization];
+}
+
+-(void)userAskCameraAuthorization:(NSNotification*)notification{
+    [self showUserAuthorizationViewForUser:notification.object type:SignalTypeCameraAuthorization];
+}
+
+-(void)showUserAuthorizationViewForUser:(NSDictionary *)user type:(NSString*)authorizationType
+{
+    //display the request button for 1 user or n users
+    UIImage *imageType = nil;
+    if([authorizationType isEqualToString:SignalTypeCameraAuthorization]){
+        imageType = [UIImage imageNamed:@"user-request-camera"];
+    }
+    else if([authorizationType isEqualToString:SignalTypeMicrophoneAuthorization]){
+        imageType = [UIImage imageNamed:@"user-request-microphone"];
+    }
+    //display the request button for 1 user or n users
+    if(self.userAuthorizationView.hidden == YES){
+        self.userAuthorizationTypeImageView.image = imageType;
+        [self.userAuthorizationAvatarImageView setImageWithURL:[NSURL URLWithString:[[TWICUserManager sharedInstance]avatarURLStringForUser:user]]];
+        self.userAuthorizationNumberLabel.text = @"0";
+        self.userAuthorizationNumberLabel.hidden = YES;
+    }
+    else
+    {
+        //to be done later with the label !
+        self.userAuthorizationNumberLabel.hidden = NO;
+        NSInteger authorizationCount = [self.userAuthorizationNumberLabel.text integerValue];
+        authorizationCount+=1;
+        self.userAuthorizationNumberLabel.text = [NSString stringWithFormat:@"%d",authorizationCount];
+        self.userAuthorizationAvatarImageView.image = nil;
+        self.userAuthorizationAvatarImageView.hidden = YES;
+    }
+    self.userAuthorizationView.hidden = NO;
+}
+
+- (IBAction)openUserAuthorizationAlertView:(id)sender {
+    self.popupViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICAlertViewController description]];
+    [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleCamera title:[NSString stringWithFormat:@"XXXX"]];
+    //((TWICAlertViewController*)self.popupViewController).delegate = self;
+    
+    //show the popup
+    [self showPopupView];
+}
+
+#pragma mark - Current User Request / Publish actions
+- (IBAction)publishOrRequestCamera:(id)sender {
+    if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionPublish])
+    {
+        [[TWICTokClient sharedInstance]publishVideo:YES audio:YES];
+    }
+    else
+    {
+        [[TWICTokClient sharedInstance]broadcastSignal:SignalTypeCameraAuthorization];
     }
 }
 
--(void)userAskCameraAuthorization:(id)sender{
-    if(self.twicStreamGridViewController){//grid
-        
-    }else{//fullscreen
-        //display popup when full screen
+- (IBAction)publishOrRequestMicrophone:(id)sender {
+    if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionPublish])
+    {
+        [[TWICTokClient sharedInstance]publishVideo:NO audio:YES];
+    }
+    else
+    {
+        [[TWICTokClient sharedInstance]broadcastSignal:SignalTypeMicrophoneAuthorization];
     }
 }
+
 @end
