@@ -138,6 +138,9 @@
         <resource-file src="src/ios/Resources/publish-microphone.png" />
         <resource-file src="src/ios/Resources/publish-microphone@2x.png" />
         <resource-file src="src/ios/Resources/publish-microphone@3x.png" />
+        <resource-file src="src/ios/Resources/user-request-microphone.png" />
+        <resource-file src="src/ios/Resources/user-request-microphone@2x.png" />
+        <resource-file src="src/ios/Resources/user-request-microphone@3x.png" />
         <!-- Cocoapods -->
         <pods-config ios-min-version="9.0" use-frameworks="true"/>
         <pod id="Firebase/Database" version="~> 3.1" />
