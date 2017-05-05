@@ -36,7 +36,6 @@ static NSString *UserAskCamera           = @"ask_camera";
 static NSString *UserAskMicrophone       = @"ask_microphone";
 static NSString *UserAskScreen           = @"ask_screen";
 
-static NSString *UserActionsKey          = @"actions";
 static NSString *UserActionTitleKey      = @"action_title";
 static NSString *UserActionImageKey      = @"action_image";
 static NSString *UserActionIsAdminKey    = @"is_admin";
@@ -70,7 +69,13 @@ typedef enum : NSUInteger {
 -(void)setDisconnectedUserStateForUserID:(NSNumber *)userID;
 -(void)setAskPermission:(NSString *)askPermission forUserID:(NSNumber *)userID toValue:(BOOL)value;
 
+-(NSArray *)actionsForUser:(NSDictionary *)user;
+
 -(NSInteger)connectedUsersCount;
 -(NSInteger)usersCount;
 -(NSArray *)allUsers;
+
+-(BOOL)isUserSharingCamera:(NSDictionary*)user;
+-(BOOL)isUserSharingScreen:(NSDictionary*)user;
+-(BOOL)isUserSharingAudio:(NSDictionary*)user;
 @end

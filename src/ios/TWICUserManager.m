@@ -11,6 +11,7 @@
 #import "TWICSettingsManager.h"
 #import "TWICHangoutManager.h"
 #import "TWICConstants.h"
+#import "TWICTokClient.h"
 
 @interface TWICUserManager()
 
@@ -54,7 +55,6 @@
 
 -(NSMutableDictionary*)createUserWithData:(NSDictionary *)data{
     NSMutableDictionary *user = [data mutableCopy];
-    user[UserActionsKey] = [self actionsForUser:data];
     if([self isCurrentUser:user]){
         user[UserConnectionStateKey] = @(UserConnectionStateConnected);
     }else{
@@ -69,21 +69,35 @@
 
 -(NSArray *)actionsForUser:(NSDictionary *)user
 {
-#warning //TODO check for user status => speaking / video    
-    
     NSMutableArray *actions = [NSMutableArray array];
-    [actions addObject:@{UserActionTitleKey:@"Send a direct message",UserActionImageKey:@"chat"}];//chat is available for everybody
-    if([[TWICHangoutManager sharedInstance]canUser:user doAction:HangoutActionAskDevice]){
+    [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Send a direct message to %@",user[UserFirstnameKey]],UserActionImageKey:@"chat"}];//chat is available for everybody
+    if([[TWICHangoutManager sharedInstance]canUser:self.currentUser doAction:HangoutActionAskDevice]){
         [actions addObject:@{UserActionTitleKey:@"Send a request for the camera",UserActionImageKey:@"camera"}];
         [actions addObject:@{UserActionTitleKey:@"Send a request for the microphone",UserActionImageKey:@"microphone-white"}];
     }
-    if([[TWICHangoutManager sharedInstance]canUser:user doAction:HangoutActionKick]){
-        [actions addObject:@{UserActionTitleKey:@"Kick Marc from the live",UserActionIsAdminKey:@(1)}];
+    if([[TWICHangoutManager sharedInstance]canUser:self.currentUser doAction:HangoutActionKick])
+    {
+        if([user[UserConnectionStateKey]boolValue])
+        {
+            [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Kick %@ from the live",user[UserFirstnameKey]],UserActionIsAdminKey:@(1)}];
+        }
     }
-    
-    
     return actions;
 }
+
+-(BOOL)isUserSharingAudio:(NSDictionary*)user{
+    OTStream *userStream = [[TWICTokClient sharedInstance]streamForUser:user];
+    return userStream.hasAudio;
+}
+-(BOOL)isUserSharingScreen:(NSDictionary*)user{
+    OTStream *userStream = [[TWICTokClient sharedInstance]streamForUser:user];
+    return userStream.videoType == OTStreamVideoTypeScreen && userStream.hasVideo;
+}
+-(BOOL)isUserSharingCamera:(NSDictionary*)user{
+    OTStream *userStream = [[TWICTokClient sharedInstance]streamForUser:user];
+    return userStream.videoType == OTStreamVideoTypeCamera && userStream.hasVideo;
+}
+
 
 -(NSString *)avatarURLStringForUser:(NSDictionary *)user
 {

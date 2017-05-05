@@ -39,4 +39,5 @@ static NSString *SignalTypeForceUnmuteStream             = @"hgt_force_unmute_st
 //streams
 -(OTSubscriber *)subscriberForStreamID:(NSString *)streamID;
 -(NSArray *)orderedSubscriberIDs;
+-(OTStream *)streamForUser:(NSDictionary*)user;
 @end

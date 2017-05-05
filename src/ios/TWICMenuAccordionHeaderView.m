@@ -13,12 +13,13 @@
 
 @interface TWICMenuAccordionHeaderView()
 @property (weak, nonatomic) IBOutlet UIImageView *avatarImageView;
-@property (weak, nonatomic) IBOutlet UIView *connectionStatusView;
-@property (weak, nonatomic) IBOutlet UILabel *displayNameLabel;
-@property (weak, nonatomic) IBOutlet UIView *separatorView;
+@property (weak, nonatomic) IBOutlet UIView      *connectionStatusView;
+@property (weak, nonatomic) IBOutlet UILabel     *displayNameLabel;
+@property (weak, nonatomic) IBOutlet UIView      *separatorView;
 @property (weak, nonatomic) IBOutlet UIImageView *chevronImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *microphoneImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *screenImageView;
+@property (weak, nonatomic) IBOutlet UIImageView *cameraImageView;
 
 @property (nonatomic, weak) NSDictionary *user;
 @end
@@ -55,6 +56,9 @@
     }else{
         self.connectionStatusView.backgroundColor = TWIC_COLOR_RED;
     }
+    self.microphoneImageView.hidden = [[TWICUserManager sharedInstance]isUserSharingAudio:user];
+    self.screenImageView.hidden = [[TWICUserManager sharedInstance]isUserSharingScreen:user];
+    self.cameraImageView.hidden = [[TWICUserManager sharedInstance]isUserSharingCamera:user];
 }
 
 -(void)willOpen

@@ -291,6 +291,7 @@
         if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
             [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_CANCEL_MICROPHONE_AUTHORIZATION object:signaledUser];
         }
+        
         //does the user is the current user and was asking for permission
         if(isCurrentUser && [signaledUser[UserAskMicrophone]boolValue]){
             [[TWICUserManager sharedInstance]setAskPermission:UserAskMicrophone forUserID:signaledUser[UserIdKey] toValue:NO];
@@ -476,6 +477,21 @@
 -(NSArray *)orderedSubscriberIDs
 {
     return self.allConnectionsIds;
+}
+
+-(OTStream *)streamForUser:(NSDictionary*)user
+{
+    for(OTStream *stream in self.allStreams)
+    {
+        NSData *data = [stream.connection.data dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
+                                                                 options:NSJSONReadingMutableContainers
+                                                                   error:nil];
+        if([user[UserIdKey] isEqualToString:dataJson[UserIdKey]]){
+            return stream;
+        }
+    }
+    return nil;
 }
 
 - (NSError *)errorWithCode:(NSInteger)code message:(NSString *)message

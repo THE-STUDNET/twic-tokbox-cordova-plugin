@@ -548,6 +548,7 @@
     else if([authorizationType isEqualToString:SignalTypeMicrophoneAuthorization]){
         imageType = [UIImage imageNamed:@"user-request-microphone"];
     }
+    
     //display the request button for 1 user or n users
     if(self.userAuthorizationView.hidden == YES){
         self.userAuthorizationTypeImageView.image = imageType;
@@ -561,7 +562,7 @@
         self.userAuthorizationNumberLabel.hidden = NO;
         NSInteger authorizationCount = [self.userAuthorizationNumberLabel.text integerValue];
         authorizationCount+=1;
-        self.userAuthorizationNumberLabel.text = [NSString stringWithFormat:@"%d",authorizationCount];
+        self.userAuthorizationNumberLabel.text = [NSString stringWithFormat:@"%ld",(long)authorizationCount];
         self.userAuthorizationAvatarImageView.image = nil;
         self.userAuthorizationAvatarImageView.hidden = YES;
     }
