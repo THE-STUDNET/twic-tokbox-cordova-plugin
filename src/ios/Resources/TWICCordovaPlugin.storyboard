@@ -831,7 +831,7 @@
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="dBz-9n-gNt" secondAttribute="trailing" constant="35" id="6wl-rS-YRr"/>
                             <constraint firstItem="dBz-9n-gNt" firstAttribute="top" secondItem="EQV-2V-OgM" secondAttribute="bottom" constant="36" id="Cbt-Mz-FVa"/>

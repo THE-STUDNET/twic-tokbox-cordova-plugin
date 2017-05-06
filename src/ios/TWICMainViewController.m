@@ -25,7 +25,7 @@
 #define PUBLISHER_VIEW_FRAME_DEFAULT_Y  10
 #define PUBLISHER_VIEW_FRAME_DEFAULT_X  -10
 
-@interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate,TWICAlertViewControllerDelegate>
+@interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate,TWICAlertViewControllerDelegate,TWICMenuViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIView             *headerView;
 @property (weak, nonatomic) IBOutlet UIView             *supportView;
 @property (weak, nonatomic) IBOutlet UIView             *footerView;
@@ -258,6 +258,7 @@
 - (IBAction)users:(id)sender {
     UINavigationController *navVC = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[NSString stringWithFormat:@"Navigation%@",[TWICMenuViewController description]]];
     TWICMenuViewController *vc = (TWICMenuViewController *)navVC.topViewController;
+    vc.delegate = self;
     vc.isAdmin = YES;
     [navVC setModalPresentationStyle:UIModalPresentationOverCurrentContext];//hack mandatory !
     [self presentViewController:navVC animated:YES completion:nil];
@@ -462,19 +463,19 @@
     [self showPopupView];
 }
 
--(void)TWICUserActionsViewController:(id)sender didTouchAction:(UserActionType)actionType
+-(void)TWICUserActionsViewController:(id)sender didTouchAction:(CurrentUserActionType)actionType
 {
     //do something with the action !
     [self removePopupView];
     
     switch (actionType) {
-        case UserActionTypeStop:
+        case CurrentUserActionTypeStop:
             [[TWICTokClient sharedInstance] unpublish];
             break;
-        case UserActionTypeCamera:
+        case CurrentUserActionTypeCamera:
             [TWICTokClient sharedInstance].publisher.publishVideo = ![TWICTokClient sharedInstance].publisher.publishVideo;
             break;
-        case UserActionTypeRotate:
+        case CurrentUserActionTypeRotate:
             if([TWICTokClient sharedInstance].publisher.cameraPosition == AVCaptureDevicePositionFront)
             {
                 [TWICTokClient sharedInstance].publisher.cameraPosition = AVCaptureDevicePositionBack;
@@ -482,7 +483,7 @@
                 [TWICTokClient sharedInstance].publisher.cameraPosition = AVCaptureDevicePositionFront;
             }
             break;
-        case UserActionTypeMicrophone:
+        case CurrentUserActionTypeMicrophone:
             [TWICTokClient sharedInstance].publisher.publishAudio = ![TWICTokClient sharedInstance].publisher.publishAudio;
             break;
     }
@@ -496,14 +497,14 @@
 -(void)currentUserCameraRequested:(NSNotification*)notification
 {
     self.popupViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICAlertViewController description]];
-    [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleCamera title:[NSString stringWithFormat:@"Do you want to share your video"]];
+    [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleCamera title:@"Do you want to share your video"];
     ((TWICAlertViewController*)self.popupViewController).delegate = self;
     [self showPopupView];
 }
 -(void)currentUserMicrophoneRequested:(NSNotification*)notification
 {
     self.popupViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICAlertViewController description]];
-    [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleCamera title:[NSString stringWithFormat:@"Do you want to share your microphone"]];
+    [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleCamera title:@"Do you want to share your microphone"];
     ((TWICAlertViewController*)self.popupViewController).delegate = self;
     //show the popup
     [self showPopupView];
@@ -600,5 +601,34 @@
         [[TWICTokClient sharedInstance]broadcastSignal:SignalTypeMicrophoneAuthorization];
     }
 }
-
+#pragma mark - TWICMenuViewControllerDelegate
+-(void)TWICMenuViewController:(id)sender didSelectAction:(NSDictionary *)action forUser:(NSDictionary *)user
+{
+    UserActionType actionType = [action[UserActionTypeKey]integerValue];
+    switch (actionType) {
+        case UserActionTypeAskShareCamera:
+        case UserActionTypeAllowShareCamera:
+            [[TWICTokClient sharedInstance]sendSignal:SignalTypeCameraRequested toUser:user];
+            [[TWICAPIClient sharedInstance]registerEventName:HangoutEventLaunchUserCamera
+                                             completionBlock:^{}
+                                                failureBlock:^(NSError *error) {}];
+            break;
+        case UserActionTypeAskShareMicrophone:
+        case UserActionTypeAllowShareMicrophone:
+            [[TWICTokClient sharedInstance]sendSignal:SignalTypeMicrophoneRequested toUser:user];
+            [[TWICAPIClient sharedInstance]registerEventName:HangoutEventLaunchUserMicrophone
+                                             completionBlock:^{}
+                                                failureBlock:^(NSError *error) {}];
+            break;
+        case UserActionTypeKick:
+            break;
+        case UserActionTypeSendDirectMessage:
+            break;
+        case UserActionTypeForceUnpublishCamera:
+            break;
+        case UserActionTypeForceUnpublishMicrophone:
+            break;
+    }
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 @end

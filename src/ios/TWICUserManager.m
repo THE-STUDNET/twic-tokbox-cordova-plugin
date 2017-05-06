@@ -70,16 +70,50 @@
 -(NSArray *)actionsForUser:(NSDictionary *)user
 {
     NSMutableArray *actions = [NSMutableArray array];
-    [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Send a direct message to %@",user[UserFirstnameKey]],UserActionImageKey:@"chat"}];//chat is available for everybody
-    if([[TWICHangoutManager sharedInstance]canUser:self.currentUser doAction:HangoutActionAskDevice]){
-        [actions addObject:@{UserActionTitleKey:@"Send a request for the camera",UserActionImageKey:@"camera"}];
-        [actions addObject:@{UserActionTitleKey:@"Send a request for the microphone",UserActionImageKey:@"microphone-white"}];
-    }
-    if([[TWICHangoutManager sharedInstance]canUser:self.currentUser doAction:HangoutActionKick])
+    if([user[UserConnectionStateKey]boolValue])
     {
-        if([user[UserConnectionStateKey]boolValue])
+        [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Send a direct message to %@",user[UserFirstnameKey]],UserActionImageKey:@"chat",UserActionTypeKey:@(UserActionTypeSendDirectMessage)}];//chat is available for everybody
+        if([[TWICHangoutManager sharedInstance]canUser:self.currentUser doAction:HangoutActionAskDevice])
         {
-            [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Kick %@ from the live",user[UserFirstnameKey]],UserActionIsAdminKey:@(1)}];
+            if([self isUserSharingCamera:user] == NO)
+            {
+                if([user[UserAskCamera]boolValue])
+                {
+                    [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Allow %@ to share his camera",user[UserFirstnameKey]],UserActionImageKey:@"camera",UserActionTypeKey:@(UserActionTypeAllowShareCamera)}];
+                }
+                else
+                {
+                    [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Ask %@ to share his camera",user[UserFirstnameKey]],UserActionImageKey:@"camera",UserActionTypeKey:@(UserActionTypeAskShareCamera)}];
+                }
+            }
+            if([self isUserSharingAudio:user] == NO)
+            {
+                if([user[UserAskMicrophone]boolValue])
+                {
+                    [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Allow %@ to share his microphone",user[UserFirstnameKey]],UserActionImageKey:@"microphone-white",UserActionTypeKey:@(UserActionTypeAllowShareMicrophone)}];
+                }
+                else
+                {
+                    [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Ask %@ to share his micropone",user[UserFirstnameKey]],UserActionImageKey:@"microphone-white",UserActionTypeKey:@(UserActionTypeAskShareMicrophone)}];
+                }
+            }
+        }
+        //allow to kick
+        if([[TWICHangoutManager sharedInstance]canUser:self.currentUser doAction:HangoutActionKick])
+        {
+            [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Kick %@ from the live",user[UserFirstnameKey]],UserActionIsRedKey:@(1),UserActionTypeKey:@(UserActionTypeKick)}];
+        }
+        //allow to force unpublish
+        if([[TWICHangoutManager sharedInstance]canUser:self.currentUser doAction:HangoutActionForceUnpusblish])
+        {
+            if([self isUserSharingCamera:user])
+            {
+                [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Force %@ to unpublish camera",user[UserFirstnameKey]],UserActionIsRedKey:@(1),UserActionTypeKey:@(UserActionTypeForceUnpublishCamera)}];
+            }
+            if([self isUserSharingAudio:user])
+            {
+                [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Force %@ to unpublish microphone",user[UserFirstnameKey]],UserActionIsRedKey:@(1),UserActionTypeKey:@(UserActionTypeForceUnpublishMicrophone)}];
+            }
         }
     }
     return actions;

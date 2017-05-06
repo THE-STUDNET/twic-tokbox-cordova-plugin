@@ -85,16 +85,16 @@
 }
 
 - (IBAction)microphone:(id)sender {
-    [self.delegate TWICUserActionsViewController:self didTouchAction:UserActionTypeMicrophone];
+    [self.delegate TWICUserActionsViewController:self didTouchAction:CurrentUserActionTypeMicrophone];
 }
 - (IBAction)camera:(id)sender {
-    [self.delegate TWICUserActionsViewController:self didTouchAction:UserActionTypeCamera];
+    [self.delegate TWICUserActionsViewController:self didTouchAction:CurrentUserActionTypeCamera];
 }
 - (IBAction)rotate:(id)sender {
-    [self.delegate TWICUserActionsViewController:self didTouchAction:UserActionTypeRotate];
+    [self.delegate TWICUserActionsViewController:self didTouchAction:CurrentUserActionTypeRotate];
 }
 - (IBAction)stop:(id)sender {
-    [self.delegate TWICUserActionsViewController:self didTouchAction:UserActionTypeStop];
+    [self.delegate TWICUserActionsViewController:self didTouchAction:CurrentUserActionTypeStop];
 }
 
 @end

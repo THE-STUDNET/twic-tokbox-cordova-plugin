@@ -347,9 +347,16 @@
 }
 
 -(void)broadcastSignal:(NSString *)signalName{
-    //signal cancel for other users
     [self.session signalWithType:signalName string:nil connection:nil error:nil];
 }
+
+-(void)sendSignal:(NSString *)signalName toUser:(NSDictionary*)user{
+    OTStream *userStream = [self streamForUser:user];
+    if(userStream){
+        [self.session signalWithType:signalName string:nil connection:userStream.connection error:nil];
+    }
+}
+
 
 -(OTError *)sendSignalType:(NSString *)signalType connection:(OTConnection *)connection
 {
@@ -481,13 +488,13 @@
 
 -(OTStream *)streamForUser:(NSDictionary*)user
 {
-    for(OTStream *stream in self.allStreams)
+    for(OTStream *stream in [self.allStreams allValues])
     {
         NSData *data = [stream.connection.data dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
                                                                  options:NSJSONReadingMutableContainers
                                                                    error:nil];
-        if([user[UserIdKey] isEqualToString:dataJson[UserIdKey]]){
+        if([user[UserIdKey] isEqualToNumber:dataJson[UserIdKey]]){
             return stream;
         }
     }

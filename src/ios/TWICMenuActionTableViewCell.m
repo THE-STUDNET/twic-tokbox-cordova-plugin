@@ -36,7 +36,7 @@
 
 -(void)configureWithAction:(NSDictionary *)action user:(NSDictionary *)user
 {
-    if(action[UserActionIsAdminKey]){
+    if(action[UserActionIsRedKey]){
         self.adminActionTitleLabel.text = action[UserActionTitleKey];
     }
     else

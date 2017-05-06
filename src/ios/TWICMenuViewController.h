@@ -10,7 +10,7 @@
 
 @protocol TWICMenuViewControllerDelegate <NSObject>
 
--(void)TWICMenuViewController:(id)sender didSelectAction:(id)action forUser:(id)user;
+-(void)TWICMenuViewController:(id)sender didSelectAction:(NSDictionary *)action forUser:(NSDictionary *)user;
 
 @end
 

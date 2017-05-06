@@ -43,12 +43,17 @@
     self.separatorView.backgroundColor = TWIC_COLOR_GREY;
     self.displayNameLabel.textColor = [UIColor whiteColor];
     self.connectionStatusView.backgroundColor = TWIC_COLOR_RED;
+    self.chevronImageView.image = [UIImage imageNamed:@"down-arrow"];
+}
+
+-(void)prepareForReuse{
+    [super prepareForReuse];
+    self.chevronImageView.image = [UIImage imageNamed:@"down-arrow"];
 }
 
 -(void)configureWithUser:(NSDictionary *)user
 {
     self.user = user;
-    self.chevronImageView.image = [UIImage imageNamed:@"down-arrow"];
     [self.avatarImageView setImageWithURL:[NSURL URLWithString:[[TWICUserManager sharedInstance]avatarURLStringForUser:user]]];
     self.displayNameLabel.text = [NSString stringWithFormat:@"%@ %@",user[UserFirstnameKey],user[UserLastnameKey]];
     if([user[UserConnectionStateKey]integerValue] == UserConnectionStateConnected){
@@ -56,9 +61,14 @@
     }else{
         self.connectionStatusView.backgroundColor = TWIC_COLOR_RED;
     }
-    self.microphoneImageView.hidden = [[TWICUserManager sharedInstance]isUserSharingAudio:user];
-    self.screenImageView.hidden = [[TWICUserManager sharedInstance]isUserSharingScreen:user];
-    self.cameraImageView.hidden = [[TWICUserManager sharedInstance]isUserSharingCamera:user];
+    self.microphoneImageView.hidden = ![[TWICUserManager sharedInstance]isUserSharingAudio:user];
+    self.screenImageView.hidden = ![[TWICUserManager sharedInstance]isUserSharingScreen:user];
+    self.cameraImageView.hidden = ![[TWICUserManager sharedInstance]isUserSharingCamera:user];
+    if([[TWICUserManager sharedInstance]actionsForUser:self.user].count > 0){
+        self.chevronImageView.hidden = NO;
+    }else{
+        self.chevronImageView.hidden = YES;
+    }
 }
 
 -(void)willOpen

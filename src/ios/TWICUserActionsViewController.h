@@ -9,16 +9,16 @@
 #import <UIKit/UIKit.h>
 
 typedef enum : NSUInteger {
-    UserActionTypeMicrophone,
-    UserActionTypeCamera,
-    UserActionTypeRotate,
-    UserActionTypeStop
-} UserActionType;
+    CurrentUserActionTypeMicrophone,
+    CurrentUserActionTypeCamera,
+    CurrentUserActionTypeRotate,
+    CurrentUserActionTypeStop
+} CurrentUserActionType;
 
 
 @protocol TWICUserActionsViewControllerDelegate <NSObject>
 
--(void)TWICUserActionsViewController:(id)sender didTouchAction:(UserActionType)actionType;
+-(void)TWICUserActionsViewController:(id)sender didTouchAction:(CurrentUserActionType)actionType;
 
 @end
 

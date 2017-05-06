@@ -38,13 +38,25 @@ static NSString *UserAskScreen           = @"ask_screen";
 
 static NSString *UserActionTitleKey      = @"action_title";
 static NSString *UserActionImageKey      = @"action_image";
-static NSString *UserActionIsAdminKey    = @"is_admin";
+static NSString *UserActionIsRedKey      = @"action_is_red";
+static NSString *UserActionTypeKey       = @"action_type";
 
 typedef enum : NSUInteger {
     UserConnectionStateUknown,
     UserConnectionStateConnected,
     UserConnectionStateDisconnected,
 } UserConnectionState;
+
+typedef enum : NSUInteger {
+    UserActionTypeSendDirectMessage,
+    UserActionTypeAskShareCamera,
+    UserActionTypeAllowShareCamera,
+    UserActionTypeAskShareMicrophone,
+    UserActionTypeAllowShareMicrophone,
+    UserActionTypeKick,
+    UserActionTypeForceUnpublishCamera,
+    UserActionTypeForceUnpublishMicrophone,
+} UserActionType;
 
 @interface TWICUserManager : NSObject
 + (TWICUserManager *)sharedInstance;

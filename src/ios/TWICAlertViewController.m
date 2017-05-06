@@ -14,7 +14,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *alertTitle;
 @property (weak, nonatomic) IBOutlet UIButton *acceptButton;
 @property (weak, nonatomic) IBOutlet UIButton *declineButton;
+
 @property (nonatomic, assign) TWICAlertViewStyle alertStyle;
+@property (nonatomic, strong) NSString *alertTitleString;
 @end
 
 @implementation TWICAlertViewController
@@ -24,7 +26,9 @@
     
     [self configureSkin];
 }
-
+-(void)viewWillAppear:(BOOL)animated{
+    [self refreshUI];
+}
 -(void)configureSkin{
     self.acceptButton.backgroundColor = TWIC_COLOR_GREEN;
     self.declineButton.backgroundColor = TWIC_COLOR_RED;
@@ -47,16 +51,20 @@
 -(void)configureWithStyle:(TWICAlertViewStyle)style title:(NSString *)title
 {
     self.alertStyle = style;
-    self.alertTitle.text = title;
-    if(style == TWICAlertViewStyleCamera){
-        self.alertImageView.image = [UIImage imageNamed:@"camera"];
-    }else if(style==TWICAlertViewStyleMicrophone){
-        self.alertImageView.image = [UIImage imageNamed:@"microphone"];
-    }
+    self.alertTitleString = title;
 }
 
 -(TWICAlertViewStyle)style
 {
     return self.alertStyle;
+}
+
+-(void)refreshUI{
+    if(self.style == TWICAlertViewStyleCamera){
+        self.alertImageView.image = [UIImage imageNamed:@"camera"];
+    }else if(self.style==TWICAlertViewStyleMicrophone){
+        self.alertImageView.image = [UIImage imageNamed:@"microphone"];
+    }
+    self.alertTitle.text = self.alertTitleString;
 }
 @end

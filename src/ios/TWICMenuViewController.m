@@ -103,7 +103,7 @@
     NSDictionary *user = self.users[indexPath.section];
     NSDictionary *action = [[[TWICUserManager sharedInstance]actionsForUser:user] objectAtIndex:indexPath.row];
     TWICMenuActionTableViewCell *cell = nil;
-    if(action[UserActionIsAdminKey]){
+    if(action[UserActionIsRedKey]){
         cell = (TWICMenuActionTableViewCell*)[tableView dequeueReusableCellWithIdentifier:[NSString stringWithFormat:@"Admin%@",[TWICMenuActionTableViewCell description]] forIndexPath:indexPath];
     }else{
         cell = (TWICMenuActionTableViewCell*)[tableView dequeueReusableCellWithIdentifier:[TWICMenuActionTableViewCell description] forIndexPath:indexPath];
@@ -123,7 +123,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if(self.delegate){
-        NSDictionary *user = [TWICUserManager sharedInstance].allUsers[indexPath.section];
+        NSDictionary *user = self.users[indexPath.section];
         NSDictionary *action = [[[TWICUserManager sharedInstance]actionsForUser:user] objectAtIndex:indexPath.row];
         [self.delegate TWICMenuViewController:self didSelectAction:action forUser:user];
     }
@@ -132,8 +132,7 @@
 
 - (BOOL)tableView:(FZAccordionTableView *)tableView canInteractWithHeaderAtSection:(NSInteger)section {
     //has actions ?
-    NSDictionary *user = self.users[section];
-    if([[[TWICUserManager sharedInstance]actionsForUser:user] count] > 0)
+    if([[[TWICUserManager sharedInstance]actionsForUser:self.users[section]] count] > 0)
     {
         return YES;
     }
