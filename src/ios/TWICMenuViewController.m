@@ -121,7 +121,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
     if(self.delegate){
         NSDictionary *user = self.users[indexPath.section];
         NSDictionary *action = [[[TWICUserManager sharedInstance]actionsForUser:user] objectAtIndex:indexPath.row];

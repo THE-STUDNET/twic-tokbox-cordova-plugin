@@ -504,19 +504,13 @@
 -(void)currentUserMicrophoneRequested:(NSNotification*)notification
 {
     self.popupViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICAlertViewController description]];
-    [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleCamera title:@"Do you want to share your microphone"];
+    [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleMicrophone title:@"Do you want to share your microphone"];
     ((TWICAlertViewController*)self.popupViewController).delegate = self;
     //show the popup
     [self showPopupView];
 }
 
 -(void)twicAlertViewControllerDidCancel:(id)sender{
-    if(((TWICAlertViewController*)sender).style == TWICAlertViewStyleCamera){
-        [TWICTokClient sharedInstance].publisher.publishVideo = NO;
-        [TWICTokClient sharedInstance].publisher.publishAudio = NO;
-    }else if(((TWICAlertViewController*)sender).style == TWICAlertViewStyleMicrophone){
-        [TWICTokClient sharedInstance].publisher.publishAudio = NO;
-    }
     [self removePopupView];
 }
 
