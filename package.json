@@ -1,0 +1,12 @@
+{
+  "name": "TWICCordovaPlugin",
+  "version": "0.0.4",
+  "description": "TWICCordovaPlugin",
+  "cordova": {
+    "id": "com-thestudnet-plugins-twiccordovaplugin",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  }
+}
