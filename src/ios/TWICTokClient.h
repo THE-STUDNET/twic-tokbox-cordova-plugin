@@ -17,6 +17,9 @@ static NSString *SignalTypeCameraRequested               = @"hgt_camera_requeste
 static NSString *SignalTypeMicrophoneRequested           = @"hgt_microphone_requested";
 static NSString *SignalTypeForceMuteStream               = @"hgt_force_mute_stream";
 static NSString *SignalTypeForceUnmuteStream             = @"hgt_force_unmute_stream";
+static NSString *SignalTypeKickUser                      = @"hgt_kick_user";
+static NSString *SignalTypeForceUnpublishStream          = @"hgt_force_unpublish_stream";
+static NSString *SignalTypeForceUnpublishScreen          = @"hgt_force_unpublish_screen";
 
 @interface TWICTokClient : NSObject
 
@@ -33,6 +36,11 @@ static NSString *SignalTypeForceUnmuteStream             = @"hgt_force_unmute_st
 //signaling
 -(void)broadcastSignal:(NSString *)signalName;
 -(void)sendSignal:(NSString *)signalName toUser:(NSDictionary*)user;
+
+//kick
+-(void)kickUser:(NSDictionary *)user;
+-(void)forceUnpublishStreamOfUser:(NSDictionary *)user;
+-(void)forceUnpublishScreenOfUser:(NSDictionary *)user;
 
 //session object that is used in stream view
 @property (strong, nonatomic) OTPublisher*  publisher;

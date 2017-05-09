@@ -70,7 +70,7 @@
 -(NSArray *)actionsForUser:(NSDictionary *)user
 {
     NSMutableArray *actions = [NSMutableArray array];
-    if([user[UserConnectionStateKey]boolValue])
+    if([user[UserConnectionStateKey]intValue] == UserConnectionStateConnected)
     {
         [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Send a direct message to %@",user[UserFirstnameKey]],UserActionImageKey:@"chat",UserActionTypeKey:@(UserActionTypeSendDirectMessage)}];//chat is available for everybody
         if([[TWICHangoutManager sharedInstance]canUser:self.currentUser doAction:HangoutActionAskDevice])
@@ -106,13 +106,9 @@
         //allow to force unpublish
         if([[TWICHangoutManager sharedInstance]canUser:self.currentUser doAction:HangoutActionForceUnpusblish])
         {
-            if([self isUserSharingCamera:user])
+            if([self isUserSharingCamera:user] || [self isUserSharingAudio:user])
             {
-                [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Force %@ to unpublish camera",user[UserFirstnameKey]],UserActionIsRedKey:@(1),UserActionTypeKey:@(UserActionTypeForceUnpublishCamera)}];
-            }
-            if([self isUserSharingAudio:user])
-            {
-                [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Force %@ to unpublish microphone",user[UserFirstnameKey]],UserActionIsRedKey:@(1),UserActionTypeKey:@(UserActionTypeForceUnpublishMicrophone)}];
+                [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Force %@ to unpublish camera/microphone",user[UserFirstnameKey]],UserActionIsRedKey:@(1),UserActionTypeKey:@(UserActionTypeForceUnpublishStream)}];
             }
         }
     }

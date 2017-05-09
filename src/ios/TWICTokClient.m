@@ -52,6 +52,13 @@
     return _sharedClient;
 }
 
+#pragma mark - Private
+- (NSError *)errorWithCode:(NSInteger)code message:(NSString *)message
+{
+    return [NSError errorWithDomain:ERROR_DOMAIN code:code userInfo:@{NSLocalizedDescriptionKey:message}];
+}
+
+
 #pragma mark - Session Management
 -(void)connect{
     [[TWICAPIClient sharedInstance]tokboxDataWithCompletionBlock:^(NSDictionary *data)
@@ -221,7 +228,7 @@
     NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
                                                              options:NSJSONReadingMutableContainers
                                                                error:nil];
-    [[TWICUserManager sharedInstance] setConnectedUserStateForUserID:dataJson[UserIdKey]];
+    [[TWICUserManager sharedInstance] setDisconnectedUserStateForUserID:dataJson[UserIdKey]];
 }
 
 
@@ -247,6 +254,9 @@
     
     [self.allSubscribers removeObjectForKey:stream.connection.connectionId];
     [self.allConnectionsIds removeObject:stream.connection.connectionId];
+    [self.allStreams removeObjectForKey:stream.connection.connectionId];
+    
+    //disconnect the user
     
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:subscriber];
 }
@@ -344,6 +354,16 @@
     {
         [TWICTokClient sharedInstance].publisher.publishAudio = YES;
     }
+    else if([type isEqualToString:SignalTypeForceUnpublishStream])
+    {
+        [self unpublish];
+    }
+    else if([type isEqualToString:SignalTypeForceUnpublishScreen]){
+        //nothing to do on mobile side
+    }
+    else if([type isEqualToString:SignalTypeKickUser]){
+        [self disconnect];
+    }
 }
 
 -(void)broadcastSignal:(NSString *)signalName{
@@ -435,8 +455,19 @@
 
 - (void)leavingBackgroundMode:(NSNotification*)notification
 {
-#warning TO BE CHANGED ==> CAN I AUTO-PUBLISH ??
-    self.publisher.publishVideo = YES;
+    //auto publishing ?
+    if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionAutoPublishMicrophone] ||
+       [[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionAutoPublishCamera])
+    {
+        if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionAutoPublishCamera])
+        {
+            [self publishVideo:YES audio:YES];
+        }
+        else if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionAutoPublishCamera])
+        {
+            [self publishVideo:NO audio:YES];
+        }
+    }
     
     //now subscribe to any background connected streams
     for (OTStream *stream in self.backgroundConnectedStreams)
@@ -501,8 +532,18 @@
     return nil;
 }
 
-- (NSError *)errorWithCode:(NSInteger)code message:(NSString *)message
+-(void)kickUser:(NSDictionary *)user
 {
-    return [NSError errorWithDomain:ERROR_DOMAIN code:code userInfo:@{NSLocalizedDescriptionKey:message}];
+    [self sendSignal:SignalTypeKickUser toUser:user];
 }
+
+-(void)forceUnpublishStreamOfUser:(NSDictionary *)user
+{
+    [self sendSignal:SignalTypeForceUnpublishStream toUser:user];
+}
+-(void)forceUnpublishScreenOfUser:(NSDictionary *)user
+{
+    [self sendSignal:SignalTypeForceUnpublishScreen toUser:user];
+}
+
 @end

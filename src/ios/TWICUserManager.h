@@ -54,8 +54,8 @@ typedef enum : NSUInteger {
     UserActionTypeAskShareMicrophone,
     UserActionTypeAllowShareMicrophone,
     UserActionTypeKick,
-    UserActionTypeForceUnpublishCamera,
-    UserActionTypeForceUnpublishMicrophone,
+    UserActionTypeForceUnpublishStream,
+    UserActionTypeForceUnpublishScreen,
 } UserActionType;
 
 @interface TWICUserManager : NSObject

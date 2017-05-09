@@ -305,7 +305,6 @@
     if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionAutoPublishMicrophone] ||
        [[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionAutoPublishCamera])
     {
-        
         if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionAutoPublishCamera])
         {
             [[TWICTokClient sharedInstance]publishVideo:YES audio:YES];
@@ -545,7 +544,8 @@
     }
     
     //display the request button for 1 user or n users
-    if(self.userAuthorizationView.hidden == YES){
+    if(self.userAuthorizationView.hidden == YES)
+    {
         self.userAuthorizationTypeImageView.image = imageType;
         [self.userAuthorizationAvatarImageView setImageWithURL:[NSURL URLWithString:[[TWICUserManager sharedInstance]avatarURLStringForUser:user]]];
         self.userAuthorizationNumberLabel.text = @"0";
@@ -602,25 +602,37 @@
     switch (actionType) {
         case UserActionTypeAskShareCamera:
         case UserActionTypeAllowShareCamera:
+            //tok signaling
             [[TWICTokClient sharedInstance]sendSignal:SignalTypeCameraRequested toUser:user];
+            //api event
             [[TWICAPIClient sharedInstance]registerEventName:HangoutEventLaunchUserCamera
                                              completionBlock:^{}
                                                 failureBlock:^(NSError *error) {}];
             break;
         case UserActionTypeAskShareMicrophone:
         case UserActionTypeAllowShareMicrophone:
+            //tok signaling
             [[TWICTokClient sharedInstance]sendSignal:SignalTypeMicrophoneRequested toUser:user];
+            //api event
             [[TWICAPIClient sharedInstance]registerEventName:HangoutEventLaunchUserMicrophone
                                              completionBlock:^{}
                                                 failureBlock:^(NSError *error) {}];
             break;
         case UserActionTypeKick:
+            //tok signaling
+            [[TWICTokClient sharedInstance]kickUser:user];
+            //api event
+            [[TWICAPIClient sharedInstance]registerEventName:HangoutActionKick
+                                             completionBlock:^{}
+                                                failureBlock:^(NSError *error) {}];
             break;
         case UserActionTypeSendDirectMessage:
             break;
-        case UserActionTypeForceUnpublishCamera:
+        case UserActionTypeForceUnpublishStream:
+            [[TWICTokClient sharedInstance]forceUnpublishStreamOfUser:user];
             break;
-        case UserActionTypeForceUnpublishMicrophone:
+        case UserActionTypeForceUnpublishScreen:
+            [[TWICTokClient sharedInstance]forceUnpublishScreenOfUser:user];
             break;
     }
     [self dismissViewControllerAnimated:YES completion:nil];
