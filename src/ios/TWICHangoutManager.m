@@ -30,7 +30,7 @@
 {
     [[TWICAPIClient sharedInstance]hangoutDataWithCompletionBlock:^(NSDictionary *data)
     {
-#pragma mark - REMOVE THAT ON RELEASE !!!!!
+#warning - REMOVE THAT ON RELEASE !!!!! => REMOVE AUTO PUBLISH KEY
         NSMutableDictionary *optionData = [data[HangoutOptionsKey] mutableCopy];
         optionData[HangoutActionAutoPublishCamera] = @(NO);
         optionData[HangoutActionAutoPublishMicrophone] = @(NO);
