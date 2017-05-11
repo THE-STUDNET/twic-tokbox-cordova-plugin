@@ -30,7 +30,14 @@
 {
     [[TWICAPIClient sharedInstance]hangoutDataWithCompletionBlock:^(NSDictionary *data)
     {
-        self.hangoutData = data;
+#pragma mark - REMOVE THAT ON RELEASE !!!!!
+        NSMutableDictionary *optionData = [data[HangoutOptionsKey] mutableCopy];
+        optionData[HangoutActionAutoPublishCamera] = @(NO);
+        optionData[HangoutActionAutoPublishMicrophone] = @(NO);
+        optionData[HangoutActionPublish]=@(NO);
+        NSMutableDictionary *debugData = [data mutableCopy];
+        debugData[HangoutOptionsKey] = optionData;
+        self.hangoutData = debugData;
         completionBlock();
     }
                                                      failureBlock:^(NSError *error)

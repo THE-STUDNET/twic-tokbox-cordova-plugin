@@ -13,6 +13,7 @@
 @interface TWICStreamCollectionViewCell()
 @property (weak, nonatomic) IBOutlet UIView *streamSupportView;
 @property (weak, nonatomic) IBOutlet UILabel *streamTitleLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *microphoneImageView;
 
 @property (nonatomic, weak) UIView *streamedView;
 
@@ -34,7 +35,7 @@
     [self.streamedView removeFromSuperview];
 }
 
--(void)configureWithStreamedView:(UIView *)view{
+-(void)configureWithStreamedView:(UIView *)view hasVideo:(BOOL)hasVideo hasAudio:(BOOL)hasAudio{
     self.streamedView = view;
     [self.contentView insertSubview:view atIndex:0];
     [view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -45,15 +46,22 @@
     }];
     self.contentView.clipsToBounds = YES;
     self.contentView.layer.cornerRadius = TWIC_CORNER_RADIUS;
+    self.streamedView.layer.borderColor = [CLEAR_COLOR CGColor];
+//    if(!hasVideo && hasAudio){
+//        self.microphoneImageView.hidden = NO;
+//    }else{
+//        self.microphoneImageView.hidden = YES;
+//    }
+    self.microphoneImageView.hidden = YES;
 }
 
 -(void)configureWithSubscriber:(OTSubscriber*)subscriber
 {
-    [self configureWithStreamedView:subscriber.view];
+    [self configureWithStreamedView:subscriber.view hasVideo:subscriber.stream.hasVideo hasAudio:subscriber.stream.hasAudio];
 }
 
 -(void)configureWithPublisher:(OTPublisher*)publisher
 {
-    [self configureWithStreamedView:publisher.view];
+    [self configureWithStreamedView:publisher.view hasVideo:publisher.stream.hasVideo hasAudio:publisher.stream.hasAudio];
 }
 @end

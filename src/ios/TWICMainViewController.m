@@ -19,13 +19,14 @@
 #import "TWICAlertViewController.h"
 #import "TWICHangoutManager.h"
 #import "UIImageView+AFNetworking.h"
+#import "TWICAlertsViewController.h"
 
 #define PUBLISHER_VIEW_FRAME_WIDTH      120
 #define PUBLISHER_VIEW_FRAME_HEIGHT     140
 #define PUBLISHER_VIEW_FRAME_DEFAULT_Y  10
 #define PUBLISHER_VIEW_FRAME_DEFAULT_X  -10
 
-@interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate,TWICAlertViewControllerDelegate,TWICMenuViewControllerDelegate>
+@interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate,TWICAlertViewControllerDelegate,TWICMenuViewControllerDelegate,TWICAlertsViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIView             *headerView;
 @property (weak, nonatomic) IBOutlet UIView             *supportView;
 @property (weak, nonatomic) IBOutlet UIView             *footerView;
@@ -85,6 +86,7 @@
     
     [NOTIFICATION_CENTER addObserver:self selector:@selector(userAskMicrophoneAuthorization:) name:NOTIFICATION_USER_ASK_MICROPHONE_AUTHORIZATION object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(userAskCameraAuthorization:) name:NOTIFICATION_USER_ASK_CAMERA_AUTHORIZATION object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(userAskScreenAuthorization:) name:TWIC_NOTIFICATION_USER_ASK_SCREEN_AUTHORIZATION object:nil];
     
     [self configureSkin];
     [self configureLocalizable];
@@ -410,7 +412,7 @@
     UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(blurviewTouched:)];
     [self.blurView addGestureRecognizer:tapAction];
     
-    UPDATE_VIEW_FRAME_SIZE(self.popupViewController.view, CGSizeMake(300*MAIN_SCREEN.bounds.size.width/414, 260*MAIN_SCREEN.bounds.size.height/736));
+    UPDATE_VIEW_FRAME_SIZE(self.popupViewController.view, CGSizeMake(301*MAIN_SCREEN.bounds.size.width/414, 258*MAIN_SCREEN.bounds.size.height/736));
     self.popupViewController.view.clipsToBounds = YES;
     self.popupViewController.view.layer.cornerRadius = TWIC_CORNER_RADIUS;
     self.popupViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.001, 0.001);
@@ -471,9 +473,10 @@
         case CurrentUserActionTypeStop:
             [[TWICTokClient sharedInstance] unpublish];
             break;
-        case CurrentUserActionTypeCamera:
+        case CurrentUserActionTypeCamera:{
             [TWICTokClient sharedInstance].publisher.publishVideo = ![TWICTokClient sharedInstance].publisher.publishVideo;
             break;
+        }
         case CurrentUserActionTypeRotate:
             if([TWICTokClient sharedInstance].publisher.cameraPosition == AVCaptureDevicePositionFront)
             {
@@ -496,79 +499,128 @@
 -(void)currentUserCameraRequested:(NSNotification*)notification
 {
     self.popupViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICAlertViewController description]];
-    [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleCamera title:@"Do you want to share your video"];
+    [(TWICAlertViewController*)self.popupViewController configureWithAuthorization:@{UserAskCamera:[TWICUserManager sharedInstance].currentUser}];
     ((TWICAlertViewController*)self.popupViewController).delegate = self;
     [self showPopupView];
 }
+
 -(void)currentUserMicrophoneRequested:(NSNotification*)notification
 {
     self.popupViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICAlertViewController description]];
-    [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleMicrophone title:@"Do you want to share your microphone"];
+    [(TWICAlertViewController*)self.popupViewController configureWithAuthorization:@{UserAskMicrophone:[TWICUserManager sharedInstance].currentUser}];
     ((TWICAlertViewController*)self.popupViewController).delegate = self;
-    //show the popup
     [self showPopupView];
+}
+
+
+#pragma mark - AlertViewControllerDelegate
+-(void)twicAlertViewControllerDidAccept:(id)sender{
+    if(((TWICAlertViewController*)sender).style == TWICAlertViewStyleCamera)
+    {
+        [[TWICTokClient sharedInstance] publishVideo:YES audio:YES];
+    }
+    else if(((TWICAlertViewController*)sender).style == TWICAlertViewStyleMicrophone)
+    {
+        [[TWICTokClient sharedInstance] publishVideo:NO audio:YES];
+    }
+    else if(((TWICAlertViewController*)sender).style == TWICAlertViewStyleScreen)
+    {
+        //nothing to do on mobile
+    }
+    //hide popup
+    [self removePopupView];
 }
 
 -(void)twicAlertViewControllerDidCancel:(id)sender{
     [self removePopupView];
 }
 
--(void)twicAlertViewControllerDidAccept:(id)sender{
-    if(((TWICAlertViewController*)sender).style == TWICAlertViewStyleCamera){
-        [TWICTokClient sharedInstance].publisher.publishVideo = YES;
-        [TWICTokClient sharedInstance].publisher.publishAudio = YES;
-    }else if(((TWICAlertViewController*)sender).style == TWICAlertViewStyleMicrophone){
-        [TWICTokClient sharedInstance].publisher.publishAudio = YES;
-    }
+#pragma mark - AlertsViewControllerDelegate
+-(void)twicAlertViewControllerDidFinish:(id)sender{
     [self removePopupView];
+    //update or remove completely the authorization view
+    [self updateUserAuthorizationView];
 }
 
 #pragma mark - Camera Microphone User Authorizations
 -(void)userAskMicrophoneAuthorization:(NSNotification*)notification{
-    [self showUserAuthorizationViewForUser:notification.object type:SignalTypeMicrophoneAuthorization];
+    [self updateUserAuthorizationView];
 }
 
 -(void)userAskCameraAuthorization:(NSNotification*)notification{
-    [self showUserAuthorizationViewForUser:notification.object type:SignalTypeCameraAuthorization];
+    [self updateUserAuthorizationView];
+}
+-(void)userAskScreenAuthorization:(NSNotification*)notification{
+    [self updateUserAuthorizationView];
 }
 
--(void)showUserAuthorizationViewForUser:(NSDictionary *)user type:(NSString*)authorizationType
-{
+#pragma mark - Authorization view
+-(void)updateUserAuthorizationView{
     //display the request button for 1 user or n users
-    UIImage *imageType = nil;
-    if([authorizationType isEqualToString:SignalTypeCameraAuthorization]){
-        imageType = [UIImage imageNamed:@"user-request-camera"];
-    }
-    else if([authorizationType isEqualToString:SignalTypeMicrophoneAuthorization]){
-        imageType = [UIImage imageNamed:@"user-request-microphone"];
-    }
+    //need to retrieve the number of users that are asking authorization
+    int nbOfRequests=[[TWICUserManager sharedInstance]numberOfWaitingAuthorizations];
     
     //display the request button for 1 user or n users
-    if(self.userAuthorizationView.hidden == YES)
+    if(nbOfRequests == 1)
     {
+        NSDictionary *user = [[[TWICUserManager sharedInstance]waitingAuthorizationsUsers]firstObject];
+        UIImage *imageType = nil;
+        if([[TWICUserManager sharedInstance]isUserAskingCameraPermission:user]){
+            imageType = [UIImage imageNamed:@"user-request-camera"];
+        }
+        else if([[TWICUserManager sharedInstance]isUserAskingMicrophonePermission:user])
+        {
+            imageType = [UIImage imageNamed:@"user-request-microphone"];
+        }
+        else if([[TWICUserManager sharedInstance]isUserSharingScreen:user])
+        {
+            imageType = [UIImage imageNamed:@"user-request-screen"];
+        }
         self.userAuthorizationTypeImageView.image = imageType;
         [self.userAuthorizationAvatarImageView setImageWithURL:[NSURL URLWithString:[[TWICUserManager sharedInstance]avatarURLStringForUser:user]]];
-        self.userAuthorizationNumberLabel.text = @"0";
         self.userAuthorizationNumberLabel.hidden = YES;
+        self.userAuthorizationView.hidden = NO;
     }
-    else
+    else if(nbOfRequests > 1)
     {
         //to be done later with the label !
         self.userAuthorizationNumberLabel.hidden = NO;
-        NSInteger authorizationCount = [self.userAuthorizationNumberLabel.text integerValue];
-        authorizationCount+=1;
-        self.userAuthorizationNumberLabel.text = [NSString stringWithFormat:@"%ld",(long)authorizationCount];
+        self.userAuthorizationNumberLabel.text = [NSString stringWithFormat:@"%d",nbOfRequests];
         self.userAuthorizationAvatarImageView.image = nil;
         self.userAuthorizationAvatarImageView.hidden = YES;
+        self.userAuthorizationTypeImageView.hidden = YES;
+        self.userAuthorizationView.hidden = NO;
     }
-    self.userAuthorizationView.hidden = NO;
+    else
+    {
+        self.userAuthorizationView.hidden = YES;
+    }
 }
 
-- (IBAction)openUserAuthorizationAlertView:(id)sender {
-    self.popupViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICAlertViewController description]];
-    [(TWICAlertViewController*)self.popupViewController configureWithStyle:TWICAlertViewStyleCamera title:[NSString stringWithFormat:@"XXXX"]];
-    //((TWICAlertViewController*)self.popupViewController).delegate = self;
-    
+- (IBAction)openUserAuthorizationAlertView:(id)sender
+{
+    //need to retrieve the number of users that are asking authorization
+    if([[TWICUserManager sharedInstance]numberOfWaitingAuthorizations] >= 0)
+    {
+        NSDictionary *user = [[[TWICUserManager sharedInstance]waitingAuthorizationsUsers]firstObject];
+        NSString *askForType=nil;
+        TWICAlertViewStyle askStyle=TWICAlertViewStyleScreen;
+        if([[TWICUserManager sharedInstance] isUserAskingScreenPermission:user]){
+            askForType = @"screen";
+            askStyle = TWICAlertViewStyleScreen;
+        }
+        else if([[TWICUserManager sharedInstance] isUserAskingCameraPermission:user]){
+            askForType=@"camera";
+            askStyle = TWICAlertViewStyleCamera;
+        }
+        else{
+            askForType=@"microphone";
+            askStyle = TWICAlertViewStyleMicrophone;
+        }
+        //instantiate the twic alerts
+        self.popupViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICAlertsViewController description]];
+        ((TWICAlertsViewController*)self.popupViewController).delegate = self;
+    }
     //show the popup
     [self showPopupView];
 }
@@ -581,20 +633,27 @@
     }
     else
     {
+        //signal everybody
         [[TWICTokClient sharedInstance]broadcastSignal:SignalTypeCameraAuthorization];
+        //update current user
+        [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:[TWICUserManager sharedInstance].currentUser[UserIdKey] toValue:@(1)];
     }
 }
 
 - (IBAction)publishOrRequestMicrophone:(id)sender {
     if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionPublish])
     {
-        [[TWICTokClient sharedInstance]publishVideo:NO audio:YES];
+        [[TWICTokClient sharedInstance]publishVideo:[TWICTokClient sharedInstance].publisher.publishVideo audio:YES];
     }
     else
     {
+        //signal everybody
         [[TWICTokClient sharedInstance]broadcastSignal:SignalTypeMicrophoneAuthorization];
+        //update currentuser
+        [[TWICUserManager sharedInstance]setAskPermission:UserAskMicrophone forUserID:[TWICUserManager sharedInstance].currentUser[UserIdKey] toValue:@(1)];
     }
 }
+
 #pragma mark - TWICMenuViewControllerDelegate
 -(void)TWICMenuViewController:(id)sender didSelectAction:(NSDictionary *)action forUser:(NSDictionary *)user
 {
@@ -633,6 +692,14 @@
             break;
         case UserActionTypeForceUnpublishScreen:
             [[TWICTokClient sharedInstance]forceUnpublishScreenOfUser:user];
+            break;
+        case UserActionTypeAllowShareScreen:
+            //tok signaling
+            [[TWICTokClient sharedInstance]sendSignal:SignalTypeScreenRequested toUser:user];
+            //api event
+            [[TWICAPIClient sharedInstance]registerEventName:HangoutEventLaunchUserScreen
+                                             completionBlock:^{}
+                                                failureBlock:^(NSError *error) {}];
             break;
     }
     [self dismissViewControllerAnimated:YES completion:nil];

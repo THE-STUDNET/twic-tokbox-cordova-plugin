@@ -97,6 +97,16 @@
                     [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Ask %@ to share his micropone",user[UserFirstnameKey]],UserActionImageKey:@"microphone-white",UserActionTypeKey:@(UserActionTypeAskShareMicrophone)}];
                 }
             }
+            if([self isUserSharingScreen:user]==NO){
+                if([user[UserAskScreen]boolValue])
+                {
+                    [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Allow %@ to share his screen",user[UserFirstnameKey]],UserActionImageKey:@"screen-white",UserActionTypeKey:@(UserActionTypeAllowShareScreen)}];
+                }
+                else
+                {
+                    //not possible to share screen on mobile
+                }
+            }
         }
         //allow to kick
         if([[TWICHangoutManager sharedInstance]canUser:self.currentUser doAction:HangoutActionKick])
@@ -127,7 +137,6 @@
     OTStream *userStream = [[TWICTokClient sharedInstance]streamForUser:user];
     return userStream.videoType == OTStreamVideoTypeCamera && userStream.hasVideo;
 }
-
 
 -(NSString *)avatarURLStringForUser:(NSDictionary *)user
 {
@@ -209,8 +218,51 @@
     return self.users.count;
 }
 
--(NSArray *)allUsers
-{
+-(NSArray *)allUsers{
     return self.users;
+}
+
+-(BOOL)isUserAskingMicrophonePermission:(NSDictionary*)user
+{
+    return [user[UserAskMicrophone]boolValue];
+}
+-(BOOL)isUserAskingCameraPermission:(NSDictionary*)user
+{
+    return [user[UserAskCamera]boolValue];
+}
+-(BOOL)isUserAskingScreenPermission:(NSDictionary*)user
+{
+    return [user[UserAskScreen]boolValue];
+}
+-(BOOL)isUserAskingPermission:(NSDictionary*)user
+{
+    return [self isUserAskingMicrophonePermission:user] || [self isUserAskingCameraPermission:user] || [self isUserAskingScreenPermission:user];
+}
+
+-(NSArray *)waitingAuthorizationsUsers
+{
+    NSMutableArray *users = [NSMutableArray array];
+    for(NSDictionary *user in self.users){
+        if([self isUserAskingPermission:user]){
+            [users addObject:user];
+        }
+    }
+    return users;
+}
+-(int)numberOfWaitingAuthorizations
+{
+    int number = 0;
+    for(NSDictionary *user in [self waitingAuthorizationsUsers]){
+        if([self isUserAskingScreenPermission:user]){
+            number++;
+        }
+        if([self isUserAskingMicrophonePermission:user]){
+            number++;
+        }
+        if([self isUserAskingCameraPermission:user]){
+            number++;
+        }
+    }
+    return number;
 }
 @end

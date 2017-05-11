@@ -11,6 +11,7 @@
 typedef enum : NSUInteger {
     TWICAlertViewStyleMicrophone,
     TWICAlertViewStyleCamera,
+    TWICAlertViewStyleScreen,
 } TWICAlertViewStyle;
 
 @protocol TWICAlertViewControllerDelegate <NSObject>
@@ -24,6 +25,10 @@ typedef enum : NSUInteger {
 
 @property(nonatomic, weak) id<TWICAlertViewControllerDelegate> delegate;
 
--(void)configureWithStyle:(TWICAlertViewStyle)style title:(NSString *)title;
+-(void)configureWithAuthorization:(NSDictionary *)authorizationData;
+
+
 @property(readonly)TWICAlertViewStyle style;
+@property (readonly) NSDictionary *user;
+@property(readonly) NSDictionary *authorizationData;
 @end

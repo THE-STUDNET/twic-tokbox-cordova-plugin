@@ -15,10 +15,11 @@
 
 @interface TWICTokClient()<OTSessionDelegate,OTPublisherKitDelegate,OTSubscriberKitDelegate>
 
-@property(strong, nonatomic) NSMutableDictionary *allStreams;
-@property(strong, nonatomic) NSMutableDictionary *allSubscribers;
-@property(strong, nonatomic) NSMutableArray *allConnectionsIds;
-@property(strong, nonatomic) NSMutableArray *backgroundConnectedStreams;
+@property (strong, nonatomic) NSMutableDictionary *allStreams;
+@property (strong, nonatomic) NSMutableDictionary *allSubscribers;
+@property (strong, nonatomic) NSMutableDictionary *allConnections;
+@property (strong, nonatomic) NSMutableArray      *allConnectionsIds;
+@property (strong, nonatomic) NSMutableArray      *backgroundConnectedStreams;
 
 @property (strong, nonatomic) OTSession* session;
 @end
@@ -34,6 +35,7 @@
         // initialize constants
         _sharedClient.allStreams = [[NSMutableDictionary alloc] init];
         _sharedClient.allSubscribers = [[NSMutableDictionary alloc] init];
+        _sharedClient.allConnections = [[NSMutableDictionary alloc] init];
         _sharedClient.allConnectionsIds = [[NSMutableArray alloc] init];
         _sharedClient.backgroundConnectedStreams = [[NSMutableArray alloc] init];
         // application background/foreground monitoring for publish/subscribe video
@@ -170,6 +172,7 @@
     [self.publisher.view removeFromSuperview];
     
     [self.allSubscribers removeAllObjects];
+    [self.allConnections removeAllObjects];
     [self.allConnectionsIds removeAllObjects];
     [self.allStreams removeAllObjects];
     self.publisher = nil;
@@ -185,6 +188,9 @@
     NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
                                                              options:NSJSONReadingMutableContainers
                                                                error:nil];
+    //store the connection
+    [self.allConnections setObject:connection forKey:connection.connectionId];
+    
     //register new or existing user
     __block NSDictionary *user = [[TWICUserManager sharedInstance] userWithUserID:dataJson[UserIdKey]];
     if(user==nil)
@@ -213,8 +219,8 @@
     [[TWICUserManager sharedInstance] setConnectedUserStateForUserID:user[UserIdKey]];
     
     //check if he was asking for permissions
-    if([user[UserAskScreen]boolValue]){
-        [self.session signalWithType:SignalTypeCameraAuthorization string:nil connection:connection retryAfterReconnect:YES error:nil];
+    if([[TWICUserManager sharedInstance] isUserAskingCameraPermission:user]){
+        [self sendSignal:SignalTypeCameraAuthorization toUser:user];
     }
     if([user[UserAskMicrophone]boolValue]){
         [self.session signalWithType:SignalTypeCancelMicrophoneAuthorization string:nil connection:connection retryAfterReconnect:YES error:nil];
@@ -229,6 +235,7 @@
                                                              options:NSJSONReadingMutableContainers
                                                                error:nil];
     [[TWICUserManager sharedInstance] setDisconnectedUserStateForUserID:dataJson[UserIdKey]];
+    [self.allConnections removeObjectForKey:connection.connectionId];
 }
 
 
@@ -257,7 +264,6 @@
     [self.allStreams removeObjectForKey:stream.connection.connectionId];
     
     //disconnect the user
-    
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:subscriber];
 }
 
@@ -279,41 +285,56 @@
     {
         //can the current user process the request
         if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
-            [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_ASK_CAMERA_AUTHORIZATION object:signaledUser];
-            [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:signaledUser[UserIdKey] toValue:YES];
-        }
-    }
-    else if([type isEqualToString:SignalTypeCancelCameraAuthorization])
-    {
-        //can the current user process the request
-        if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
-            [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_CANCEL_CAMERA_AUTHORIZATION object:signaledUser];
-        }
-        //does the user is the current user and was asking for permission
-        if(isCurrentUser && [signaledUser[UserAskCamera]boolValue]){
-            [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:signaledUser[UserIdKey] toValue:NO];
-        }
-    }
-    else if([type isEqualToString:SignalTypeCancelMicrophoneAuthorization])
-    {
-        //check if this user has already send this request
-        //can the current user process the request
-        if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
-            [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_CANCEL_MICROPHONE_AUTHORIZATION object:signaledUser];
-        }
-        
-        //does the user is the current user and was asking for permission
-        if(isCurrentUser && [signaledUser[UserAskMicrophone]boolValue]){
-            [[TWICUserManager sharedInstance]setAskPermission:UserAskMicrophone forUserID:signaledUser[UserIdKey] toValue:NO];
+            //check if this user has already send this request
+            if([[TWICUserManager sharedInstance]isUserAskingCameraPermission:signaledUser] == NO){
+                [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:signaledUser[UserIdKey] toValue:YES];
+                [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_ASK_CAMERA_AUTHORIZATION object:signaledUser];
+            }
         }
     }
     else if([type isEqualToString:SignalTypeMicrophoneAuthorization])
     {
-        //check if this user has already send this request
         //can the current user process the request
         if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
-            [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_ASK_MICROPHONE_AUTHORIZATION object:signaledUser];
-            [[TWICUserManager sharedInstance]setAskPermission:UserAskMicrophone forUserID:signaledUser[UserIdKey] toValue:YES];
+            //check if this user has already send this request
+            if([[TWICUserManager sharedInstance]isUserAskingMicrophonePermission:signaledUser] == NO){
+                [[TWICUserManager sharedInstance]setAskPermission:UserAskMicrophone forUserID:signaledUser[UserIdKey] toValue:YES];
+                [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_ASK_MICROPHONE_AUTHORIZATION object:signaledUser];
+            }
+        }
+    }
+    else if([type isEqualToString:SignalTypeCancelScreenAuthorization]){
+        //can the current user process the request
+        if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskScreen]){
+            //check if this user has already send this request
+            if([[TWICUserManager sharedInstance]isUserAskingMicrophonePermission:signaledUser] == NO){
+                [[TWICUserManager sharedInstance]setAskPermission:UserAskScreen forUserID:signaledUser[UserIdKey] toValue:YES];
+                [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_USER_ASK_SCREEN_AUTHORIZATION object:signaledUser];
+            }
+        }
+    }
+    else if([type isEqualToString:SignalTypeCancelCameraAuthorization])
+    {
+        //does the user is the current user and was asking for permission
+        if(isCurrentUser && [signaledUser[UserAskCamera]boolValue]){
+            [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:signaledUser[UserIdKey] toValue:NO];
+        }
+        
+        //can the current user process the request
+        if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
+            [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_CANCEL_CAMERA_AUTHORIZATION object:signaledUser];
+        }
+    }
+    else if([type isEqualToString:SignalTypeCancelMicrophoneAuthorization])
+    {
+        //does the user is the current user and was asking for permission
+        if(isCurrentUser && [signaledUser[UserAskMicrophone]boolValue]){
+            [[TWICUserManager sharedInstance]setAskPermission:UserAskMicrophone forUserID:signaledUser[UserIdKey] toValue:NO];
+        }
+        
+        //can the current user process the request
+        if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
+            [NOTIFICATION_CENTER postNotificationName:NOTIFICATION_USER_CANCEL_MICROPHONE_AUTHORIZATION object:signaledUser];
         }
     }
     else if([type isEqualToString:SignalTypeCameraRequested])//only received for me
@@ -323,8 +344,7 @@
             //signal cancel for other users
             [self.session signalWithType:SignalTypeCancelCameraAuthorization string:nil connection:connection error:nil];
             //publish camera
-            self.publisher.publishVideo = YES;
-            self.publisher.publishAudio = YES;
+            [self publishVideo:YES audio:YES];
         }
         else
         {
@@ -338,7 +358,7 @@
             //signal cancel for other users
             [self.session signalWithType:SignalTypeCancelMicrophoneAuthorization string:nil connection:connection error:nil];
             //publish audio
-            self.publisher.publishAudio = YES;
+            [self publishVideo:self.publisher.publishVideo audio:YES];
         }
         else
         {
@@ -364,6 +384,9 @@
     else if([type isEqualToString:SignalTypeKickUser]){
         [self disconnect];
     }
+    else if([type isEqualToString:SignalTypeScreenRequested]){
+        //should never appear on mobile
+    }
 }
 
 -(void)broadcastSignal:(NSString *)signalName{
@@ -371,9 +394,9 @@
 }
 
 -(void)sendSignal:(NSString *)signalName toUser:(NSDictionary*)user{
-    OTStream *userStream = [self streamForUser:user];
-    if(userStream){
-        [self.session signalWithType:signalName string:nil connection:userStream.connection error:nil];
+    OTConnection *userConnection = [self connectionForUser:user];
+    if(userConnection){
+        [self.session signalWithType:signalName string:nil connection:userConnection error:nil];
     }
 }
 
@@ -527,6 +550,21 @@
                                                                    error:nil];
         if([user[UserIdKey] isEqualToNumber:dataJson[UserIdKey]]){
             return stream;
+        }
+    }
+    return nil;
+}
+
+-(OTConnection *)connectionForUser:(NSDictionary *)user
+{
+    for(OTConnection *connection in [self.allConnections allValues])
+    {
+        NSData *data = [connection.data dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
+                                                                 options:NSJSONReadingMutableContainers
+                                                                   error:nil];
+        if([user[UserIdKey] isEqualToNumber:dataJson[UserIdKey]]){
+            return connection;
         }
     }
     return nil;

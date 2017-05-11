@@ -20,6 +20,7 @@ static NSString *HangoutEventStartRecord          = @"hangout.startrecord";
 static NSString *HangoutEventStopRecord           = @"hangout.stoprecord";
 static NSString *HangoutEventLaunchUserCamera     = @"hangout.launchusercamera";
 static NSString *HangoutEventLaunchUserMicrophone = @"hangout.launchusermicrophone";
+static NSString *HangoutEventLaunchUserScreen     = @"hangout.launchuserscreen";
 
 @interface TWICAPIClient : AFHTTPSessionManager
 + (TWICAPIClient *)sharedInstance;

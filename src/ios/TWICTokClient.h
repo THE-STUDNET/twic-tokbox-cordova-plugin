@@ -20,6 +20,8 @@ static NSString *SignalTypeForceUnmuteStream             = @"hgt_force_unmute_st
 static NSString *SignalTypeKickUser                      = @"hgt_kick_user";
 static NSString *SignalTypeForceUnpublishStream          = @"hgt_force_unpublish_stream";
 static NSString *SignalTypeForceUnpublishScreen          = @"hgt_force_unpublish_screen";
+static NSString *SignalTypeScreenRequested               = @"hgt_screen_requested";
+static NSString *SignalTypeCancelScreenAuthorization     = @"hgt_cancel_screen_authorization";
 
 @interface TWICTokClient : NSObject
 

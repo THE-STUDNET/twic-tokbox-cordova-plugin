@@ -53,6 +53,7 @@ typedef enum : NSUInteger {
     UserActionTypeAllowShareCamera,
     UserActionTypeAskShareMicrophone,
     UserActionTypeAllowShareMicrophone,
+    UserActionTypeAllowShareScreen,
     UserActionTypeKick,
     UserActionTypeForceUnpublishStream,
     UserActionTypeForceUnpublishScreen,
@@ -65,29 +66,30 @@ typedef enum : NSUInteger {
             completionBlock:(void(^)())completionBlock
                failureBlock:(void (^)(NSError *error))failureBlock;
 
--(NSString *)avatarURLStringForUser:(NSDictionary *)user;
-
--(NSDictionary *)currentUser;
-
--(NSDictionary *)userWithUserID:(NSNumber *)userID;
-
--(BOOL)isCurrentUser:(NSDictionary *)user;
-
--(void)loadDetailsForUserID:(NSNumber*)userID
-            completionBlock:(void (^)())completionBlock
-               failureBlock:(void (^)(NSError *))failureBlock;
-
--(void)setConnectedUserStateForUserID:(NSNumber *)userID;
--(void)setDisconnectedUserStateForUserID:(NSNumber *)userID;
--(void)setAskPermission:(NSString *)askPermission forUserID:(NSNumber *)userID toValue:(BOOL)value;
-
--(NSArray *)actionsForUser:(NSDictionary *)user;
-
+//many user management
 -(NSInteger)connectedUsersCount;
 -(NSInteger)usersCount;
 -(NSArray *)allUsers;
+-(NSArray *)waitingAuthorizationsUsers;
+-(int)numberOfWaitingAuthorizations;
 
+//single user management
+-(void)loadDetailsForUserID:(NSNumber*)userID
+            completionBlock:(void (^)())completionBlock
+               failureBlock:(void (^)(NSError *))failureBlock;
+-(NSArray *)actionsForUser:(NSDictionary *)user;
+-(NSString *)avatarURLStringForUser:(NSDictionary *)user;
+-(NSDictionary *)currentUser;
+-(NSDictionary *)userWithUserID:(NSNumber *)userID;
+-(BOOL)isCurrentUser:(NSDictionary *)user;
+-(void)setConnectedUserStateForUserID:(NSNumber *)userID;
+-(void)setDisconnectedUserStateForUserID:(NSNumber *)userID;
+-(void)setAskPermission:(NSString *)askPermission forUserID:(NSNumber *)userID toValue:(BOOL)value;
 -(BOOL)isUserSharingCamera:(NSDictionary*)user;
 -(BOOL)isUserSharingScreen:(NSDictionary*)user;
 -(BOOL)isUserSharingAudio:(NSDictionary*)user;
+-(BOOL)isUserAskingMicrophonePermission:(NSDictionary*)user;
+-(BOOL)isUserAskingCameraPermission:(NSDictionary*)user;
+-(BOOL)isUserAskingScreenPermission:(NSDictionary*)user;
+-(BOOL)isUserAskingPermission:(NSDictionary*)user;
 @end

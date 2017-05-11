@@ -71,6 +71,8 @@
         <source-file src="src/ios/TWICHangoutManager.m" />
         <header-file src="src/ios/TWICAlertViewController.h" />
         <source-file src="src/ios/TWICAlertViewController.m" />
+        <header-file src="src/ios/TWICAlertsViewController.h" />
+        <source-file src="src/ios/TWICAlertsViewController.m" />
         <!--resources files-->
         <resource-file src="src/ios/Resources/TWICCordovaPlugin.storyboard" />
         <resource-file src="src/ios/Resources/TWICMenuAccordionHeaderView.xib" />

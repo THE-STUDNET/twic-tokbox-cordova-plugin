@@ -39,6 +39,7 @@
 #define NOTIFICATION_USER_CAMERA_REQUESTED                @"tok_user_camera_request"
 #define TWIC_NOTIFICATION_PUBLISHER_DESTROYED             @"tok_publisher_destroyed"
 #define TWIC_NOTIFICATION_PUBLISHER_PUBLISHING            @"tok_publisher_publishing"
+#define TWIC_NOTIFICATION_USER_ASK_SCREEN_AUTHORIZATION   @"tok_user_askscreen_authorization"
 
 //TWICPlaftform
 #define ERROR_DOMAIN                    @"com.twicplatform.error"
