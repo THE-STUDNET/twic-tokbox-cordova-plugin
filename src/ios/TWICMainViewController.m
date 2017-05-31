@@ -72,6 +72,10 @@
     
     [NOTIFICATION_CENTER addObserver:self selector:@selector(sessionConnected:) name:TWIC_NOTIFICATION_SESSION_CONNECTED object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(sessionDisconnected:) name:TWIC_NOTIFICATION_SESSION_DISCONNECTED object:nil];
+    
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(archivingStarted:) name:TWIC_NOTIFICATION_SESSION_ARCHIVE_STARTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(archivingStopped:) name:TWIC_NOTIFICATION_SESSION_ARCHIVE_STOPPED object:nil];
+    
     [NOTIFICATION_CENTER addObserver:self selector:@selector(subscriberConnected:) name:TWIC_NOTIFICATION_SUBSCRIBER_CONNECTED object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(subscriberDisconnected:) name:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:nil];
     
@@ -126,6 +130,8 @@
     self.disconnectButton.tintColor = [UIColor whiteColor];
     self.usersButton.tintColor = [UIColor whiteColor];
     self.sendButton.tintColor = [UIColor whiteColor];
+    
+    [self.recordButton setImage:[UIImage imageNamed:[TWICTokClient sharedInstance].archiving?@"record":@"unrecord"] forState:UIControlStateNormal];
     
     [self configureView:self.disconnectButton];
     [self configureView:self.usersButton];
@@ -266,10 +272,6 @@
     [self presentViewController:navVC animated:YES completion:nil];
 }
 
-- (IBAction)record:(id)sender {
-    
-}
-
 - (IBAction)disconnect:(id)sender {
     if(self.backButton)
     {
@@ -321,6 +323,12 @@
         //display request or publishing buttons
         self.currentUserButtonsView.hidden = NO;
     }
+    
+    //can archive
+    self.recordButton.enabled = [[TWICHangoutManager sharedInstance]canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionArchive];
+    
+    //archiving
+    [self.recordButton setImage:[UIImage imageNamed:[TWICTokClient sharedInstance].archiving?@"record":@"unrecord"] forState:UIControlStateNormal];
 }
 
 -(void)sessionDisconnected:(NSNotification *)notification
@@ -339,6 +347,22 @@
     }
 }
 
+-(void)subscriberDisconnected:(NSNotification *)notification{
+    if(self.twicStreamGridViewController)
+    {
+        [self.twicStreamGridViewController refresh];
+    }
+    else
+    {
+        //check if it's the current stream ?
+        OTSubscriber *subscriber = notification.object;
+        if([subscriber.stream.streamId isEqualToString:self.currentSubcriberStreamID]){
+            [self disconnect:nil];
+        }
+    }
+}
+
+#pragma mark - Tok Publisher Management
 -(void)publisherDestroyed:(NSNotification *)notification{
     
     if(self.twicStreamGridViewController)
@@ -359,20 +383,15 @@
     self.currentUserButtonsView.hidden = YES;
 }
 
--(void)subscriberDisconnected:(NSNotification *)notification{
-    if(self.twicStreamGridViewController)
-    {
-        [self.twicStreamGridViewController refresh];
-    }
-    else
-    {
-        //check if it's the current stream ?
-        OTSubscriber *subscriber = notification.object;
-        if([subscriber.stream.streamId isEqualToString:self.currentSubcriberStreamID]){
-            [self disconnect:nil];
-        }
-    }
+#pragma mark - Tok Archiving Management
+-(void)archivingStarted:(NSNotification*)notification{
+    [self.recordButton setImage:[UIImage imageNamed:@"record"] forState:UIControlStateNormal];
 }
+
+-(void)archivingStopped:(NSNotification*)notification{
+    [self.recordButton setImage:[UIImage imageNamed:@"unrecord"] forState:UIControlStateNormal];
+}
+
 
 #pragma mark - Tok Users Management
 -(void)userConnected:(NSNotification *)notification{
@@ -636,7 +655,7 @@
         //signal everybody
         [[TWICTokClient sharedInstance]broadcastSignal:SignalTypeCameraAuthorization];
         //update current user
-        [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:[TWICUserManager sharedInstance].currentUser[UserIdKey] toValue:@(1)];
+        [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:[TWICUserManager sharedInstance].currentUser[UserIdKey] toValue:YES];
     }
 }
 
@@ -650,7 +669,7 @@
         //signal everybody
         [[TWICTokClient sharedInstance]broadcastSignal:SignalTypeMicrophoneAuthorization];
         //update currentuser
-        [[TWICUserManager sharedInstance]setAskPermission:UserAskMicrophone forUserID:[TWICUserManager sharedInstance].currentUser[UserIdKey] toValue:@(1)];
+        [[TWICUserManager sharedInstance]setAskPermission:UserAskMicrophone forUserID:[TWICUserManager sharedInstance].currentUser[UserIdKey] toValue:YES];
     }
 }
 
@@ -703,5 +722,28 @@
             break;
     }
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - Archive actions
+- (IBAction)record:(id)sender {
+    if([[TWICHangoutManager sharedInstance]canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionArchive]){
+        if([TWICTokClient sharedInstance].archiving){
+            //stop archiving
+            [[TWICAPIClient sharedInstance] registerEventName:HangoutEventStopRecord
+                                              completionBlock:^{}
+                                                 failureBlock:^(NSError *error) {}];
+            //update ui immediately
+            [self.recordButton setImage:[UIImage imageNamed:@"unrecord"] forState:UIControlStateNormal];
+        }else{
+            //start archiving
+            //stop archiving
+            [[TWICAPIClient sharedInstance] registerEventName:HangoutEventStartRecord
+                                              completionBlock:^{}
+                                                 failureBlock:^(NSError *error) {}];
+            
+            //update ui immediately
+            [self.recordButton setImage:[UIImage imageNamed:@"record"] forState:UIControlStateNormal];
+        }
+    }
 }
 @end

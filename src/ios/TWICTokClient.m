@@ -22,6 +22,7 @@
 @property (strong, nonatomic) NSMutableArray      *backgroundConnectedStreams;
 
 @property (strong, nonatomic) OTSession* session;
+@property (strong, nonatomic) NSString *archiveId;
 @end
 
 @implementation TWICTokClient
@@ -408,21 +409,39 @@
     return error;
 }
 
+#pragma mark - Archive events
 - (void)session:(nonnull OTSession*)session archiveStartedWithId:(nonnull NSString*)archiveId name:(NSString* _Nullable)name
 {
+    self.archiveId = archiveId;
+    
     //raise event to update ui
+    [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SESSION_ARCHIVE_STARTED object:archiveId];
 }
 
 - (void)session:(nonnull OTSession*)session archiveStoppedWithId:(nonnull NSString *)archiveId
 {
+    self.archiveId = nil;
+    
     //raise event to update ui
+    [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SESSION_ARCHIVE_STOPPED object:archiveId];
 }
 
+-(BOOL)archiving{
+    return self.archiveId!=nil;
+}
+
+-(void)startRecord{
+    
+}
+
+-(void)stopRecord{
+    
+}
 
 #pragma mark - Publisher events
 -(void)publisher:(OTPublisherKit *)publisher didFailWithError:(OTError *)error
 {
-    [self showAlert:[NSString stringWithFormat:@"There was an error publishing."]];
+    [self showAlert:[NSString stringWithFormat:@"There was an error publishing: %@",error.localizedDescription]];
     [self endCallAction:nil];
 }
 
@@ -431,6 +450,7 @@
     // create self subscriber
     //[self createSubscriber:stream];
 }
+
 #pragma mark - Subscriber events
 - (void)subscriberDidConnectToStream:(OTSubscriberKit *)subscriber
 {
@@ -446,7 +466,7 @@
 
 - (void)subscriber:(OTSubscriber *)subscriber didFailWithError:(OTError *)error
 {
-    NSLog(@"subscriber could not connect to stream");
+    [self showAlert:[NSString stringWithFormat:@"The subscriber could not connect to stream: %@",error.localizedDescription]];
 }
 
 - (void)createSubscriber:(OTStream *)stream
@@ -521,7 +541,7 @@
 {
     // show alertview on main UI
     dispatch_async(dispatch_get_main_queue(), ^{
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Message from video session"
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil
                                                         message:string
                                                        delegate:self
                                               cancelButtonTitle:@"OK"

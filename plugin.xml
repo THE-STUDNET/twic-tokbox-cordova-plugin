@@ -104,6 +104,9 @@
         <resource-file src="src/ios/Resources/record.png" />
         <resource-file src="src/ios/Resources/record@2x.png" />
         <resource-file src="src/ios/Resources/record@3x.png" />
+        <resource-file src="src/ios/Resources/unrecord.png" />
+        <resource-file src="src/ios/Resources/unrecord@2x.png" />
+        <resource-file src="src/ios/Resources/unrecord@3x.png" />
         <resource-file src="src/ios/Resources/rotate.png" />
         <resource-file src="src/ios/Resources/rotate@2x.png" />
         <resource-file src="src/ios/Resources/rotate@3x.png" />
