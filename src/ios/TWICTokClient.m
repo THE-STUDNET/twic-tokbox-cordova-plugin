@@ -430,14 +430,6 @@
     return self.archiveId!=nil;
 }
 
--(void)startRecord{
-    
-}
-
--(void)stopRecord{
-    
-}
-
 #pragma mark - Publisher events
 -(void)publisher:(OTPublisherKit *)publisher didFailWithError:(OTError *)error
 {
@@ -544,7 +536,7 @@
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil
                                                         message:string
                                                        delegate:self
-                                              cancelButtonTitle:@"OK"
+                                              cancelButtonTitle:@"Ok"
                                               otherButtonTitles:nil];
         [alert show];
     });

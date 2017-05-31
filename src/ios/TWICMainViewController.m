@@ -20,6 +20,7 @@
 #import "TWICHangoutManager.h"
 #import "UIImageView+AFNetworking.h"
 #import "TWICAlertsViewController.h"
+#import "TWICSettingsManager.h"
 
 #define PUBLISHER_VIEW_FRAME_WIDTH      120
 #define PUBLISHER_VIEW_FRAME_HEIGHT     140
@@ -444,6 +445,8 @@
     [UIView animateWithDuration:0.3/1.5 animations:^{
         self.popupViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.1, 1.1);
         self.blurView.alpha = 1;
+        //resign first responder if exist
+        [self.view endEditing:YES];
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:0.3/2 animations:^{
             self.popupViewController.view.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.9, 0.9);
@@ -728,21 +731,38 @@
 - (IBAction)record:(id)sender {
     if([[TWICHangoutManager sharedInstance]canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionArchive]){
         if([TWICTokClient sharedInstance].archiving){
+            //update ui immediately
+            [self.recordButton setImage:[UIImage imageNamed:@"unrecord"] forState:UIControlStateNormal];
             //stop archiving
+            [[TWICAPIClient sharedInstance]stopArchivingHangoutWithID:[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]
+                                                      completionBlock:^{}
+                                                         failureBlock:^(NSError *error)
+            {
+                //rollback the ui
+                [self.recordButton setImage:[UIImage imageNamed:@"record"] forState:UIControlStateNormal];
+                [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+            }];
+            
             [[TWICAPIClient sharedInstance] registerEventName:HangoutEventStopRecord
                                               completionBlock:^{}
                                                  failureBlock:^(NSError *error) {}];
-            //update ui immediately
-            [self.recordButton setImage:[UIImage imageNamed:@"unrecord"] forState:UIControlStateNormal];
         }else{
+            //update ui immediately
+            [self.recordButton setImage:[UIImage imageNamed:@"record"] forState:UIControlStateNormal];
             //start archiving
+            [[TWICAPIClient sharedInstance]startArchivingHangoutWithID:[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]
+                                                      completionBlock:^{}
+                                                         failureBlock:^(NSError *error)
+             {
+                 //update ui immediately
+                 [self.recordButton setImage:[UIImage imageNamed:@"unrecord"] forState:UIControlStateNormal];
+                 [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+             }];
+
             //stop archiving
             [[TWICAPIClient sharedInstance] registerEventName:HangoutEventStartRecord
                                               completionBlock:^{}
                                                  failureBlock:^(NSError *error) {}];
-            
-            //update ui immediately
-            [self.recordButton setImage:[UIImage imageNamed:@"record"] forState:UIControlStateNormal];
         }
     }
 }

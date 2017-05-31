@@ -35,6 +35,7 @@
         optionData[HangoutActionAutoPublishCamera] = @(YES);
         optionData[HangoutActionAutoPublishMicrophone] = @(YES);
         optionData[HangoutActionPublish]=@(YES);
+        optionData[HangoutActionArchive]=@(YES);
         NSMutableDictionary *debugData = [data mutableCopy];
         debugData[HangoutOptionsKey] = optionData;
         self.hangoutData = debugData;

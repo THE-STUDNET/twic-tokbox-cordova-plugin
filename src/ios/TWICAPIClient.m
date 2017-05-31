@@ -17,6 +17,8 @@ static NSString *TWICConversationGetPath = @"conversation.get";
 static NSString *TWICConversationGetTokenPath = @"conversation.getToken";
 static NSString *TWICUserGetPath = @"user.get";
 static NSString *TWICActivityAddPath = @"activity.add";
+static NSString *TWICStartArchivePath = @"videoarchive.startRecord";
+static NSString *TWICStopArchivePath = @"videoarchive.stopRecord";
 
 @interface TWICAPIClient()
 @property (nonatomic, strong) NSDateFormatter *serverDateFormatter;
@@ -220,5 +222,28 @@ static NSString *TWICActivityAddPath = @"activity.add";
                failureBlock:failureBlock];
 }
 
+-(void)startArchivingHangoutWithID:(NSString *)hangoutID
+                   completionBlock:(void(^)())completionBlock
+                      failureBlock:(void (^)(NSError *error))failureBlock
+{
+    return [self jsonRequestForMethodName:TWICStartArchivePath
+                         methodParameters:@{@"conversation_id":hangoutID}
+            completionBlock:^(NSDictionary *data){
+                completionBlock();
+            }
+                             failureBlock:failureBlock];
+}
+
+-(void)stopArchivingHangoutWithID:(NSString *)hangoutID
+                  completionBlock:(void(^)())completionBlock
+                     failureBlock:(void (^)(NSError *error))failureBlock
+{
+    return [self jsonRequestForMethodName:TWICStopArchivePath
+                         methodParameters:@{@"conversation_id":hangoutID}
+                          completionBlock:^(NSDictionary *data){
+                              completionBlock();
+                          }
+                             failureBlock:failureBlock];
+}
 
 @end
