@@ -21,17 +21,18 @@ static NSString *HangoutActionAskScreen             = @"askScreen";
 static NSString *HangoutActionForceMute             = @"forceMute";
 static NSString *HangoutActionForceUnpusblish       = @"forceUnpublish";
 static NSString *HangoutActionKick                  = @"kick";
+static NSString *HangoutActionRecord                = @"record";
+static NSString *HanngoutOptionNbUserAutoRecord     = @"nb_user_autorecord";
 
 @interface TWICHangoutManager : NSObject
-
 + (TWICHangoutManager *)sharedInstance;
 
 @property (nonatomic, strong) NSDictionary *hangoutData;
 
 -(void)configureHangoutDataWithCompletionBlock:(void(^)())completionBlock
                                   failureBlock:(void (^)(NSError *error))failureBlock;
-
 -(BOOL)canUser:(NSDictionary *)user doAction:(NSString *)actionName;
+-(id)optionForKey:(NSString *)optionKey;
 @end
 
 /*

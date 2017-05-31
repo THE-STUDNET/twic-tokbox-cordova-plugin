@@ -35,7 +35,6 @@
         optionData[HangoutActionAutoPublishCamera] = @(YES);
         optionData[HangoutActionAutoPublishMicrophone] = @(YES);
         optionData[HangoutActionPublish]=@(YES);
-        optionData[HangoutActionArchive]=@(YES);
         NSMutableDictionary *debugData = [data mutableCopy];
         debugData[HangoutOptionsKey] = optionData;
         self.hangoutData = debugData;
@@ -58,5 +57,9 @@
         return [option containsValueForKey:userRoleKey];
     }
     return [option boolValue];
+}
+
+-(id)optionForKey:(NSString *)optionKey{
+    return [self.hangoutData[HangoutOptionsKey] valueForKey:optionKey];
 }
 @end

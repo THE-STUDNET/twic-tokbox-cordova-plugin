@@ -182,8 +182,7 @@
 
 - (void)session:(OTSession *)session connectionCreated:(OTConnection *)connection
 {
-    //connection du user
-    
+    //user management
     //check if the user is in the list of existing users
     NSData *data = [connection.data dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
@@ -202,6 +201,7 @@
          {
              user = [[TWICUserManager sharedInstance] userWithUserID:dataJson[UserIdKey]];
              [self processUserConnected:user connection:connection];
+             [self processAutoRecordManagement];
          }
                                                failureBlock:^(NSError *error) {}];
     }
@@ -209,6 +209,31 @@
     {
         if([[TWICUserManager sharedInstance]isCurrentUser:user] == NO){
             [self processUserConnected:user connection:connection];
+            [self processAutoRecordManagement];
+        }
+    }
+}
+
+-(void)processAutoRecordManagement{
+    //recording management
+    if([[TWICHangoutManager sharedInstance]canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionRecord]){
+        //need to check if the nb or sutorecord user is the same has the number of connected users
+        NSNumber *nbAutoRecordUsers = [[TWICHangoutManager sharedInstance] optionForKey:HanngoutOptionNbUserAutoRecord];
+        BOOL startRecording=NO;
+        if(nbAutoRecordUsers){
+            if([nbAutoRecordUsers intValue]<=[TWICUserManager sharedInstance].connectedUsersCount){
+                startRecording = YES;
+            }
+        }else{
+            startRecording = YES;
+        }
+        //start the record
+        if(startRecording)
+        {
+            [[TWICAPIClient sharedInstance]startArchivingHangoutWithID:[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]
+                                                       completionBlock:^{}
+                                                          failureBlock:^(NSError *error) {}
+             ];
         }
     }
 }
