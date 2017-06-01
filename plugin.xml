@@ -76,6 +76,7 @@
         <!--resources files-->
         <resource-file src="src/ios/Resources/TWICCordovaPlugin.storyboard" />
         <resource-file src="src/ios/Resources/TWICMenuAccordionHeaderView.xib" />
+        <resource-file src="/src/ios/Resources/GoogleService-Info.plist" />
         <!--media files-->
         <resource-file src="src/ios/Resources/camera.png" />
         <resource-file src="src/ios/Resources/camera@2x.png" />

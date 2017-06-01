@@ -15,18 +15,6 @@
 //init with embedded values
 -(void)configure;
 
-//init with custom values
-- (void)configureWithGoogleAppID:(NSString *)googleAppID
-                        bundleID:(NSString *)bundleID
-                     GCMSenderID:(NSString *)GCMSenderID
-                          APIKey:(NSString *)APIKey
-                        clientID:(NSString *)clientID
-                      trackingID:(NSString *)trackingID
-                 androidClientID:(NSString *)androidClientID
-                     databaseURL:(NSString *)databaseURL
-                   storageBucket:(NSString *)storageBucket
-               deepLinkURLScheme:(NSString *)deepLinkURLScheme;
-
 -(void)registerConnectedUser;
 -(void)unregisterConnectedUser;
 
