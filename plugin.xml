@@ -158,6 +158,7 @@
         <!-- Cocoapods -->
         <pods-config ios-min-version="9.0" use-frameworks="true"/>
         <pod id="Firebase/Database" version="~> 3.1" />
+        <pod id="Firebase/Auth" />
         <pod id="SVProgressHUD" />
         <pod id="OpenTok" version="~> 2.10"/>
         <pod id="GONMacros" />

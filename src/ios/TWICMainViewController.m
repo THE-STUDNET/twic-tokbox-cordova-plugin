@@ -22,10 +22,12 @@
 #import "TWICAlertsViewController.h"
 #import "TWICSettingsManager.h"
 
-#define PUBLISHER_VIEW_FRAME_WIDTH      120
-#define PUBLISHER_VIEW_FRAME_HEIGHT     140
-#define PUBLISHER_VIEW_FRAME_DEFAULT_Y  10
-#define PUBLISHER_VIEW_FRAME_DEFAULT_X  -10
+#define PUBLISHER_VIEW_FRAME_WIDTH     120
+#define PUBLISHER_VIEW_FRAME_HEIGHT    140
+#define PUBLISHER_VIEW_FRAME_DEFAULT_Y 10
+#define PUBLISHER_VIEW_FRAME_DEFAULT_X -10
+
+#define USER_BUTTONS_DEFAULT_TOP_CONSTRAINT 8
 
 @interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate,TWICAlertViewControllerDelegate,TWICMenuViewControllerDelegate,TWICAlertsViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIView             *headerView;
@@ -171,13 +173,13 @@
     //publish or requests buttons
     if([[TWICHangoutManager sharedInstance] canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionPublish])
     {
-        self.currentUserButtonsViewTopConstraint.constant = -8;
+        self.currentUserButtonsViewTopConstraint.constant = -USER_BUTTONS_DEFAULT_TOP_CONSTRAINT;
         [self.currentUserMicrophoneButton setImage:[UIImage imageNamed:@"publish-microphone"] forState:UIControlStateNormal];
         [self.currentUserCameraButton setImage:[UIImage imageNamed:@"publish-camera"] forState:UIControlStateNormal];
     }
     else
     {
-        self.currentUserButtonsViewTopConstraint.constant = 8;
+        self.currentUserButtonsViewTopConstraint.constant = USER_BUTTONS_DEFAULT_TOP_CONSTRAINT;
         [self.currentUserMicrophoneButton setImage:[UIImage imageNamed:@"request-microphone"] forState:UIControlStateNormal];
         [self.currentUserCameraButton setImage:[UIImage imageNamed:@"request-camera"] forState:UIControlStateNormal];
     }
@@ -220,6 +222,10 @@
         [TWICTokClient sharedInstance].publisher.view.clipsToBounds = YES;
         UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(publisherTouched:)];
         [[TWICTokClient sharedInstance].publisher.view addGestureRecognizer:tapAction];
+        
+        
+        //increase the height constraint for buttons
+        self.currentUserButtonsViewTopConstraint.constant = PUBLISHER_VIEW_FRAME_HEIGHT + PUBLISHER_VIEW_FRAME_DEFAULT_Y;
     }
 }
 
@@ -284,6 +290,11 @@
         
         //remove the publisher view
         [[TWICTokClient sharedInstance].publisher.view removeFromSuperview];
+        
+        //recalculate the good constraints for action buttons
+        if(self.currentUserButtonsView){
+            self.currentUserButtonsViewTopConstraint.constant = USER_BUTTONS_DEFAULT_TOP_CONSTRAINT;
+        }
 
         //add grid
         [self addStreamGridViewController];

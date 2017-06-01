@@ -12,6 +12,7 @@
 #import "TWICAPIClient.h"
 #import "TWICUserManager.h"
 #import "TWICHangoutManager.h"
+#import "TWICFirebaseClient.h"
 
 @interface TWICTokClient()<OTSessionDelegate,OTPublisherKitDelegate,OTSubscriberKitDelegate>
 
@@ -157,11 +158,17 @@
                                      completionBlock:^() {}
                                         failureBlock:^(NSError *error) {}];
     
+    //firebase write
+    [[TWICFirebaseClient sharedInstance]registerConnectedUser];
+    
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SESSION_CONNECTED object:session];
 }
 
 - (void)sessionDidDisconnect:(OTSession*)session
 {
+    //firebase write
+    [[TWICFirebaseClient sharedInstance]unregisterConnectedUser];
+    
     // remove all subscriber views from video container
     for (int i = 0; i < [self.allConnectionsIds count]; i++)
     {
@@ -216,12 +223,12 @@
 
 -(void)processAutoRecordManagement{
     //recording management
-    if([[TWICHangoutManager sharedInstance]canUser:[TWICUserManager sharedInstance].currentUser doAction:HangoutActionRecord]){
+    if([[[TWICHangoutManager sharedInstance]optionForKey:HangoutOptionRecord]boolValue]){
         //need to check if the nb or sutorecord user is the same has the number of connected users
-        NSNumber *nbAutoRecordUsers = [[TWICHangoutManager sharedInstance] optionForKey:HanngoutOptionNbUserAutoRecord];
+        NSNumber *nbAutoRecordUsers = [[TWICHangoutManager sharedInstance] optionForKey:HangoutOptionNbUserAutoRecord];
         BOOL startRecording=NO;
         if(nbAutoRecordUsers){
-            if([nbAutoRecordUsers intValue]<=[TWICUserManager sharedInstance].connectedUsersCount){
+            if([nbAutoRecordUsers intValue]<=[TWICUserManager sharedInstance].connectedUsersCount-1){//-1 because of me !
                 startRecording = YES;
             }
         }else{

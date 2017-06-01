@@ -10,6 +10,10 @@
 
 
 static NSString *HangoutOptionsKey = @"options";
+static NSString *HangoutRulesKey = @"rules";
+
+static NSString *HangoutOptionRecord                = @"record";
+static NSString *HangoutOptionNbUserAutoRecord      = @"nb_user_autorecord";
 
 static NSString *HangoutActionAutoPublishCamera     = @"autoPublishCamera";
 static NSString *HangoutActionAutoPublishMicrophone = @"autoPublishMicrophone";
@@ -21,8 +25,6 @@ static NSString *HangoutActionAskScreen             = @"askScreen";
 static NSString *HangoutActionForceMute             = @"forceMute";
 static NSString *HangoutActionForceUnpusblish       = @"forceUnpublish";
 static NSString *HangoutActionKick                  = @"kick";
-static NSString *HangoutActionRecord                = @"record";
-static NSString *HanngoutOptionNbUserAutoRecord     = @"nb_user_autorecord";
 
 @interface TWICHangoutManager : NSObject
 + (TWICHangoutManager *)sharedInstance;

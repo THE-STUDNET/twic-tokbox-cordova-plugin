@@ -27,6 +27,7 @@
                    storageBucket:(NSString *)storageBucket
                deepLinkURLScheme:(NSString *)deepLinkURLScheme;
 
--(void)writeStringValue:(NSString *)stringValue;
+-(void)registerConnectedUser;
+-(void)unregisterConnectedUser;
 
 @end

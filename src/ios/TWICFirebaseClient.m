@@ -10,11 +10,14 @@
 #import <FirebaseDatabase/FirebaseDatabase.h>
 #import <FirebaseCore/FirebaseCore.h>
 #import "TWICSettingsManager.h"
+#import "TWICHangoutManager.h"
+#import "TWICUserManager.h"
 
 @interface TWICFirebaseClient()
 
 //the database
 @property (strong, nonatomic) FIRDatabaseReference *databaseReference;
+@property (strong, nonatomic) FIRDatabaseReference *connectedUserReference;
 
 @end
 
@@ -74,15 +77,29 @@ static NSString *_ClientID = @"1027767631440-vdq1lfsj0kop3lp7fr1stc53ubof7tma.ap
                                                deepLinkURLScheme:deepLinkURLScheme];
     //configure the app
     [FIRApp configureWithOptions:options];
+//    [[FIRAuth auth] signInWithCustomToken:customToken
+//                               completion:^(FIRUser *_Nullable user, NSError *_Nullable error) {
+//                                   // ...
+//                               }];
 
     //retrieve the database
-    self.databaseReference = [[FIRDatabase database]referenceWithPath:@"messageiOS"];
+    self.databaseReference = [[FIRDatabase database] referenceWithPath:[NSString stringWithFormat:@"hangouts/%@/connecteds",[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]]];//get hangout id
 }
 
--(void)writeStringValue:(NSString *)stringValue
+-(void)registerConnectedUser
 {
-
-    [self.databaseReference setValue:stringValue];
+    self.connectedUserReference = [self.databaseReference childByAutoId];
+    //store the reference
+    [self.connectedUserReference setValue:[TWICUserManager sharedInstance].currentUser[UserIdKey]];
+    //add guard in case of crash or other things
+    [self.connectedUserReference onDisconnectRemoveValue];
 }
-
+-(void)unregisterConnectedUser
+{
+    //remove the value
+    [self.connectedUserReference removeValue];
+    //cancel guard
+    [self.connectedUserReference cancelDisconnectOperations];
+    self.connectedUserReference = nil;
+}
 @end

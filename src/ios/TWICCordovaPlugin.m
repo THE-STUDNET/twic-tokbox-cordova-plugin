@@ -67,8 +67,7 @@
     }];
 
     //firebase configuration
-    //[[TWICFirebaseClient sharedInstance] configure];
-    //[[TWICFirebaseClient sharedInstance] writeStringValue:[NSString stringWithFormat:@"Hello world from iOS %@",[NSDate date]]];
+    [[TWICFirebaseClient sharedInstance] configure];
 
     //socketio
     //[TWICSocketIOClient sharedInstance].delegate = self;

@@ -31,12 +31,14 @@
     [[TWICAPIClient sharedInstance]hangoutDataWithCompletionBlock:^(NSDictionary *data)
     {
 #warning - REMOVE THAT ON RELEASE !!!!! => REMOVE AUTO PUBLISH KEY
-        NSMutableDictionary *optionData = [data[HangoutOptionsKey] mutableCopy];
-        optionData[HangoutActionAutoPublishCamera] = @(YES);
-        optionData[HangoutActionAutoPublishMicrophone] = @(YES);
-        optionData[HangoutActionPublish]=@(YES);
+        NSMutableDictionary *optionsData = [data[HangoutOptionsKey] mutableCopy];
+        NSMutableDictionary *rulesData = [optionsData[HangoutRulesKey] mutableCopy];
+        rulesData[HangoutActionAutoPublishCamera] = @(YES);
+        rulesData[HangoutActionAutoPublishMicrophone] = @(YES);
+        rulesData[HangoutActionPublish]=@(YES);
         NSMutableDictionary *debugData = [data mutableCopy];
-        debugData[HangoutOptionsKey] = optionData;
+        optionsData[HangoutRulesKey] = rulesData;
+        debugData[HangoutOptionsKey] = optionsData;
         self.hangoutData = debugData;
         completionBlock();
     }
@@ -52,7 +54,7 @@
     NSString *userRoleKey = [user[UserRolesKey]firstObject];
     
     //revrieve action
-    id option = self.hangoutData[HangoutOptionsKey][actionName];
+    id option = self.hangoutData[HangoutOptionsKey][HangoutRulesKey][actionName];
     if([option isKindOfClass:[NSDictionary class]]){
         return [option containsValueForKey:userRoleKey];
     }
