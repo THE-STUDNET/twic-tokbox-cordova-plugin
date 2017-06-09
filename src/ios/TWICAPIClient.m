@@ -19,6 +19,7 @@ static NSString *TWICUserGetPath = @"user.get";
 static NSString *TWICActivityAddPath = @"activity.add";
 static NSString *TWICStartArchivePath = @"videoarchive.startRecord";
 static NSString *TWICStopArchivePath = @"videoarchive.stopRecord";
+static NSString *TWICMessageListPath = @"message.getList";
 
 @interface TWICAPIClient()
 @property (nonatomic, strong) NSDateFormatter *serverDateFormatter;
@@ -152,10 +153,11 @@ static NSString *TWICStopArchivePath = @"videoarchive.stopRecord";
          completionBlock:(void(^)())completionBlock
             failureBlock:(void (^)(NSError *error))failureBlock
 {
-    [self jsonRequestForMethodName:TWICActivityAddPath methodParameters:@{@"activities":@[@{@"date":[self.serverDateFormatter stringFromDate:[NSDate date]],
-                                                                                            @"event":eventName,
-                                                                                            @"object":@{@"id":hangoutId,
-                                                                                                        @"name":@"hangout"}}]}
+    [self jsonRequestForMethodName:TWICActivityAddPath
+                  methodParameters:@{@"activities":@[@{@"date":[self.serverDateFormatter stringFromDate:[NSDate date]],
+                                                       @"event":eventName,
+                                                       @"object":@{@"id":hangoutId,
+                                                                   @"name":@"hangout"}}]}
                    completionBlock:^(NSDictionary *data)
      {
          completionBlock();
@@ -246,4 +248,17 @@ static NSString *TWICStopArchivePath = @"videoarchive.stopRecord";
                              failureBlock:failureBlock];
 }
 
+-(void)listMessageForHangoutWithID:(NSString *)hangoutID
+                   completionBlock:(void(^)(NSArray *messages))completionBlock
+                      failureBlock:(void (^)(NSError *error))failureBlock
+{
+    return [self jsonRequestForMethodName:TWICMessageListPath
+                         methodParameters:@{@"conversation_id":hangoutID,
+                                            @"filter":@{@"o":@{@"message.id":@"DESC"}}}
+                          completionBlock:^(NSDictionary *data)
+            {
+                completionBlock(data[@"list"]);
+            }
+                             failureBlock:failureBlock];
+}
 @end

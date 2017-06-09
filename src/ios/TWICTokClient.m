@@ -614,6 +614,18 @@
     return nil;
 }
 
+-(NSDictionary *)userForSubscriberStreamID:(NSString *)streamID{
+    OTSubscriber *subscriber = self.allSubscribers[streamID];
+    if(subscriber){
+        NSData *data = [subscriber.stream.connection.data dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
+                                                                 options:NSJSONReadingMutableContainers
+                                                                   error:nil];
+        return [[TWICUserManager sharedInstance]userWithUserID:dataJson[UserIdKey]];
+    }
+    return nil;
+}
+
 -(void)kickUser:(NSDictionary *)user
 {
     [self sendSignal:SignalTypeKickUser toUser:user];

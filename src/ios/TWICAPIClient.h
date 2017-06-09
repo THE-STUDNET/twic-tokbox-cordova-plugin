@@ -53,4 +53,9 @@ static NSString *HangoutEventLaunchUserScreen     = @"hangout.launchuserscreen";
 -(void)stopArchivingHangoutWithID:(NSString *)hangoutID
                   completionBlock:(void(^)())completionBlock
                      failureBlock:(void (^)(NSError *error))failureBlock;
+
+-(void)listMessageForHangoutWithID:(NSString *)hangoutID
+                   completionBlock:(void(^)(NSArray *messages))completionBlock
+                      failureBlock:(void (^)(NSError *error))failureBlock;
+
 @end

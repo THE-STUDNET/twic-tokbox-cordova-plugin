@@ -55,7 +55,7 @@
 {
     self.user = user;
     [self.avatarImageView setImageWithURL:[NSURL URLWithString:[[TWICUserManager sharedInstance]avatarURLStringForUser:user]]];
-    self.displayNameLabel.text = [NSString stringWithFormat:@"%@ %@",user[UserFirstnameKey],user[UserLastnameKey]];
+    self.displayNameLabel.text = [[TWICUserManager sharedInstance]displayNameForUser:user];
     if([user[UserConnectionStateKey]integerValue] == UserConnectionStateConnected){
         self.connectionStatusView.backgroundColor = TWIC_COLOR_GREEN;
     }else{

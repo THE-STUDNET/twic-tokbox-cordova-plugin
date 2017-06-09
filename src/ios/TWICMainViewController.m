@@ -21,6 +21,8 @@
 #import "UIImageView+AFNetworking.h"
 #import "TWICAlertsViewController.h"
 #import "TWICSettingsManager.h"
+#import "TWICSocketIOClient.h"
+#import "TWICChatTableViewController.h"
 
 #define PUBLISHER_VIEW_FRAME_WIDTH     120
 #define PUBLISHER_VIEW_FRAME_HEIGHT    140
@@ -29,7 +31,9 @@
 
 #define USER_BUTTONS_DEFAULT_TOP_CONSTRAINT 8
 
-@interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate,TWICAlertViewControllerDelegate,TWICMenuViewControllerDelegate,TWICAlertsViewControllerDelegate>
+#define FOOTER_VIEW_DEFAULT_HEIGHT      112
+
+@interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate,TWICAlertViewControllerDelegate,TWICMenuViewControllerDelegate,TWICAlertsViewControllerDelegate,TWICSocketIOClientDelegate>
 @property (weak, nonatomic) IBOutlet UIView             *headerView;
 @property (weak, nonatomic) IBOutlet UIView             *supportView;
 @property (weak, nonatomic) IBOutlet UIView             *footerView;
@@ -42,7 +46,8 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomConstraint;
 @property (weak, nonatomic) IBOutlet UIImageView        *speakingImageView;
 @property (weak, nonatomic) IBOutlet UILabel            *currentSpeakerDisplayName;
-
+@property (weak, nonatomic) IBOutlet UIButton           *chatButton;
+@property (weak, nonatomic) IBOutlet UIView             *chatNewMessageView;
 
 @property (nonatomic, strong) TWICStreamGridViewController *twicStreamGridViewController;
 @property (nonatomic, copy  ) NSString                     *currentSubcriberStreamID;
@@ -63,6 +68,12 @@
 @property (weak, nonatomic) IBOutlet UIImageView *userAuthorizationAvatarImageView;
 @property (weak, nonatomic) IBOutlet UIButton    *userAuthorizationButton;
 @property (weak, nonatomic) IBOutlet UIImageView *userAuthorizationTypeImageView;
+
+//chat
+@property (weak, nonatomic) TWICChatTableViewController *chatTableViewController;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *footerHeightConstraint;
+@property (weak, nonatomic) IBOutlet UIView *chatContentView;
+
 @end
 
 @implementation TWICMainViewController
@@ -101,6 +112,10 @@
     
     //connect the session
     [[TWICTokClient sharedInstance] connect];
+    
+    //Chat && Socket iO
+    [self configureChatViewController];
+    [TWICSocketIOClient sharedInstance].delegate = self;
 }
 
 -(void)dealloc{
@@ -133,6 +148,7 @@
     self.disconnectButton.tintColor = [UIColor whiteColor];
     self.usersButton.tintColor = [UIColor whiteColor];
     self.sendButton.tintColor = [UIColor whiteColor];
+    self.chatButton.tintColor = [UIColor whiteColor];
     
     [self.recordButton setImage:[UIImage imageNamed:[TWICTokClient sharedInstance].archiving?@"record":@"unrecord"] forState:UIControlStateNormal];
     
@@ -140,6 +156,7 @@
     [self configureView:self.usersButton];
     [self configureView:self.sendButton];
     [self configureView:self.messageTextField];
+    [self configureView:self.chatButton];
     
     self.currentSpeakerDisplayName.textColor = [UIColor whiteColor];
     self.currentSpeakerDisplayName.alpha = TWIC_ALPHA;
@@ -158,6 +175,13 @@
     self.userAuthorizationTypeImageView.backgroundColor = CLEAR_COLOR;
     self.userAuthorizationAvatarImageView.backgroundColor = CLEAR_COLOR;
     self.userAuthorizationAvatarImageView.layer.cornerRadius = self.userAuthorizationAvatarImageView.frame.size.width / 2;
+    
+    self.chatNewMessageView.backgroundColor = TWIC_COLOR_BLUE;
+    self.chatNewMessageView.layer.cornerRadius = self.chatNewMessageView.frame.size.width / 2;
+    self.chatNewMessageView.hidden = YES;
+    self.chatButton.hidden = YES;
+    [self hideChatControls];
+    [self hideChatViewController];
 }
 
 -(void)configureView:(UIView*)view{
@@ -202,6 +226,14 @@
     
     //add publisher view
     [self addPublisherView];
+    
+    //change the current speaker label
+    NSDictionary *user = [[TWICTokClient sharedInstance]userForSubscriberStreamID:subscriberID];
+    if(user){
+        self.currentSpeakerDisplayName.text = [[TWICUserManager sharedInstance]displayNameForUser:user];
+        self.currentSpeakerDisplayName.hidden = NO;
+        self.speakingImageView.hidden = NO;
+    }
 }
 
 -(void)addPublisherView{
@@ -248,6 +280,51 @@
      }];
     [super addChildViewController:self.twicStreamGridViewController];
     [self.twicStreamGridViewController didMoveToParentViewController:self];
+}
+
+-(void)configureChatViewController{
+    self.chatTableViewController = [TWIC_STORYBOARD instantiateViewControllerWithIdentifier:[TWICChatTableViewController description]];
+    [self.chatContentView addSubview:self.chatTableViewController.view];
+    [self.chatTableViewController.view mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.chatContentView.mas_top);
+        make.bottom.equalTo(self.chatContentView.mas_bottom);
+        make.left.equalTo(self.chatContentView.mas_left);
+        make.right.equalTo(self.chatContentView.mas_right);
+    }];
+    [self.chatTableViewController didMoveToParentViewController:self];
+    [self addChildViewController:self.chatTableViewController];
+    
+    [[TWICAPIClient sharedInstance]listMessageForHangoutWithID:[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]
+                                               completionBlock:^(NSArray *messages) {
+                                                   if(messages.count > 0)
+                                                   {
+                                                       [self showChatControls];
+                                                       [self.chatTableViewController configureWithMessages:messages];
+                                                   }
+                                               }
+                                                  failureBlock:^(NSError *error) {
+                                                      [self hideChatControls];
+                                                  }];
+}
+
+-(void)showChatViewController
+{
+    self.footerHeightConstraint.constant = self.view.frame.size.height * 0.66;
+}
+
+-(void)hideChatViewController
+{
+    self.footerHeightConstraint.constant = FOOTER_VIEW_DEFAULT_HEIGHT;
+}
+
+-(void)hideChatControls{
+    self.chatButton.hidden = YES;
+    self.chatNewMessageView.hidden = YES;
+}
+
+-(void)showChatControls{
+    self.chatButton.hidden = NO;
+    self.chatNewMessageView.hidden = NO;
 }
 
 #pragma mark - Keyboard Management
@@ -298,6 +375,10 @@
 
         //add grid
         [self addStreamGridViewController];
+        
+        //remove speaking info
+        self.speakingImageView.hidden = YES;
+        self.currentSpeakerDisplayName.hidden = YES;
     }
     else
     {
@@ -310,6 +391,16 @@
         //hide display
         [self dismissViewControllerAnimated:YES completion:nil];
     }
+}
+
+- (IBAction)openChat:(id)sender
+{
+    if(self.footerHeightConstraint.constant == FOOTER_VIEW_DEFAULT_HEIGHT){
+        [self showChatViewController];
+    }else{
+        [self hideChatViewController];
+    }
+    
 }
 
 #pragma mark - TokSession Management
@@ -776,5 +867,12 @@
                                                  failureBlock:^(NSError *error) {}];
         }
     }
+}
+
+#pragma mark - Socket iO
+-(void)twicSocketIOClient:(id)sender didReceiveMessage:(NSDictionary *)messageObject
+{
+    [self.chatTableViewController twicSocketIOClient:sender didReceiveMessage:messageObject];
+    [self showChatControls];
 }
 @end

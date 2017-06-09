@@ -92,4 +92,5 @@ typedef enum : NSUInteger {
 -(BOOL)isUserAskingCameraPermission:(NSDictionary*)user;
 -(BOOL)isUserAskingScreenPermission:(NSDictionary*)user;
 -(BOOL)isUserAskingPermission:(NSDictionary*)user;
+-(NSString *)displayNameForUser:(NSDictionary *)user;
 @end

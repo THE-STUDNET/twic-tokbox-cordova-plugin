@@ -54,4 +54,7 @@ static NSString *SignalTypeCancelScreenAuthorization     = @"hgt_cancel_screen_a
 
 //archiving
 @property(nonatomic, readonly)BOOL archiving;
+
+//users <=> streams
+-(NSDictionary *)userForSubscriberStreamID:(NSString *)streamID;
 @end

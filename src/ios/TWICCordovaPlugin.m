@@ -68,10 +68,9 @@
 
     //firebase configuration
     [[TWICFirebaseClient sharedInstance] configure];
-
-    //socketio
-    //[TWICSocketIOClient sharedInstance].delegate = self;
-    //[[TWICSocketIOClient sharedInstance]connect];
+    
+    //socket iO
+    [[TWICSocketIOClient sharedInstance]connect];
 }
 
 -(void)launchMainViewController{

@@ -265,4 +265,9 @@
     }
     return number;
 }
+
+-(NSString *)displayNameForUser:(NSDictionary *)user
+{
+    return [NSString stringWithFormat:@"%@ %@",user[UserFirstnameKey],user[UserLastnameKey]];
+}
 @end
