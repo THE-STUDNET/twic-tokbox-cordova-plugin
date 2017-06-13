@@ -44,6 +44,8 @@
 #define TWIC_NOTIFICATION_SESSION_ARCHIVE_STARTED         @"tok_session_archive_started"
 #define TWIC_NOTIFICATION_SESSION_ARCHIVE_STOPPED         @"tok_session_archive_stoped"
 
+#define TWIC_NOTIFICATION_NEW_MESSAGE                     @"new_message"
+
 //TWICPlaftform
 #define ERROR_DOMAIN                    @"com.twicplatform.error"
 

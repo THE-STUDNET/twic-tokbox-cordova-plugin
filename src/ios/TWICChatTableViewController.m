@@ -9,6 +9,7 @@
 #import "TWICChatTableViewController.h"
 #import "TWICChatTableViewCell.h"
 #import "Masonry.h"
+#import "TWICConstants.h"
 
 @interface TWICChatTableViewController ()
 
@@ -27,6 +28,12 @@
     [self configureSkin];
     
     self.messages = [NSMutableArray array];
+    
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(newMessage:) name:TWIC_NOTIFICATION_NEW_MESSAGE object:nil];
+}
+
+-(void)dealloc{
+    NOTIFICATION_CENTER_REMOVE;
 }
 
 -(void)configureSkin{
@@ -73,10 +80,19 @@
 {
     [self.messages addObject:messageObject];
     [self.tableView beginUpdates];
-    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.messages.count - 1
+    [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.messages.count - 1
                                                                 inSection:0]]
                           withRowAnimation:UITableViewRowAnimationFade];
     [self.tableView endUpdates];
     
+}
+
+-(void)newMessage:(NSNotification*)notification{
+    [self.messages addObject:notification.object];
+    [self.tableView beginUpdates];
+    [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.messages.count - 1
+                                                                inSection:0]]
+                          withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView endUpdates];
 }
 @end

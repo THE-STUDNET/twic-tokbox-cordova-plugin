@@ -759,6 +759,10 @@
     {
         //signal everybody
         [[TWICTokClient sharedInstance]broadcastSignal:SignalTypeCameraAuthorization];
+        
+        //call api
+        [[TWICAPIClient sharedInstance]registerEventName:HangoutEventAskCameraAuth completionBlock:^{} failureBlock:nil];
+        
         //update current user
         [[TWICUserManager sharedInstance]setAskPermission:UserAskCamera forUserID:[TWICUserManager sharedInstance].currentUser[UserIdKey] toValue:YES];
     }
@@ -773,6 +777,10 @@
     {
         //signal everybody
         [[TWICTokClient sharedInstance]broadcastSignal:SignalTypeMicrophoneAuthorization];
+        
+        //call api
+        [[TWICAPIClient sharedInstance]registerEventName:HangoutEventAskMicrophoneAuth completionBlock:^{} failureBlock:nil];
+        
         //update currentuser
         [[TWICUserManager sharedInstance]setAskPermission:UserAskMicrophone forUserID:[TWICUserManager sharedInstance].currentUser[UserIdKey] toValue:YES];
     }

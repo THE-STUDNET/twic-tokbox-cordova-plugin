@@ -258,6 +258,11 @@
     if([user[UserAskMicrophone]boolValue]){
         [self.session signalWithType:SignalTypeCancelMicrophoneAuthorization string:nil connection:connection retryAfterReconnect:YES error:nil];
     }
+    
+    //send a message
+    [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_NEW_MESSAGE
+                                       object:@{@"text":[NSString stringWithFormat:@"%@ joins the hangout",[[TWICUserManager sharedInstance]displayNameForUser:user]],
+                                                @"user_id":user[UserIdKey]}];
 }
 
 - (void)session:(OTSession *)session connectionDestroyed:(OTConnection *)connection
@@ -268,6 +273,14 @@
                                                              options:NSJSONReadingMutableContainers
                                                                error:nil];
     [[TWICUserManager sharedInstance] setDisconnectedUserStateForUserID:dataJson[UserIdKey]];
+    
+    NSDictionary *user = [[TWICUserManager sharedInstance]userWithUserID:dataJson[UserIdKey]];
+    
+    //post message
+    [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_NEW_MESSAGE
+                                       object:@{@"text":[NSString stringWithFormat:@"%@ leaves the hangout",[[TWICUserManager sharedInstance]displayNameForUser:user]],
+                                                @"user_id":user[UserIdKey]}];
+    
     [self.allConnections removeObjectForKey:connection.connectionId];
 }
 
