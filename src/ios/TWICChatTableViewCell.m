@@ -11,6 +11,7 @@
 #import "TWICUserManager.h"
 #import "UIImageView+AFNetworking.h"
 #import "TWICUserManager.h"
+#import "TWICMessageManager.h"
 
 @interface TWICChatTableViewCell()
 @property (weak, nonatomic) IBOutlet UIImageView *userAvatarImageView;
@@ -46,10 +47,15 @@
 
 -(void)configureWithMessage:(NSDictionary *)message
 {
-    NSDictionary *user = [[TWICUserManager sharedInstance]userWithUserID:message[@"user_id"]];
+    NSDictionary *user = [[TWICUserManager sharedInstance]userWithUserID:message[MessageUserIdKey]];
     self.userDisplayNameLabel.text = [[TWICUserManager sharedInstance]displayNameForUser:user];
     [self.userAvatarImageView setImageWithURL:[NSURL URLWithString:[[TWICUserManager sharedInstance]avatarURLStringForUser:user]]];
     self.messageLabel.text = message[@"text"];
+    
+    //mark message as read if needed
+    if([message[MessageReadKey]boolValue] ==  NO){
+        
+    }
 }
 
 -(CGFloat)height{

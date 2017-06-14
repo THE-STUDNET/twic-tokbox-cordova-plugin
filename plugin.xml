@@ -77,6 +77,8 @@
         <source-file src="src/ios/TWICChatTableViewController.m" />
         <header-file src="src/ios/TWICChatTableViewCell.h" />
         <source-file src="src/ios/TWICChatTableViewCell.m" />
+        <header-file src="src/ios/TWICMessageManager.h" />
+        <source-file src="src/ios/TWICMessageManager.m" />
         <!--resources files-->
         <resource-file src="src/ios/Resources/TWICCordovaPlugin.storyboard" />
         <resource-file src="src/ios/Resources/TWICMenuAccordionHeaderView.xib" />

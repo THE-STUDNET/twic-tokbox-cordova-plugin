@@ -13,13 +13,15 @@
 #define TWICTimeStamp [NSString stringWithFormat:@"%f",[[NSDate date] timeIntervalSince1970] * 1000]
 
 
-static NSString *TWICConversationGetPath = @"conversation.get";
+static NSString *TWICConversationGetPath      = @"conversation.get";
 static NSString *TWICConversationGetTokenPath = @"conversation.getToken";
-static NSString *TWICUserGetPath = @"user.get";
-static NSString *TWICActivityAddPath = @"activity.add";
-static NSString *TWICStartArchivePath = @"videoarchive.startRecord";
-static NSString *TWICStopArchivePath = @"videoarchive.stopRecord";
-static NSString *TWICMessageListPath = @"message.getList";
+static NSString *TWICUserGetPath              = @"user.get";
+static NSString *TWICActivityAddPath          = @"activity.add";
+static NSString *TWICStartArchivePath         = @"videoarchive.startRecord";
+static NSString *TWICStopArchivePath          = @"videoarchive.stopRecord";
+static NSString *TWICMessageListPath          = @"message.getList";
+static NSString *TWICConversationReadPath     = @"conversation.read";
+static NSString *TWICMessageSendPath          = @"message.send";
 
 @interface TWICAPIClient()
 @property (nonatomic, strong) NSDateFormatter *serverDateFormatter;
@@ -261,4 +263,68 @@ static NSString *TWICMessageListPath = @"message.getList";
             }
                              failureBlock:failureBlock];
 }
+
+-(void)listMessageForHangoutWithID:(NSString *)hangoutID
+                     fromMessageID:(NSString *)messageID
+                   completionBlock:(void(^)(NSArray *messages))completionBlock
+                      failureBlock:(void (^)(NSError *error))failureBlock
+{
+    return [self jsonRequestForMethodName:TWICMessageListPath
+                         methodParameters:@{@"conversation_id":hangoutID,
+                                            @"filter":@{@"o":@{@"message.id":@"DESC"},
+                                                        @"s":[NSString stringWithFormat:@"%@",messageID],
+                                                        @"c":@{@"message.id":@">"}}}
+                          completionBlock:^(NSDictionary *data)
+            {
+                completionBlock(data[@"list"]);
+            }
+                             failureBlock:failureBlock];
+}
+
+-(void)listMessageForHangoutWithID:(NSString *)hangoutID
+                       toMessageID:(NSString *)messageID
+                   completionBlock:(void(^)(NSArray *messages))completionBlock
+                      failureBlock:(void (^)(NSError *error))failureBlock
+{
+    return [self jsonRequestForMethodName:TWICMessageListPath
+                         methodParameters:@{@"conversation_id":hangoutID,
+                                            @"filter":@{@"o":@{@"message.id":@"DESC"},
+                                                        @"s":[NSString stringWithFormat:@"%@",messageID],
+                                                        @"c":@{@"message.id":@"<"}}}
+                          completionBlock:^(NSDictionary *data)
+            {
+                completionBlock(data[@"list"]);
+            }
+                             failureBlock:failureBlock];
+}
+
+-(void)setConversatonAsReadForHangoutWithID:(NSString *)hangoutID
+                            completionBlock:(void(^)())completionBlock
+                               failureBlock:(void (^)(NSError *error))failureBlock
+{
+    return [self jsonRequestForMethodName:TWICConversationReadPath
+                         methodParameters:@{@"conversation_id":hangoutID}
+                          completionBlock:^(NSDictionary *data){
+                              completionBlock();
+                          }
+                             failureBlock:failureBlock];
+
+}
+
+-(void)sendMessage:(NSString *)message
+   toHangoutWithID:(NSString *)hangoutID
+   completionBlock:(void(^)(NSDictionary *message))completionBlock
+      failureBlock:(void (^)(NSError *error))failureBlock
+{
+    return [self jsonRequestForMethodName:TWICMessageSendPath
+                         methodParameters:@{@"conversation_id":hangoutID,
+                                            @"text":message}
+                          completionBlock:^(NSDictionary *data)
+            {
+                completionBlock(data);
+            }
+                             failureBlock:failureBlock];
+}
+
+
 @end

@@ -23,6 +23,7 @@
 #import "TWICSettingsManager.h"
 #import "TWICSocketIOClient.h"
 #import "TWICChatTableViewController.h"
+#import "TWICMessageManager.h"
 
 #define PUBLISHER_VIEW_FRAME_WIDTH     120
 #define PUBLISHER_VIEW_FRAME_HEIGHT    140
@@ -33,7 +34,7 @@
 
 #define FOOTER_VIEW_DEFAULT_HEIGHT      112
 
-@interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate,TWICAlertViewControllerDelegate,TWICMenuViewControllerDelegate,TWICAlertsViewControllerDelegate,TWICSocketIOClientDelegate>
+@interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate,TWICAlertViewControllerDelegate,TWICMenuViewControllerDelegate,TWICAlertsViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIView             *headerView;
 @property (weak, nonatomic) IBOutlet UIView             *supportView;
 @property (weak, nonatomic) IBOutlet UIView             *footerView;
@@ -73,6 +74,7 @@
 @property (weak, nonatomic) TWICChatTableViewController *chatTableViewController;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *footerHeightConstraint;
 @property (weak, nonatomic) IBOutlet UIView *chatContentView;
+@property (nonatomic, assign) BOOL isChatOpened;
 
 @end
 
@@ -106,6 +108,10 @@
     [NOTIFICATION_CENTER addObserver:self selector:@selector(userAskCameraAuthorization:) name:NOTIFICATION_USER_ASK_CAMERA_AUTHORIZATION object:nil];
     [NOTIFICATION_CENTER addObserver:self selector:@selector(userAskScreenAuthorization:) name:TWIC_NOTIFICATION_USER_ASK_SCREEN_AUTHORIZATION object:nil];
     
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(newMessage:) name:TWIC_NOTIFICATION_NEW_MESSAGE object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(messagesLoaded:) name:TWIC_NOTIFICATION_MESSAGES_LOADED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(latestMessagesLoaded:) name:TWIC_NOTIFICATION_LATEST_MESSAGES_LOADED object:nil];
+    
     [self configureSkin];
     [self configureLocalizable];
     [self refreshUI];
@@ -113,9 +119,8 @@
     //connect the session
     [[TWICTokClient sharedInstance] connect];
     
-    //Chat && Socket iO
+    //Chat
     [self configureChatViewController];
-    [TWICSocketIOClient sharedInstance].delegate = self;
 }
 
 -(void)dealloc{
@@ -294,37 +299,47 @@
     [self.chatTableViewController didMoveToParentViewController:self];
     [self addChildViewController:self.chatTableViewController];
     
-    [[TWICAPIClient sharedInstance]listMessageForHangoutWithID:[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]
-                                               completionBlock:^(NSArray *messages) {
-                                                   if(messages.count > 0)
-                                                   {
-                                                       [self showChatControls];
-                                                       [self.chatTableViewController configureWithMessages:messages];
-                                                   }
-                                               }
-                                                  failureBlock:^(NSError *error) {
-                                                      [self hideChatControls];
-                                                  }];
+    if([[TWICMessageManager sharedInstance] allMessages].count > 0){
+        [self showChatControls];
+    }else{
+        [self hideChatControls];
+    }   
 }
 
 -(void)showChatViewController
 {
+    self.isChatOpened = YES;
+    [self.chatTableViewController refreshUI];
     self.footerHeightConstraint.constant = self.view.frame.size.height * 0.66;
+    //mak all messages as read
+    [[TWICMessageManager sharedInstance]markMessagesAsRead];
+    //hide the new message view
+    self.chatNewMessageView.hidden = YES;
 }
 
 -(void)hideChatViewController
 {
+    self.isChatOpened = NO;
     self.footerHeightConstraint.constant = FOOTER_VIEW_DEFAULT_HEIGHT;
 }
 
 -(void)hideChatControls{
-    self.chatButton.hidden = YES;
-    self.chatNewMessageView.hidden = YES;
+    if(self.isChatOpened == NO){
+        self.chatButton.hidden = YES;
+        self.chatNewMessageView.hidden = YES;
+    }
 }
 
 -(void)showChatControls{
-    self.chatButton.hidden = NO;
-    self.chatNewMessageView.hidden = NO;
+    if(self.isChatOpened == NO)
+    {
+        self.chatButton.hidden = NO;
+        //check the number of unread messages
+        if([[TWICMessageManager sharedInstance]unreadMessagesCount] > 0)
+        {
+            self.chatNewMessageView.hidden = NO;
+        }
+    }
 }
 
 #pragma mark - Keyboard Management
@@ -343,8 +358,18 @@
 #pragma mark - Buttons Management
 - (IBAction)send:(id)sender {
     [self.messageTextField resignFirstResponder];
-    //need to send data
-    self.messageTextField.text = @"Type your message";
+    if(self.messageTextField.text.length > 0 && [self.messageTextField.text isEqualToString:@"Type your message"] == NO){
+        //need to send data
+        [[TWICAPIClient sharedInstance]sendMessage:self.messageTextField.text
+                                   toHangoutWithID:[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]
+                                   completionBlock:^(NSDictionary *message){}
+                                      failureBlock:^(NSError *error)
+         {
+             [SVProgressHUD showErrorWithStatus:error.localizedDescription];
+         }];
+        
+        self.messageTextField.text = @"Type your message";
+    }
 }
 
 - (IBAction)users:(id)sender {
@@ -432,6 +457,9 @@
     
     //archiving
     [self.recordButton setImage:[UIImage imageNamed:[TWICTokClient sharedInstance].archiving?@"record":@"unrecord"] forState:UIControlStateNormal];
+    
+    //chat
+    [[TWICMessageManager sharedInstance]loadMessages];
 }
 
 -(void)sessionDisconnected:(NSNotification *)notification
@@ -877,10 +905,19 @@
     }
 }
 
-#pragma mark - Socket iO
--(void)twicSocketIOClient:(id)sender didReceiveMessage:(NSDictionary *)messageObject
-{
-    [self.chatTableViewController twicSocketIOClient:sender didReceiveMessage:messageObject];
+#pragma mark - Chat Management
+-(void)newMessage:(NSNotification *)notification{
     [self showChatControls];
+}
+-(void)messagesLoaded:(NSNotification*)notification{
+    if([[TWICMessageManager sharedInstance] allMessages].count > 0){
+        [self showChatControls];
+    }
+}
+
+-(void)latestMessagesLoaded:(NSNotification *)notification{
+    if([[TWICMessageManager sharedInstance] allMessages].count > 0){
+        [self showChatControls];
+    }
 }
 @end

@@ -7,10 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TWICSocketIOClient.h"
 
-@interface TWICChatTableViewController : UITableViewController<TWICSocketIOClientDelegate>
+@interface TWICChatTableViewController : UITableViewController
 
--(void)configureWithMessages:(NSArray*)messages;
-
+-(void)refreshUI;
 @end

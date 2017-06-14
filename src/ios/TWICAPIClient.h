@@ -60,4 +60,23 @@ static NSString *HangoutEventAskCameraAuth        = @"hangout.ask_camera_auth";
                    completionBlock:(void(^)(NSArray *messages))completionBlock
                       failureBlock:(void (^)(NSError *error))failureBlock;
 
+-(void)listMessageForHangoutWithID:(NSString *)hangoutID
+                     fromMessageID:(NSString *)messageID
+                   completionBlock:(void(^)(NSArray *messages))completionBlock
+                      failureBlock:(void (^)(NSError *error))failureBlock;
+
+-(void)listMessageForHangoutWithID:(NSString *)hangoutID
+                       toMessageID:(NSString *)messageID
+                   completionBlock:(void(^)(NSArray *messages))completionBlock
+                      failureBlock:(void (^)(NSError *error))failureBlock;
+
+-(void)setConversatonAsReadForHangoutWithID:(NSString *)hangoutID
+                            completionBlock:(void(^)())completionBlock
+                               failureBlock:(void (^)(NSError *error))failureBlock;
+
+-(void)sendMessage:(NSString *)message
+   toHangoutWithID:(NSString *)hangoutID
+   completionBlock:(void(^)(NSDictionary *message))completionBlock
+      failureBlock:(void (^)(NSError *error))failureBlock;
+
 @end

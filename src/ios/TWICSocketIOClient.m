@@ -62,7 +62,7 @@ static NSString *action_authentify           = @"authentify";
         NSString* stringUUID = [UUID UUIDString];
         NSDictionary *wssettings = [[TWICSettingsManager sharedInstance] settingsForKey:SettingsWSKey];
         
-        NSDictionary *dataToSend = @{@"id":@(1),
+        NSDictionary *dataToSend = @{@"id":[[TWICSettingsManager sharedInstance] settingsForKey:SettingsUserIdKey],
                                      @"authentification":wssettings[SettingsAuthTokenKey],
                                      @"connection_token":stringUUID};
         
@@ -77,7 +77,6 @@ static NSString *action_authentify           = @"authentify";
         if([data count] > 0){
             [weakSelf.delegate twicSocketIOClient:self didReceiveMessage:[data firstObject]];
         }
-        NSLog(@"%@",data);
     }];
     
     [self.socket on:@"connect_timeout" callback:^(NSArray* data, SocketAckEmitter* ack) {

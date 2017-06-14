@@ -157,9 +157,11 @@
 
 -(NSDictionary *)userWithUserID:(NSNumber *)userID
 {
-    for(NSDictionary *user in self.users){
-        if([user[UserIdKey] isEqualToNumber:userID]){
-            return user;
+    if(userID){
+        for(NSDictionary *user in self.users){
+            if([user[UserIdKey] isEqualToNumber:userID]){
+                return user;
+            }
         }
     }
     return nil;

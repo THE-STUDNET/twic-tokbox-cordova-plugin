@@ -43,8 +43,11 @@
 #define TWIC_NOTIFICATION_USER_ASK_SCREEN_AUTHORIZATION   @"tok_user_askscreen_authorization"
 #define TWIC_NOTIFICATION_SESSION_ARCHIVE_STARTED         @"tok_session_archive_started"
 #define TWIC_NOTIFICATION_SESSION_ARCHIVE_STOPPED         @"tok_session_archive_stoped"
-
+//chat
 #define TWIC_NOTIFICATION_NEW_MESSAGE                     @"new_message"
+#define TWIC_NOTIFICATION_MESSAGES_LOADED                 @"messages_loaded"
+#define TWIC_NOTIFICATION_LATEST_MESSAGES_LOADED          @"latest_messages_loaded"
+#define TWIC_NOTIFICATION_HISTORICAL_MESSAGES_LOADED      @"historical_messages_loaded"
 
 //TWICPlaftform
 #define ERROR_DOMAIN                    @"com.twicplatform.error"
