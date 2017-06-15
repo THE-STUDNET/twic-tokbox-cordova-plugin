@@ -125,6 +125,11 @@
     }];
 }
 
+-(void)addMessage:(NSDictionary *)message{
+    [self.messages addObject:MessageReadKey];
+    [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_NEW_MESSAGE object:MessageReadKey];
+}
+
 -(void)twicSocketIOClient:(id)sender didReceiveMessage:(NSDictionary *)messageObject
 {
     [self loadLatestMessages];

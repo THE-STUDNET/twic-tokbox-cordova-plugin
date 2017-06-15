@@ -13,6 +13,7 @@
 #import "TWICUserManager.h"
 #import "TWICHangoutManager.h"
 #import "TWICFirebaseClient.h"
+#import "TWICMessageManager.h"
 
 @interface TWICTokClient()<OTSessionDelegate,OTPublisherKitDelegate,OTSubscriberKitDelegate>
 
@@ -260,9 +261,10 @@
     }
     
     //send a message
-    [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_NEW_MESSAGE
-                                       object:@{@"text":[NSString stringWithFormat:@"%@ joins the hangout",[[TWICUserManager sharedInstance]displayNameForUser:user]],
-                                                @"user_id":user[UserIdKey]}];
+    [[TWICMessageManager sharedInstance]addMessage:@{MessageTextKey:[NSString stringWithFormat:@"%@ joins the hangout",[[TWICUserManager sharedInstance]displayNameForUser:user]],
+                                                     MessageUserIdKey:user[UserIdKey],
+                                                     MessageReadKey:@(NO)}];
+    
 }
 
 - (void)session:(OTSession *)session connectionDestroyed:(OTConnection *)connection
@@ -277,9 +279,9 @@
     NSDictionary *user = [[TWICUserManager sharedInstance]userWithUserID:dataJson[UserIdKey]];
     
     //post message
-    [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_NEW_MESSAGE
-                                       object:@{@"text":[NSString stringWithFormat:@"%@ leaves the hangout",[[TWICUserManager sharedInstance]displayNameForUser:user]],
-                                                @"user_id":user[UserIdKey]}];
+    [[TWICMessageManager sharedInstance]addMessage:@{MessageTextKey:[NSString stringWithFormat:@"%@ leaves the hangout",[[TWICUserManager sharedInstance]displayNameForUser:user]],
+                                                     MessageUserIdKey:user[UserIdKey],
+                                                     MessageReadKey:@(NO)}];
     
     [self.allConnections removeObjectForKey:connection.connectionId];
 }
