@@ -126,7 +126,7 @@
 }
 
 -(void)addMessage:(NSDictionary *)message{
-    [self.messages addObject:MessageReadKey];
+    [self.messages addObject:message];
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_NEW_MESSAGE object:MessageReadKey];
 }
 
