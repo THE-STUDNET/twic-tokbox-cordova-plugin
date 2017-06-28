@@ -136,6 +136,9 @@
 }
 -(NSString *)lastMessageID
 {
-    return self.messages[self.messages.count - 1][MessageIdKey];
+    if(self.messages.count > 0){
+        return self.messages[self.messages.count - 1][MessageIdKey];
+    }
+    return @"";
 }
 @end
