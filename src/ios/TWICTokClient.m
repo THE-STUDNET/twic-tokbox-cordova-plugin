@@ -263,6 +263,7 @@
     //send a message
     [[TWICMessageManager sharedInstance]addMessage:@{MessageTextKey:[NSString stringWithFormat:@"%@ joins the hangout",[[TWICUserManager sharedInstance]displayNameForUser:user]],
                                                      MessageUserIdKey:user[UserIdKey],
+                                                     MessageIdKey:[[TWICMessageManager sharedInstance]lastMessageID],
                                                      MessageReadKey:@(NO)}];
     
 }
@@ -281,6 +282,7 @@
     //post message
     [[TWICMessageManager sharedInstance]addMessage:@{MessageTextKey:[NSString stringWithFormat:@"%@ leaves the hangout",[[TWICUserManager sharedInstance]displayNameForUser:user]],
                                                      MessageUserIdKey:user[UserIdKey],
+                                                     MessageIdKey:[[TWICMessageManager sharedInstance]lastMessageID],
                                                      MessageReadKey:@(NO)}];
     
     [self.allConnections removeObjectForKey:connection.connectionId];

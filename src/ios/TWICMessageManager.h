@@ -24,6 +24,7 @@ static NSString *MessageReadKey = @"read";
 -(void)loadLatestMessages;
 -(void)loadHistoricalMessages;
 -(void)addMessage:(NSDictionary *)message;
+-(NSString *)lastMessageID;
 
 -(NSArray *)allMessages;
 -(int)unreadMessagesCount;

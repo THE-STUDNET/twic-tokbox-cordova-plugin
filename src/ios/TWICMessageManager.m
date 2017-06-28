@@ -134,4 +134,8 @@
 {
     [self loadLatestMessages];
 }
+-(NSString *)lastMessageID
+{
+    return self.messages[self.messages.count - 1][MessageIdKey];
+}
 @end
