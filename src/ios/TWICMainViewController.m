@@ -135,7 +135,9 @@
 #pragma mark - Skining
 
 -(void)configureLocalizable{
-    self.messageTextField.text = @"Type your message";
+    self.messageTextField.text = nil;
+    self.messageTextField.attributedPlaceholder = [[NSAttributedString alloc]initWithString:@"Type your message"
+                                                                                 attributes:@{NSForegroundColorAttributeName:[UIColor whiteColor]}];
 }
 
 -(void)configureSkin{

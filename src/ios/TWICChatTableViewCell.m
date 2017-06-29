@@ -47,9 +47,15 @@
 
 -(void)configureWithMessage:(NSDictionary *)message
 {
-    NSDictionary *user = [[TWICUserManager sharedInstance]userWithUserID:message[MessageUserIdKey]];
-    self.userDisplayNameLabel.text = [[TWICUserManager sharedInstance]displayNameForUser:user];
-    [self.userAvatarImageView setImageWithURL:[NSURL URLWithString:[[TWICUserManager sharedInstance]avatarURLStringForUser:user]]];
+    if(message[MessageUserIdKey]){
+        NSDictionary *user = [[TWICUserManager sharedInstance]userWithUserID:message[MessageUserIdKey]];
+        self.userDisplayNameLabel.text = [[TWICUserManager sharedInstance]displayNameForUser:user];
+        [self.userAvatarImageView setImageWithURL:[NSURL URLWithString:[[TWICUserManager sharedInstance]avatarURLStringForUser:user]]];
+    }else{
+        self.userDisplayNameLabel.text = @"Automatic message";
+        self.userAvatarImageView.image = [UIImage imageNamed:@"user"];
+    }
+    
     self.messageLabel.text = message[@"text"];
     
     //mark message as read if needed
