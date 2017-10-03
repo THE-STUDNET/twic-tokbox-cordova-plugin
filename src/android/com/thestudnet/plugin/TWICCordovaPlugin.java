@@ -49,7 +49,7 @@ public class TWICCordovaPlugin extends CordovaPlugin {
             if(event.getType() == com.thestudnet.twicandroidplugin.events.PluginInteraction.Type.IS_INITIALIZED) {
                 Log.d("TWICCordovaPlugin", "IS_INITIALIZED");
                 Intent intent = new Intent(mContext, com.thestudnet.twicandroidplugin.activities.TWICAndroidPluginActivity.class);
-                this.startActivity(intent);
+                cordova.getActivity().startActivity(intent);
             }
         }
 }
