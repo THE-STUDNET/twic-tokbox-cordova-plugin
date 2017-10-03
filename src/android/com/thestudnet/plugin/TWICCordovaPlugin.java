@@ -17,35 +17,37 @@ import java.util.Date;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import com.thestudnet.twicandroidplugin.events.EventBus;
+
 /**
  * This class echoes a string called from JavaScript.
  */
 public class TWICCordovaPlugin extends CordovaPlugin {
 
+    private Context mContext;
+
     @Override
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        if (action.equals("launchHangout")) {
-            cordova.getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    // Configure plugin
-                    com.thestudnet.twicandroidplugin.TWICAndroidPlugin twicAndroidPlugin = com.thestudnet.twicandroidplugin.TWICAndroidPlugin.getInstance();
-
-                    // Just a simple Firebase test
-                    FirebaseDatabase firebaseDatabase = twicAndroidPlugin.getFirebaseDatabase();
-                    DatabaseReference myRef = firebaseDatabase.getReference("message");
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-                    String currentDateandTime = sdf.format(new Date());
-                    myRef.setValue("Hello, World! " + currentDateandTime);
-
-                    // Launch activity
-                    Context context = cordova.getActivity().getApplicationContext();
-                    Intent intent = new Intent(context, com.thestudnet.twicandroidplugin.activities.VideoGridActivity.class);
-                    cordova.getActivity().startActivity(intent);
-                }
-            });
-            return true;
+        public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+            if (action.equals("launchHangout")) {
+                cordova.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mContext = cordova.getActivity().getApplicationContext();
+                        com.thestudnet.twicandroidplugin.TWICAndroidPlugin.getInstance().initContext(mContext).configure(args.getString(0)).launch();
+                        callbackContext.success();
+                    }
+                });
+                return true;
+            }
+            return false;
         }
-        return false;
-    }
+
+    @Subscribe
+        public void OnPluginInteraction(com.thestudnet.twicandroidplugin.events.PluginInteraction.OnPluginInteractionEvent event) {
+            if(event.getType() == com.thestudnet.twicandroidplugin.events.PluginInteraction.Type.IS_INITIALIZED) {
+                Log.d("TWICCordovaPlugin", "IS_INITIALIZED");
+                Intent intent = new Intent(mContext, com.thestudnet.twicandroidplugin.activities.TWICAndroidPluginActivity.class);
+                this.startActivity(intent);
+            }
+        }
 }

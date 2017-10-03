@@ -1,35 +1,45 @@
 repositories{
     jcenter()
-    maven { url  "http://tokbox.bintray.com/maven" }
+    maven { url "http://tokbox.bintray.com/maven" }
+    maven { url "https://maven.google.com" }
+    maven { url "https://jitpack.io" }
     flatDir {
         dirs 'libs'
     }
 }
 
 dependencies {
-    compile ('this.prefix.does.not.matter:TWICAndroidPlugin:1.0.0@aar') {
-        transitive = true
-    }
     compile 'com.android.support:appcompat-v7:25.1.1'
     compile 'com.android.support:support-v4:25.1.1'
     compile 'com.android.support:percent:25.3.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:support-annotations:25.3.1'
+    compile 'com.android.support:support-compat:25.3.1'
+    compile 'com.android.support:support-core-ui:25.3.1'
 
+    compile 'com.github.bumptech.glide:glide:3.8.0'
     compile 'cn.pedant.sweetalert:library:1.3'
     compile 'com.squareup:otto:1.3.8'
     compile 'pub.devrel:easypermissions:0.3.0'
     compile 'com.makeramen:roundedimageview:2.3.0'
     compile 'me.grantland:autofittextview:0.2.1'
+    compile group: 'com.thetransactioncompany', name: 'jsonrpc2-base', version: '1.38'
+    compile group: 'com.thetransactioncompany', name: 'jsonrpc2-client', version: '1.16.4'
+    compile 'com.romandanylyk:pageindicatorview:0.2.0'
 
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 
-    compile 'com.opentok.android:opentok-android-sdk:2.10.+'
+    compile 'com.opentok.android:opentok-android-sdk:2.11.0'
     compile 'com.google.firebase:firebase-core:10.2.0'
     compile 'com.google.firebase:firebase-database:10.2.0'
-
     compile ('io.socket:socket.io-client:0.8.3') {
         // excluding org.json which is provided by Android
         exclude group: 'org.json', module: 'json'
+    }
+
+    compile ('this.prefix.does.not.matter:TWICAndroidPlugin:1.0.0@aar') {
+        transitive = true
     }
 }
 
