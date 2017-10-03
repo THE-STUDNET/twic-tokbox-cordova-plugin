@@ -17,6 +17,7 @@ import java.util.Date;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import com.squareup.otto.Subscribe;
 import com.thestudnet.twicandroidplugin.events.EventBus;
 
 /**
