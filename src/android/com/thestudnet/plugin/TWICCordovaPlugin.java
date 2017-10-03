@@ -29,7 +29,7 @@ public class TWICCordovaPlugin extends CordovaPlugin {
     private Context mContext;
 
     @Override
-        public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+        public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
             if (action.equals("launchHangout")) {
                 cordova.getActivity().runOnUiThread(new Runnable() {
                     @Override
