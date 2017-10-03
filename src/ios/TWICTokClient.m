@@ -306,6 +306,20 @@
     // get subscriber for this stream
     OTSubscriber *subscriber = [self.allSubscribers objectForKey:stream.connection.connectionId];
     
+    //retrieve the user
+    NSData *data = [stream.connection.data dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
+                                                             options:NSJSONReadingMutableContainers
+                                                               error:nil];
+    NSDictionary *user = [[TWICUserManager sharedInstance]userWithUserID:dataJson[UserIdKey]];
+
+    //need to check the reason "force unpublished?"
+    //add a message
+    [[TWICMessageManager sharedInstance]addMessage:@{MessageTextKey:[NSString stringWithFormat:@"%@ stream has been turned off",[[TWICUserManager sharedInstance]displayNameForUser:user]],
+                                                     MessageUserIdKey:user[UserIdKey],
+                                                     MessageIdKey:[[TWICMessageManager sharedInstance]lastMessageID],
+                                                     MessageReadKey:@(NO)}];
+    
     // remove from superview
     [subscriber.view removeFromSuperview];
     
@@ -463,6 +477,11 @@
 {
     self.archiveId = archiveId;
     
+    //add message
+    [[TWICMessageManager sharedInstance]addMessage:@{MessageTextKey:@"Recording started",
+                                                     MessageIdKey:[[TWICMessageManager sharedInstance]lastMessageID],
+                                                     MessageReadKey:@(NO)}];
+    
     //raise event to update ui
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SESSION_ARCHIVE_STARTED object:archiveId];
 }
@@ -471,6 +490,10 @@
 {
     self.archiveId = nil;
     
+    //add message
+    [[TWICMessageManager sharedInstance]addMessage:@{MessageTextKey:@"Recording stopped",
+                                                     MessageIdKey:[[TWICMessageManager sharedInstance]lastMessageID],
+                                                     MessageReadKey:@(NO)}];
     //raise event to update ui
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SESSION_ARCHIVE_STOPPED object:archiveId];
 }

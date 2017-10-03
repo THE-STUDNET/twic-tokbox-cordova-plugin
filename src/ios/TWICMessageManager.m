@@ -139,6 +139,6 @@
     if(self.messages.count > 0){
         return self.messages[self.messages.count - 1][MessageIdKey];
     }
-    return @"";
+    return @"0";
 }
 @end
