@@ -23,13 +23,13 @@ public class TWICCordovaPlugin extends CordovaPlugin {
     @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("launchHangout")) {
+            // Register bus events
+            EventBus.getInstance().register(this);
             cordova.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     mContext = cordova.getActivity().getApplicationContext();
                     try {
-                        // Register bus events
-                        EventBus.getInstance().register(mContext);
                         // Launch native plugin
                         com.thestudnet.twicandroidplugin.TWICAndroidPlugin.getInstance().initContext(mContext).configure(args.getString(0)).launch();
                     } catch (JSONException e) {
