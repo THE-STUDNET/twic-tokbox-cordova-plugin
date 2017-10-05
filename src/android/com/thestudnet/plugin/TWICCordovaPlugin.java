@@ -35,7 +35,11 @@ public class TWICCordovaPlugin extends CordovaPlugin {
                     @Override
                     public void run() {
                         mContext = cordova.getActivity().getApplicationContext();
+                        // Register bus events
+                        EventBus.getInstance().register(mContext);
+                        // Launch native plugin
                         com.thestudnet.twicandroidplugin.TWICAndroidPlugin.getInstance().initContext(mContext).configure(args.getString(0)).launch();
+                        // Call Cordova success callback
                         callbackContext.success();
                     }
                 });
