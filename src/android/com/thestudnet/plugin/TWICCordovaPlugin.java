@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.squareup.otto.Subscribe;
+import com.thestudnet.twicandroidplugin.events.EventBus;
 
 /**
  * This class echoes a string called from JavaScript.
