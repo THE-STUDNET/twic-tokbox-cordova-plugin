@@ -21,15 +21,10 @@ public class TWICCordovaPlugin extends CordovaPlugin {
     private Context mContext;
 
     @Override
-    public void onResume(boolean multitasking) {
-        super.onResume(multitasking);
-        // Register bus events
-        EventBus.getInstance().register(this);
-    }
-
-    @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("launchHangout")) {
+            // Register bus events
+            EventBus.getInstance().register(this);
             cordova.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -59,10 +54,10 @@ public class TWICCordovaPlugin extends CordovaPlugin {
     }
 
     @Override
-    public void onPause(boolean multitasking) {
-        super.onPause(multitasking);
+    public void onDestroy() {
         // Unregister bus events
         EventBus.getInstance().unregister(this);
+        super.onDestroy();
     }
 
 }
