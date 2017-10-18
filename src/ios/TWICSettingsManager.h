@@ -30,6 +30,7 @@ static NSString *SettingsFirebaseGoogleAppIdKey = @"google_app_id";
 static NSString *SettingsFirebaseGCMSenderIdKey = @"gcm_sender_id";
 static NSString *SettingsFirebaseAPIKey         = @"api_key";
 static NSString *SettingsFirebaseClientIDKey    = @"client_id";
+static NSString *SettingsFirebaseTokenKey       = @"token";
 
 @interface TWICSettingsManager : NSObject
 

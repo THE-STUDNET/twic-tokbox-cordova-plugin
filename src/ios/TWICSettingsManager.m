@@ -52,7 +52,8 @@
                               SettingsFirebaseGCMSenderIdKey:@"676747833735",
                               SettingsFirebaseGoogleAppIdKey:@"AIzaSyAI49slJORKGIsfToSN-Q1eB7S079a9ATc",
                               SettingsFirebaseClientIDKey:@"676747833735-f05geh1chf15r7v4v7bp78n6bsfi0rjl.apps.googleusercontent.com",
-                              SettingsFirebaseDatabaseUrlKey:@"https://version2-bd6b5.firebaseio.com"
+                              SettingsFirebaseDatabaseUrlKey:@"https://version2-bd6b5.firebaseio.com",
+                              SettingsFirebaseTokenKey:@"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJmaXJlYmFzZS1hZG1pbnNkay1jZjY0ekB2ZXJzaW9uMi1iZDZiNS5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsInN1YiI6ImZpcmViYXNlLWFkbWluc2RrLWNmNjR6QHZlcnNpb24yLWJkNmI1LmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6XC9cL2lkZW50aXR5dG9vbGtpdC5nb29nbGVhcGlzLmNvbVwvZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJpYXQiOjE1MDgzMjcxODksImV4cCI6MTUwODMzMDc4OSwidWlkIjo2fQ.Cvp4atdwyt4wkkwU8djgo70A7N_l9pB45yI9nAf7Uoq1TOf78_O9gEDjvpKf_V4Kx1HdTBDW2pngYHg0A4pe-SPcStBRKNWJ2ry3Kyc2bQSkfeEvh23-d9F4zkmwJSNrhNJe3bo3gt0aqfxOewC6dN1yBX_2AqOECPDYCnr4XKjaaF3HYB8pwppsnuvopsKXmygjVRUF0vCjFBeBcmW-TsVxzj5XTswL1u7hsiaoYgnBKGU6pxHFX0In-qvJ20pN6vtoAnxiom-y16hsBwXPpglDeQShtvckrsshBWeagFQftdt2YQTDaaeFdpMUMoW0-iysL9up3_uDfbn8ZVNPfQ",
                               },
                       SettingsWSKey:@{
                               SettingsAuthTokenKey:@"8475756d6741e60a5c04cbcb34ec79a66f1aa38e",
