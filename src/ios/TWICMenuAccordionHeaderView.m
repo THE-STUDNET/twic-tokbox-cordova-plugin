@@ -71,13 +71,11 @@
     }
 }
 
--(void)willOpen
-{
+-(void)willOpen{
     self.chevronImageView.image = [UIImage imageNamed:@"up-arrow"];
 }
 
--(void)willClose
-{
+-(void)willClose{
     self.chevronImageView.image = [UIImage imageNamed:@"down-arrow"];
 }
 

@@ -11,7 +11,7 @@
 
 @protocol TWICStreamGridViewControllerDelegate <NSObject>
 
--(void)TWICStreamGridViewController:(id)sender didSelectSubscriberID:(NSString *)subscriberID;
+-(void)TWICStreamGridViewController:(id)sender didSelectSubscriberConnectionID:(NSString *)subscriberConnectionID;
 -(void)TWICStreamGridViewControllerDidSelectPublisher:(id)sender;
 
 @end

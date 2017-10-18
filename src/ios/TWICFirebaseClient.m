@@ -41,29 +41,33 @@
 
 -(void)configureWithFirebaseSettings:(NSDictionary *)settings
 {
-//    //create the options
-    FIROptions *options = [[FIROptions alloc]initWithGoogleAppID:settings[SettingsFirebaseGoogleAppIdKey]
-                                                        bundleID:[[NSBundle mainBundle] bundleIdentifier]
-                                                     GCMSenderID:settings[SettingsFirebaseGCMSenderIdKey]
-                                                          APIKey:settings[SettingsApiKey]
-                                                        clientID:settings[SettingsFirebaseClientIDKey]
-                                                      trackingID:nil
-                                                 androidClientID:nil
-                                                     databaseURL:settings[SettingsFirebaseDatabaseUrlKey]
-                                                   storageBucket:nil
-                                               deepLinkURLScheme:nil];
-
-    //configure the app
-    [FIRApp configureWithOptions:options];
-
     //authent
-    [[FIRAuth auth] signInWithCustomToken:settings[SettingsFirebaseTokenKey]
-                               completion:^(FIRUser *_Nullable user, NSError *_Nullable error)
-     {
-         //retrieve the database
-         NSString *refPath =[NSString stringWithFormat:@"hangouts/%@/connecteds",[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]];
-         self.databaseReference = [[FIRDatabase database] referenceWithPath:refPath];//get hangout id
-     }];
+    if([settings[SettingsFirebaseTokenKey]length] > 0)
+    {
+        //create the options
+        FIROptions *options = [[FIROptions alloc]initWithGoogleAppID:settings[SettingsFirebaseGoogleAppIdKey]
+                                                            bundleID:[[NSBundle mainBundle] bundleIdentifier]
+                                                         GCMSenderID:settings[SettingsFirebaseGCMSenderIdKey]
+                                                              APIKey:settings[SettingsApiKey]
+                                                            clientID:settings[SettingsFirebaseClientIDKey]
+                                                          trackingID:nil
+                                                     androidClientID:nil
+                                                         databaseURL:settings[SettingsFirebaseDatabaseUrlKey]
+                                                       storageBucket:nil
+                                                   deepLinkURLScheme:nil];
+        
+        //configure the app
+        [FIRApp configureWithOptions:options];
+        
+        //authent
+        [[FIRAuth auth] signInWithCustomToken:settings[SettingsFirebaseTokenKey]
+                                   completion:^(FIRUser *_Nullable user, NSError *_Nullable error)
+         {
+             //retrieve the database
+             NSString *refPath =[NSString stringWithFormat:@"hangouts/%@/connecteds",[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]];
+             self.databaseReference = [[FIRDatabase database] referenceWithPath:refPath];//get hangout id
+         }];
+    }
 }
 
 -(void)registerConnectedUser

@@ -129,23 +129,19 @@
     }
 }
 #pragma mark - <FZAccordionTableViewDelegate> -
-
 - (BOOL)tableView:(FZAccordionTableView *)tableView canInteractWithHeaderAtSection:(NSInteger)section {
     //has actions ?
-    if([[[TWICUserManager sharedInstance]actionsForUser:self.users[section]] count] > 0)
-    {
+    if([[[TWICUserManager sharedInstance]actionsForUser:self.users[section]] count] > 0){
         return YES;
     }
     return NO;
 }
 
-- (void)tableView:(nonnull FZAccordionTableView *)tableView didOpenSection:(NSInteger)section withHeader:(nullable UITableViewHeaderFooterView *)header
-{
+- (void)tableView:(nonnull FZAccordionTableView *)tableView didOpenSection:(NSInteger)section withHeader:(nullable UITableViewHeaderFooterView *)header{
     [(TWICMenuAccordionHeaderView *)header willOpen];
 }
 
-- (void)tableView:(nonnull FZAccordionTableView *)tableView didCloseSection:(NSInteger)section withHeader:(nullable UITableViewHeaderFooterView *)header
-{
+- (void)tableView:(nonnull FZAccordionTableView *)tableView didCloseSection:(NSInteger)section withHeader:(nullable UITableViewHeaderFooterView *)header{
     [(TWICMenuAccordionHeaderView *)header willClose];
 }
 

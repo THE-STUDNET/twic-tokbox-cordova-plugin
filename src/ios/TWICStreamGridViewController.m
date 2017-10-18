@@ -73,13 +73,13 @@
         }
         else
         {
-            NSString *subscriberID = [TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row-1];
-            [(TWICStreamCollectionViewCell*)cell configureWithSubscriber:[[TWICTokClient sharedInstance]subscriberForStreamID:subscriberID]];
+            NSString *subscriberConnectionID = [TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row-1];
+            [(TWICStreamCollectionViewCell*)cell configureWithSubscriber:[[TWICTokClient sharedInstance]subscriberForConnectionID:subscriberConnectionID]];
         }
     }
     else{
-        NSString *subscriberID = [TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row];
-        [(TWICStreamCollectionViewCell*)cell configureWithSubscriber:[[TWICTokClient sharedInstance]subscriberForStreamID:subscriberID]];
+        NSString *subscriberConnectionID = [TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row];
+        [(TWICStreamCollectionViewCell*)cell configureWithSubscriber:[[TWICTokClient sharedInstance]subscriberForConnectionID:subscriberConnectionID]];
     }
 }
 
@@ -92,10 +92,10 @@
         }
         else
         {
-            [self.delegate TWICStreamGridViewController:self didSelectSubscriberID:[TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row-1]];
+            [self.delegate TWICStreamGridViewController:self didSelectSubscriberConnectionID:[TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row-1]];
         }
     }else{
-        [self.delegate TWICStreamGridViewController:self didSelectSubscriberID:[TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row]];
+        [self.delegate TWICStreamGridViewController:self didSelectSubscriberConnectionID:[TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row]];
     }
 }
 

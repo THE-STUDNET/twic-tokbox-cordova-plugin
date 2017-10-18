@@ -72,7 +72,7 @@
     NSMutableArray *actions = [NSMutableArray array];
     if([user[UserConnectionStateKey]intValue] == UserConnectionStateConnected)
     {
-        [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Send a direct message to %@",user[UserFirstnameKey]],UserActionImageKey:@"chat",UserActionTypeKey:@(UserActionTypeSendDirectMessage)}];//chat is available for everybody
+//        [actions addObject:@{UserActionTitleKey:[NSString stringWithFormat:@"Send a direct message to %@",user[UserFirstnameKey]],UserActionImageKey:@"chat",UserActionTypeKey:@(UserActionTypeSendDirectMessage)}];//chat is available for everybody
         if([[TWICHangoutManager sharedInstance]canUser:self.currentUser doAction:HangoutActionAskDevice])
         {
             if([self isUserSharingCamera:user] == NO)

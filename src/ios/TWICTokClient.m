@@ -181,8 +181,7 @@
     // remove all subscriber views from video container
     for (int i = 0; i < [self.allConnectionsIds count]; i++)
     {
-        OTSubscriber *subscriber = [self.allSubscribers valueForKey:
-                                    [self.allConnectionsIds objectAtIndex:i]];
+        OTSubscriber *subscriber = [self.allSubscribers valueForKey:[self.allConnectionsIds objectAtIndex:i]];
         [subscriber.view removeFromSuperview];
     }
     
@@ -619,9 +618,9 @@
     });
 }
 
--(OTSubscriber *)subscriberForStreamID:(NSString *)streamID
+-(OTSubscriber *)subscriberForConnectionID:(NSString *)connectionID
 {
-    return [self.allSubscribers objectForKey:streamID];
+    return [self.allSubscribers objectForKey:connectionID];
 }
 
 -(NSArray *)orderedSubscriberIDs
@@ -659,8 +658,8 @@
     return nil;
 }
 
--(NSDictionary *)userForSubscriberStreamID:(NSString *)streamID{
-    OTSubscriber *subscriber = self.allSubscribers[streamID];
+-(NSDictionary *)userForSubscriberConnectionID:(NSString *)connectionID{
+    OTSubscriber *subscriber = self.allSubscribers[connectionID];
     if(subscriber){
         NSData *data = [subscriber.stream.connection.data dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data

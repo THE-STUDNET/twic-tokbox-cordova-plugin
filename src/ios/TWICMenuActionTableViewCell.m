@@ -38,9 +38,7 @@
 {
     if(action[UserActionIsRedKey]){
         self.adminActionTitleLabel.text = action[UserActionTitleKey];
-    }
-    else
-    {
+    }else{
         self.actionImageView.image = [UIImage imageNamed:action[UserActionImageKey]];
         self.actionTitleLabel.text = action[UserActionTitleKey];
     }    
