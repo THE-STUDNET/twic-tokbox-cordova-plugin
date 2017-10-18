@@ -30,16 +30,16 @@
 {
     [[TWICAPIClient sharedInstance]hangoutDataWithCompletionBlock:^(NSDictionary *data)
     {
-#warning - REMOVE THAT ON RELEASE !!!!! => REMOVE AUTO PUBLISH KEY
-        NSMutableDictionary *optionsData = [data[HangoutOptionsKey] mutableCopy];
-        NSMutableDictionary *rulesData = [optionsData[HangoutRulesKey] mutableCopy];
-        rulesData[HangoutActionAutoPublishCamera] = @(YES);
-        rulesData[HangoutActionAutoPublishMicrophone] = @(YES);
-        rulesData[HangoutActionPublish]=@(YES);
-        NSMutableDictionary *debugData = [data mutableCopy];
-        optionsData[HangoutRulesKey] = rulesData;
-        debugData[HangoutOptionsKey] = optionsData;
-        self.hangoutData = debugData;
+//#warning - REMOVE THAT ON RELEASE !!!!! => REMOVE AUTO PUBLISH KEY
+//        NSMutableDictionary *optionsData = [data[HangoutOptionsKey] mutableCopy];
+//        NSMutableDictionary *rulesData = [optionsData[HangoutRulesKey] mutableCopy];
+//        rulesData[HangoutActionAutoPublishCamera] = @(YES);
+//        rulesData[HangoutActionAutoPublishMicrophone] = @(YES);
+//        rulesData[HangoutActionPublish]=@(YES);
+//        NSMutableDictionary *debugData = [data mutableCopy];
+//        optionsData[HangoutRulesKey] = rulesData;
+//        debugData[HangoutOptionsKey] = optionsData;
+        self.hangoutData = data;
         completionBlock();
     }
                                                      failureBlock:^(NSError *error)
@@ -51,12 +51,17 @@
 -(BOOL)canUser:(NSDictionary *)user doAction:(NSString *)actionName
 {
     //retrieve the role of the user
-    NSString *userRoleKey = [user[UserRolesKey]firstObject];
+    NSString *userRoleKey = user[UserRoleKey];
     
     //revrieve action
     id option = self.hangoutData[HangoutOptionsKey][HangoutRulesKey][actionName];
-    if([option isKindOfClass:[NSDictionary class]]){
-        return [option containsValueForKey:userRoleKey];
+    if([option isKindOfClass:[NSArray class]]){
+        NSDictionary *rolesData = [option firstObject];
+        if([rolesData isKindOfClass:[NSDictionary class]]){
+            NSArray *roleValues = rolesData[HangoutRolesKey];
+            BOOL allowed = [roleValues containsObject:userRoleKey];
+            return allowed;
+        }
     }
     return [option boolValue];
 }

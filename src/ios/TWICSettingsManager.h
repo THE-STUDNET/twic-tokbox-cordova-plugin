@@ -25,6 +25,13 @@ static NSString *SettingsUrlKey                 = @"url";
 static NSString *SettingsPortKey                = @"port";
 static NSString *SettingsSecureKey              = @"secure";
 
+static NSString *SettingsFirebaseDatabaseUrlKey = @"database_url";
+static NSString *SettingsFirebaseGoogleAppIdKey = @"google_app_id";
+static NSString *SettingsFirebaseGCMSenderIdKey = @"gcm_sender_id";
+static NSString *SettingsFirebaseAPIKey         = @"api_key";
+static NSString *SettingsFirebaseClientIDKey    = @"client_id";
+static NSString *SettingsFirebaseTokenKey       = @"token";
+
 @interface TWICSettingsManager : NSObject
 
 + (TWICSettingsManager *)sharedInstance;

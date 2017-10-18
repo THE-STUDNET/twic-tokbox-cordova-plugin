@@ -13,7 +13,6 @@
 #import "TWICSettingsManager.h"
 #import "TWICHangoutManager.h"
 #import "TWICUserManager.h"
-
 @interface TWICFirebaseClient()
 
 //the database
@@ -34,34 +33,47 @@
     return _sharedClient;
 }
 
-
 -(void)configure
 {
     NSDictionary *firebaseSettings = [[TWICSettingsManager sharedInstance]settingsForKey:SettingsFirebaseKey];
-    [self configureWithDatabaseURL:firebaseSettings[SettingsUrlKey]
-               authenticationToken:firebaseSettings[SettingsAuthTokenKey]];
+    [self configureWithFirebaseSettings:firebaseSettings];
 }
 
--(void)configureWithDatabaseURL:(NSString *)url
-            authenticationToken:(NSString *)token
+-(void)configureWithFirebaseSettings:(NSDictionary *)settings
 {
+//    //create the options
+    FIROptions *options = [[FIROptions alloc]initWithGoogleAppID:settings[SettingsFirebaseGoogleAppIdKey]
+                                                        bundleID:[[NSBundle mainBundle] bundleIdentifier]
+                                                     GCMSenderID:settings[SettingsFirebaseGCMSenderIdKey]
+                                                          APIKey:settings[SettingsApiKey]
+                                                        clientID:settings[SettingsFirebaseClientIDKey]
+                                                      trackingID:nil
+                                                 androidClientID:nil
+                                                     databaseURL:settings[SettingsFirebaseDatabaseUrlKey]
+                                                   storageBucket:nil
+                                               deepLinkURLScheme:nil];
+
     //configure the app
-    [FIRApp configure];
-    
-    [[FIRAuth auth] signInWithCustomToken:token
+    [FIRApp configureWithOptions:options];
+
+    //authent
+    [[FIRAuth auth] signInWithCustomToken:settings[SettingsFirebaseTokenKey]
                                completion:^(FIRUser *_Nullable user, NSError *_Nullable error)
-    {
-        //retrieve the database
-        self.databaseReference = [[FIRDatabase database] referenceWithPath:[NSString stringWithFormat:@"hangouts/%@/connecteds",[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]]];//get hangout id
-    }];
-    
+     {
+         //retrieve the database
+         NSString *refPath =[NSString stringWithFormat:@"hangouts/%@/connecteds",[[TWICSettingsManager sharedInstance]settingsForKey:SettingsHangoutIdKey]];
+         self.databaseReference = [[FIRDatabase database] referenceWithPath:refPath];//get hangout id
+     }];
 }
 
 -(void)registerConnectedUser
 {
     self.connectedUserReference = [self.databaseReference childByAutoId];
     //store the reference
-    [self.connectedUserReference setValue:[TWICUserManager sharedInstance].currentUser[UserIdKey]];
+    [self.connectedUserReference setValue:[TWICUserManager sharedInstance].currentUser[UserIdKey]
+                      withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        
+    }];
     //add guard in case of crash or other things
     [self.connectedUserReference onDisconnectRemoveValue];
 }

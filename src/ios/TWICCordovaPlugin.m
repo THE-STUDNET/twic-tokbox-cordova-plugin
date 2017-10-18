@@ -50,6 +50,10 @@
     [SVProgressHUD showWithStatus:@"Loading..."];
     [[TWICHangoutManager sharedInstance] configureHangoutDataWithCompletionBlock:^
     {
+        //firebase configuration
+        [[TWICFirebaseClient sharedInstance] configure];
+        
+        //configure user ids
         [[TWICUserManager sharedInstance]configureWithUserIds:[TWICHangoutManager sharedInstance].hangoutData[@"users"]
                                               completionBlock:^
          {
@@ -66,11 +70,8 @@
         [SVProgressHUD showErrorWithStatus:error.localizedDescription];
     }];
 
-    //firebase configuration
-    [[TWICFirebaseClient sharedInstance] configure];
-    
     //socket iO
-    [[TWICSocketIOClient sharedInstance]connect];
+    [[TWICSocketIOClient sharedInstance] connect];
 }
 
 -(void)launchMainViewController{

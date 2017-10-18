@@ -68,6 +68,14 @@
 -(void)connect{
     [[TWICAPIClient sharedInstance]tokboxDataWithCompletionBlock:^(NSDictionary *data)
      {
+         //set role to current user
+         if(data[@"role"]==nil){
+             [[TWICUserManager sharedInstance] setRoleToCurrentUser:@"user"];
+         }else{
+             [[TWICUserManager sharedInstance] setRoleToCurrentUser:data[@"role"]];
+         }
+         
+         //connect to the session
          [self connectToSession:data[@"session"] withUserToken:data[@"token"]];
      }
                                                     failureBlock:^(NSError *error)
@@ -605,12 +613,9 @@
 {
     // show alertview on main UI
     dispatch_async(dispatch_get_main_queue(), ^{
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil
-                                                        message:string
-                                                       delegate:self
-                                              cancelButtonTitle:@"Ok"
-                                              otherButtonTitles:nil];
-        [alert show];
+        UIAlertController *alert=[UIAlertController alertControllerWithTitle:nil message:string preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:nil]];
+        [APPLICATION.delegate.window.rootViewController presentViewController:alert animated:YES completion:nil];        
     });
 }
 

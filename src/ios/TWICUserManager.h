@@ -28,7 +28,7 @@ static NSString *UserNicknameKey         = @"nickname";
 static NSString *UserOrganizationIdKey   = @"organization_id";
 static NSString *UserOriginKey           = @"origin";
 static NSString *UserPositionKey         = @"position";
-static NSString *UserRolesKey            = @"roles";
+static NSString *UserRoleKey             = @"role";
 
 //LOCAL Attributes
 static NSString *UserConnectionStateKey  = @"connection_state";
@@ -85,6 +85,7 @@ typedef enum : NSUInteger {
 -(void)setConnectedUserStateForUserID:(NSNumber *)userID;
 -(void)setDisconnectedUserStateForUserID:(NSNumber *)userID;
 -(void)setAskPermission:(NSString *)askPermission forUserID:(NSNumber *)userID toValue:(BOOL)value;
+-(void)setRoleToCurrentUser:(NSString *)role;
 -(BOOL)isUserSharingCamera:(NSDictionary*)user;
 -(BOOL)isUserSharingScreen:(NSDictionary*)user;
 -(BOOL)isUserSharingAudio:(NSDictionary*)user;

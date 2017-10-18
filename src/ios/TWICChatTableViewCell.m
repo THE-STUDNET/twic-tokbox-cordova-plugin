@@ -30,7 +30,7 @@
 }
 
 -(void)prepareForReuse{
-    
+    [super prepareForReuse];
 }
 
 -(void)configureSkin{
@@ -51,6 +51,17 @@
         NSDictionary *user = [[TWICUserManager sharedInstance]userWithUserID:message[MessageUserIdKey]];
         self.userDisplayNameLabel.text = [[TWICUserManager sharedInstance]displayNameForUser:user];
         [self.userAvatarImageView setImageWithURL:[NSURL URLWithString:[[TWICUserManager sharedInstance]avatarURLStringForUser:user]]];
+        
+        //if my message, then color in blue
+        if([[TWICUserManager sharedInstance] isCurrentUser:user]){
+            self.supportView.backgroundColor = TWIC_COLOR_BLUE;
+            self.userDisplayNameLabel.textColor = [UIColor whiteColor];
+            self.messageLabel.textColor = [UIColor whiteColor];
+        }else{
+            self.supportView.backgroundColor = [UIColor whiteColor];
+            self.userDisplayNameLabel.textColor = TWIC_COLOR_BLACK;
+            self.messageLabel.textColor = TWIC_COLOR_GREY;
+        }
     }else{
         self.userDisplayNameLabel.text = @"Automatic message";
         self.userAvatarImageView.image = [UIImage imageNamed:@"user"];
@@ -60,7 +71,6 @@
     
     //mark message as read if needed
     if([message[MessageReadKey]boolValue] ==  NO){
-        
     }
 }
 
