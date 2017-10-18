@@ -126,16 +126,34 @@
 }
 
 -(BOOL)isUserSharingAudio:(NSDictionary*)user{
-    OTStream *userStream = [[TWICTokClient sharedInstance]streamForUser:user];
-    return userStream.hasAudio;
+    __block BOOL isSharingAudio = NO;
+    [[[TWICTokClient sharedInstance]streamsForUser:user]enumerateObjectsUsingBlock:^(OTStream * stream, NSUInteger idx, BOOL * _Nonnull stop) {
+        if(stream.hasAudio){
+            isSharingAudio = YES;
+            *stop=YES;
+        }
+    }];
+    return isSharingAudio;
 }
 -(BOOL)isUserSharingScreen:(NSDictionary*)user{
-    OTStream *userStream = [[TWICTokClient sharedInstance]streamForUser:user];
-    return userStream.videoType == OTStreamVideoTypeScreen && userStream.hasVideo;
+    __block BOOL isSharingScreen = NO;
+    [[[TWICTokClient sharedInstance]streamsForUser:user]enumerateObjectsUsingBlock:^(OTStream * stream, NSUInteger idx, BOOL * _Nonnull stop) {
+        if(stream.hasVideo && stream.videoType == OTStreamVideoTypeScreen){
+            isSharingScreen = YES;
+            *stop=YES;
+        }
+    }];
+    return isSharingScreen;
 }
 -(BOOL)isUserSharingCamera:(NSDictionary*)user{
-    OTStream *userStream = [[TWICTokClient sharedInstance]streamForUser:user];
-    return userStream.videoType == OTStreamVideoTypeCamera && userStream.hasVideo;
+    __block BOOL isSharingCamera = NO;
+    [[[TWICTokClient sharedInstance]streamsForUser:user]enumerateObjectsUsingBlock:^(OTStream * stream, NSUInteger idx, BOOL * _Nonnull stop) {
+        if(stream.hasVideo && stream.videoType == OTStreamVideoTypeCamera){
+            isSharingCamera = YES;
+            *stop=YES;
+        }
+    }];
+    return isSharingCamera;
 }
 
 -(NSString *)avatarURLStringForUser:(NSDictionary *)user

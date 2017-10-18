@@ -73,13 +73,13 @@
         }
         else
         {
-            NSString *subscriberConnectionID = [TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row-1];
-            [(TWICStreamCollectionViewCell*)cell configureWithSubscriber:[[TWICTokClient sharedInstance]subscriberForConnectionID:subscriberConnectionID]];
+            NSString *subscriberStreamID = [TWICTokClient sharedInstance].orderedStreamIDs[indexPath.row-1];
+            [(TWICStreamCollectionViewCell*)cell configureWithSubscriber:[[TWICTokClient sharedInstance]subscriberForStreamID:subscriberStreamID]];
         }
     }
     else{
-        NSString *subscriberConnectionID = [TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row];
-        [(TWICStreamCollectionViewCell*)cell configureWithSubscriber:[[TWICTokClient sharedInstance]subscriberForConnectionID:subscriberConnectionID]];
+        NSString *subscriberStreamID = [TWICTokClient sharedInstance].orderedStreamIDs[indexPath.row];
+        [(TWICStreamCollectionViewCell*)cell configureWithSubscriber:[[TWICTokClient sharedInstance]subscriberForStreamID:subscriberStreamID]];
     }
 }
 
@@ -92,10 +92,10 @@
         }
         else
         {
-            [self.delegate TWICStreamGridViewController:self didSelectSubscriberConnectionID:[TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row-1]];
+            [self.delegate TWICStreamGridViewController:self didSelectSubscriberWithStreamID:[TWICTokClient sharedInstance].orderedStreamIDs[indexPath.row-1]];
         }
     }else{
-        [self.delegate TWICStreamGridViewController:self didSelectSubscriberConnectionID:[TWICTokClient sharedInstance].orderedSubscriberIDs[indexPath.row]];
+        [self.delegate TWICStreamGridViewController:self didSelectSubscriberWithStreamID:[TWICTokClient sharedInstance].orderedStreamIDs[indexPath.row]];
     }
 }
 
@@ -136,9 +136,9 @@
 
 -(void)refresh{
     if([TWICTokClient sharedInstance].publisher!=nil){
-        self.streamCount = [TWICTokClient sharedInstance].orderedSubscriberIDs.count + 1;
+        self.streamCount = [TWICTokClient sharedInstance].orderedStreamIDs.count + 1;
     }else{
-        self.streamCount = [TWICTokClient sharedInstance].orderedSubscriberIDs.count;
+        self.streamCount = [TWICTokClient sharedInstance].orderedStreamIDs.count;
     }
     [self.collectionView reloadData];
 }

@@ -48,13 +48,13 @@ static NSString *SignalTypeCancelScreenAuthorization     = @"hgt_cancel_screen_a
 @property (strong, nonatomic) OTPublisher*  publisher;
 
 //streams
--(OTSubscriber *)subscriberForConnectionID:(NSString*)connectionID;
--(NSArray *)orderedSubscriberIDs;
--(OTStream *)streamForUser:(NSDictionary*)user;
+-(OTSubscriber *)subscriberForStreamID:(NSString *)streamID;
+-(NSArray *)orderedStreamIDs;
+-(NSArray *)streamsForUser:(NSDictionary*)user;
 
 //archiving
 @property(nonatomic, readonly)BOOL archiving;
 
 //users <=> streams
--(NSDictionary *)userForSubscriberConnectionID:(NSString *)connectionID;
+-(NSDictionary *)userForStreamID:(NSString *)streamID;
 @end

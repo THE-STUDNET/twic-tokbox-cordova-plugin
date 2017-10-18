@@ -53,7 +53,7 @@
 @property (weak, nonatomic) IBOutlet UIView             *chatNewMessageView;
 
 @property (nonatomic, strong) TWICStreamGridViewController *twicStreamGridViewController;
-@property (nonatomic, copy  ) NSString                     *currentSubscriberConnectionID;
+@property (nonatomic, copy  ) NSString                     *currentSubscriberStreamID;
 @property (nonatomic, assign) BOOL                         backButton;
 
 @property (nonatomic, strong) GRKBlurView      *blurView;
@@ -218,12 +218,12 @@
     }
 }
 
--(void)presentFullScreenSubscriberWithID:(NSString *)subscriberID{
+-(void)presentFullScreenSubscriberWithStreamID:(NSString *)streamID{
     //store the current subscriber id
-    self.currentSubscriberConnectionID = subscriberID;
+    self.currentSubscriberStreamID = streamID;
     
     //add subscriber view
-    OTSubscriber *subscriber = [[TWICTokClient sharedInstance] subscriberForConnectionID:subscriberID];
+    OTSubscriber *subscriber = [[TWICTokClient sharedInstance] subscriberForStreamID:streamID];
     [self.supportView addSubview:subscriber.view];
     [subscriber.view mas_makeConstraints:^(MASConstraintMaker *make)
      {
@@ -237,7 +237,7 @@
     [self addPublisherView];
     
     //change the current speaker label
-    NSDictionary *user = [[TWICTokClient sharedInstance] userForSubscriberConnectionID:subscriberID];
+    NSDictionary *user = [[TWICTokClient sharedInstance] userForStreamID:streamID];
     if(user){
         self.currentSpeakerDisplayName.text = [[TWICUserManager sharedInstance]displayNameForUser:user];
         self.currentSpeakerDisplayName.hidden = NO;
@@ -397,7 +397,7 @@
         self.backButton = NO;
 
         //remove the current subscriber
-        OTSubscriber *currentSubscriber = [[TWICTokClient sharedInstance] subscriberForConnectionID:self.currentSubscriberConnectionID];
+        OTSubscriber *currentSubscriber = [[TWICTokClient sharedInstance] subscriberForStreamID:self.currentSubscriberStreamID];
         [currentSubscriber.view removeFromSuperview];
         
         //remove the publisher view
@@ -493,7 +493,7 @@
     }else{
         //check if it's the current stream ?
         OTSubscriber *subscriber = notification.object;
-        if([subscriber.stream.connection.connectionId isEqualToString:self.currentSubscriberConnectionID]){
+        if([subscriber.stream.streamId isEqualToString:self.currentSubscriberStreamID]){
             [self disconnect:nil];
         }
     }
@@ -550,13 +550,13 @@
     [self addActionsView];
 }
 
--(void)TWICStreamGridViewController:(id)sender didSelectSubscriberConnectionID:(NSString *)subscriberConnectionID
+-(void)TWICStreamGridViewController:(id)sender didSelectSubscriberWithStreamID:(NSString *)subscriberStreamID
 {
     [self.twicStreamGridViewController.view removeFromSuperview];
     self.twicStreamGridViewController = nil;
     
     //present the subscriber in fullscreen
-    [self presentFullScreenSubscriberWithID:subscriberConnectionID];
+    [self presentFullScreenSubscriberWithStreamID:subscriberStreamID];
     
     self.backButton = YES;
 }

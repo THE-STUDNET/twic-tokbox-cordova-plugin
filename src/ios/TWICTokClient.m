@@ -20,7 +20,6 @@
 @property (strong, nonatomic) NSMutableDictionary *allStreams;
 @property (strong, nonatomic) NSMutableDictionary *allSubscribers;
 @property (strong, nonatomic) NSMutableDictionary *allConnections;
-@property (strong, nonatomic) NSMutableArray      *allConnectionsIds;
 @property (strong, nonatomic) NSMutableArray      *backgroundConnectedStreams;
 
 @property (strong, nonatomic) OTSession* session;
@@ -39,8 +38,8 @@
         _sharedClient.allStreams = [[NSMutableDictionary alloc] init];
         _sharedClient.allSubscribers = [[NSMutableDictionary alloc] init];
         _sharedClient.allConnections = [[NSMutableDictionary alloc] init];
-        _sharedClient.allConnectionsIds = [[NSMutableArray alloc] init];
         _sharedClient.backgroundConnectedStreams = [[NSMutableArray alloc] init];
+        
         // application background/foreground monitoring for publish/subscribe video
         // toggling
         [[NSNotificationCenter defaultCenter] addObserver:_sharedClient
@@ -179,17 +178,14 @@
     [[TWICFirebaseClient sharedInstance]unregisterConnectedUser];
     
     // remove all subscriber views from video container
-    for (int i = 0; i < [self.allConnectionsIds count]; i++)
-    {
-        OTSubscriber *subscriber = [self.allSubscribers valueForKey:[self.allConnectionsIds objectAtIndex:i]];
+    [[self.allSubscribers allValues]enumerateObjectsUsingBlock:^(OTSubscriber *subscriber, NSUInteger idx, BOOL * _Nonnull stop) {
         [subscriber.view removeFromSuperview];
-    }
+    }];
     
     [self.publisher.view removeFromSuperview];
     
     [self.allSubscribers removeAllObjects];
     [self.allConnections removeAllObjects];
-    [self.allConnectionsIds removeAllObjects];
     [self.allStreams removeAllObjects];
     self.publisher = nil;
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SESSION_DISCONNECTED object:session];
@@ -311,31 +307,31 @@
 - (void)session:(nonnull OTSession*)session streamDestroyed:(nonnull OTStream*)stream
 {
     // get subscriber for this stream
-    OTSubscriber *subscriber = [self.allSubscribers objectForKey:stream.connection.connectionId];
-    
-    //retrieve the user
-    NSData *data = [stream.connection.data dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
-                                                             options:NSJSONReadingMutableContainers
-                                                               error:nil];
-    NSDictionary *user = [[TWICUserManager sharedInstance]userWithUserID:dataJson[UserIdKey]];
+    OTSubscriber *subscriber = [self.allSubscribers objectForKey:stream.streamId];
+    if(subscriber){
+        //retrieve the user
+        NSData *data = [stream.connection.data dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
+                                                                 options:NSJSONReadingMutableContainers
+                                                                   error:nil];
+        NSDictionary *user = [[TWICUserManager sharedInstance]userWithUserID:dataJson[UserIdKey]];
 
-    //need to check the reason "force unpublished?"
-    //add a message
-    [[TWICMessageManager sharedInstance]addMessage:@{MessageTextKey:[NSString stringWithFormat:@"%@ stream has been turned off",[[TWICUserManager sharedInstance]displayNameForUser:user]],
-                                                     MessageUserIdKey:user[UserIdKey],
-                                                     MessageIdKey:[[TWICMessageManager sharedInstance]lastMessageID],
-                                                     MessageReadKey:@(NO)}];
-    
-    // remove from superview
-    [subscriber.view removeFromSuperview];
-    
-    [self.allSubscribers removeObjectForKey:stream.connection.connectionId];
-    [self.allConnectionsIds removeObject:stream.connection.connectionId];
-    [self.allStreams removeObjectForKey:stream.connection.connectionId];
-    
-    //disconnect the user
-    [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:subscriber];
+        //need to check the reason "force unpublished?"
+        //add a message
+        [[TWICMessageManager sharedInstance]addMessage:@{MessageTextKey:[NSString stringWithFormat:@"%@ stream has been turned off",[[TWICUserManager sharedInstance]displayNameForUser:user]],
+                                                         MessageUserIdKey:user[UserIdKey],
+                                                         MessageIdKey:[[TWICMessageManager sharedInstance]lastMessageID],
+                                                         MessageReadKey:@(NO)}];
+        
+        // remove from superview
+        [subscriber.view removeFromSuperview];
+        
+        [self.allSubscribers removeObjectForKey:stream.streamId];
+        [self.allStreams removeObjectForKey:stream.streamId];
+        
+        //disconnect the user
+        [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:subscriber];
+    }
 }
 
 #pragma mark - Signal Management
@@ -465,10 +461,9 @@
 }
 
 -(void)sendSignal:(NSString *)signalName toUser:(NSDictionary*)user{
-    OTConnection *userConnection = [self connectionForUser:user];
-    if(userConnection){
-        [self.session signalWithType:signalName string:nil connection:userConnection error:nil];
-    }
+    [[self connectionsForUser:user]enumerateObjectsUsingBlock:^(OTConnection *  _Nonnull connection, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.session signalWithType:signalName string:nil connection:connection error:nil];
+    }];
 }
 
 
@@ -518,8 +513,6 @@
 
 - (void)publisher:(OTPublisherKit *)publisher streamCreated:(OTStream *)stream
 {
-    // create self subscriber
-    //[self createSubscriber:stream];
 }
 
 #pragma mark - Subscriber events
@@ -527,9 +520,9 @@
 {
     // create subscriber
     OTSubscriber *sub = (OTSubscriber *)subscriber;
-    [self.allSubscribers setObject:subscriber forKey:sub.stream.connection.connectionId];
-    [self.allConnectionsIds addObject:sub.stream.connection.connectionId];
-    [self.allStreams setObject:sub.stream forKey:sub.stream.connection.connectionId];
+    [self.allSubscribers setObject:subscriber forKey:sub.stream.streamId];
+//    [self.allConnectionsIds addObject:sub.stream.connection.connectionId];
+    [self.allStreams setObject:sub.stream forKey:sub.stream.streamId];
     
     //video is now available
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SUBSCRIBER_CONNECTED object:sub];
@@ -618,18 +611,19 @@
     });
 }
 
--(OTSubscriber *)subscriberForConnectionID:(NSString *)connectionID
+-(OTSubscriber *)subscriberForStreamID:(NSString *)streamID
 {
-    return [self.allSubscribers objectForKey:connectionID];
+    return [self.allSubscribers objectForKey:streamID];
 }
 
--(NSArray *)orderedSubscriberIDs
+-(NSArray *)orderedStreamIDs
 {
-    return self.allConnectionsIds;
+    return [self.allSubscribers allKeys];//Not ordered !!
 }
 
--(OTStream *)streamForUser:(NSDictionary*)user
+-(NSArray *)streamsForUser:(NSDictionary*)user
 {
+    NSMutableArray *streams = [NSMutableArray array];
     for(OTStream *stream in [self.allStreams allValues])
     {
         NSData *data = [stream.connection.data dataUsingEncoding:NSUTF8StringEncoding];
@@ -637,14 +631,15 @@
                                                                  options:NSJSONReadingMutableContainers
                                                                    error:nil];
         if([user[UserIdKey] isEqualToNumber:dataJson[UserIdKey]]){
-            return stream;
+            [streams addObject:stream];
         }
     }
-    return nil;
+    return streams;
 }
 
--(OTConnection *)connectionForUser:(NSDictionary *)user
+-(NSArray *)connectionsForUser:(NSDictionary *)user
 {
+    NSMutableArray *connections = [NSMutableArray array];
     for(OTConnection *connection in [self.allConnections allValues])
     {
         NSData *data = [connection.data dataUsingEncoding:NSUTF8StringEncoding];
@@ -652,14 +647,14 @@
                                                                  options:NSJSONReadingMutableContainers
                                                                    error:nil];
         if([user[UserIdKey] isEqualToNumber:dataJson[UserIdKey]]){
-            return connection;
+            [connections addObject:connection];
         }
     }
-    return nil;
+    return connections;
 }
 
--(NSDictionary *)userForSubscriberConnectionID:(NSString *)connectionID{
-    OTSubscriber *subscriber = self.allSubscribers[connectionID];
+-(NSDictionary *)userForStreamID:(NSString *)streamID{
+    OTSubscriber *subscriber = self.allSubscribers[streamID];
     if(subscriber){
         NSData *data = [subscriber.stream.connection.data dataUsingEncoding:NSUTF8StringEncoding];
         NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
