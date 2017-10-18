@@ -317,12 +317,18 @@
     [[TWICMessageManager sharedInstance]markMessagesAsRead];
     //hide the new message view
     self.chatNewMessageView.hidden = YES;
+    //update chat button color
+    self.chatButton.backgroundColor = TWIC_COLOR_BLUE;
+    self.chatButton.alpha = 1.0;
 }
 
 -(void)hideChatViewController
 {
     self.isChatOpened = NO;
     self.footerHeightConstraint.constant = FOOTER_VIEW_DEFAULT_HEIGHT;
+    //update chat button color
+    self.chatButton.backgroundColor = [UIColor blackColor];
+    self.chatButton.alpha = TWIC_ALPHA;
 }
 
 -(void)hideChatControls{

@@ -26,6 +26,8 @@ static NSString *HangoutActionForceMute             = @"forceMute";
 static NSString *HangoutActionForceUnpusblish       = @"forceUnpublish";
 static NSString *HangoutActionKick                  = @"kick";
 
+static NSString *HangoutRolesKey                    = @"roles";
+
 @interface TWICHangoutManager : NSObject
 + (TWICHangoutManager *)sharedInstance;
 

@@ -200,6 +200,10 @@
     [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_USER_DISCONNECTED object:user];
 }
 
+-(void)setRoleToCurrentUser:(NSString *)role{
+    [(NSMutableDictionary*)self.currentUser setValue:role forKey:UserRoleKey];
+}
+
 -(void)setAskPermission:(NSString *)askPermission forUserID:(NSNumber *)userID toValue:(BOOL)value{
     NSMutableDictionary *user = (NSMutableDictionary*)[self userWithUserID:userID];
     user[askPermission] = @(value);

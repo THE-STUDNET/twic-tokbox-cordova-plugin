@@ -68,6 +68,14 @@
 -(void)connect{
     [[TWICAPIClient sharedInstance]tokboxDataWithCompletionBlock:^(NSDictionary *data)
      {
+         //set role to current user
+         if(data[@"role"]==nil){
+             [[TWICUserManager sharedInstance] setRoleToCurrentUser:@"user"];
+         }else{
+             [[TWICUserManager sharedInstance] setRoleToCurrentUser:data[@"role"]];
+         }
+         
+         //connect to the session
          [self connectToSession:data[@"session"] withUserToken:data[@"token"]];
      }
                                                     failureBlock:^(NSError *error)
