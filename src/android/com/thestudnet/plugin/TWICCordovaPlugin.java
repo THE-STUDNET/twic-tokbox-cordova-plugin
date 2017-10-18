@@ -19,7 +19,7 @@ import com.thestudnet.twicandroidplugin.events.EventBus;
 public class TWICCordovaPlugin extends CordovaPlugin {
 
     private Context mContext;
-    private boolean registered false;
+    private boolean registered = false;
 
     @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
