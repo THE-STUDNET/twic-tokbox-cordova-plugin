@@ -19,12 +19,19 @@ import com.thestudnet.twicandroidplugin.events.EventBus;
 public class TWICCordovaPlugin extends CordovaPlugin {
 
     private Context mContext;
+    private boolean registered false;
 
     @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("launchHangout")) {
-            // Register bus events
-            EventBus.getInstance().register(this);
+
+            if(!registered) {
+                // Set local variable
+                registered = true;
+                // Register bus events
+                EventBus.getInstance().register(this);
+            }
+
             cordova.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -48,8 +55,6 @@ public class TWICCordovaPlugin extends CordovaPlugin {
     public void OnPluginInteraction(com.thestudnet.twicandroidplugin.events.PluginInteraction.OnPluginInteractionEvent event) {
         Log.d("TWICCordovaPlugin", "IN OnPluginInteraction");
         if(event.getType() == com.thestudnet.twicandroidplugin.events.PluginInteraction.Type.IS_INITIALIZED) {
-            // Unregister bus events
-            EventBus.getInstance().unregister(this);
             // Launch main activity
             Intent intent = new Intent(mContext, com.thestudnet.twicandroidplugin.activities.TWICAndroidPluginActivity.class);
             cordova.getActivity().startActivity(intent);
