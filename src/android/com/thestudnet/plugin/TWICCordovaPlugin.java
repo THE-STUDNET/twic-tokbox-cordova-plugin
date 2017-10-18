@@ -48,16 +48,12 @@ public class TWICCordovaPlugin extends CordovaPlugin {
     public void OnPluginInteraction(com.thestudnet.twicandroidplugin.events.PluginInteraction.OnPluginInteractionEvent event) {
         Log.d("TWICCordovaPlugin", "IN OnPluginInteraction");
         if(event.getType() == com.thestudnet.twicandroidplugin.events.PluginInteraction.Type.IS_INITIALIZED) {
+            // Unregister bus events
+            EventBus.getInstance().unregister(this);
+            // Launch main activity
             Intent intent = new Intent(mContext, com.thestudnet.twicandroidplugin.activities.TWICAndroidPluginActivity.class);
             cordova.getActivity().startActivity(intent);
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        // Unregister bus events
-        EventBus.getInstance().unregister(this);
-        super.onDestroy();
     }
 
 }
