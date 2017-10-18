@@ -19,19 +19,17 @@ import com.thestudnet.twicandroidplugin.events.EventBus;
 public class TWICCordovaPlugin extends CordovaPlugin {
 
     private Context mContext;
-    private boolean registered = false;
+
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+        // Register bus events
+        EventBus.getInstance().register(this);
+    }
 
     @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("launchHangout")) {
-
-            if(!registered) {
-                // Set local variable
-                registered = true;
-                // Register bus events
-                EventBus.getInstance().register(this);
-            }
-
             cordova.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
