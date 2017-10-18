@@ -48,8 +48,11 @@
                                                  @"download":@"download"}
                               },
                       SettingsFirebaseKey:@{
-                              SettingsUrlKey:@"https://new2017-263e1.firebaseio.com",
-                              SettingsAuthTokenKey:@"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhZG1pbiI6ZmFsc2UsImRlYnVnIjpmYWxzZSwiZXhwIjoxNTA2MDk2Njg3LCJkIjp7InVpZCI6IjEifSwidiI6MCwiaWF0IjoxNDg4MjczNDg1fQ.QbOwg_gMTodjO8TRRVdll4bVewwuVFl_GLzyOTWEkZE"
+                              SettingsFirebaseGoogleAppIdKey:@"1:676747833735:ios:91cf23adbd90d67c",
+                              SettingsFirebaseGCMSenderIdKey:@"676747833735",
+                              SettingsFirebaseGoogleAppIdKey:@"AIzaSyAI49slJORKGIsfToSN-Q1eB7S079a9ATc",
+                              SettingsFirebaseClientIDKey:@"676747833735-f05geh1chf15r7v4v7bp78n6bsfi0rjl.apps.googleusercontent.com",
+                              SettingsFirebaseDatabaseUrlKey:@"https://version2-bd6b5.firebaseio.com"
                               },
                       SettingsWSKey:@{
                               SettingsAuthTokenKey:@"8475756d6741e60a5c04cbcb34ec79a66f1aa38e",
