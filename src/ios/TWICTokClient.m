@@ -549,6 +549,18 @@
     [self showAlert:[NSString stringWithFormat:@"The subscriber could not connect to stream: %@",error.localizedDescription]];
 }
 
+-(void)subscriberVideoEnabled:(OTSubscriberKit *)subscriber reason:(OTSubscriberVideoEventReason)reason{
+    if(reason == OTSubscriberVideoEventPublisherPropertyChanged){
+        [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SUBSCRIBER_VIDEO_CHANGED object:subscriber];
+    }
+}
+
+-(void)subscriberVideoDisabled:(OTSubscriberKit *)subscriber reason:(OTSubscriberVideoEventReason)reason{
+    if(reason == OTSubscriberVideoEventPublisherPropertyChanged){
+        [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_SUBSCRIBER_VIDEO_CHANGED object:subscriber];
+    }
+}
+
 - (void)createSubscriber:(OTStream *)stream
 {
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground ||

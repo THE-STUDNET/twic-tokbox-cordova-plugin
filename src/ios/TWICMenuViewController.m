@@ -34,17 +34,20 @@
     
     [self configureSkin];
     
-    [self refreshData];
-    
-    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshUI:) name:TWIC_NOTIFICATION_USER_CONNECTED object:nil];
-    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshUI:) name:TWIC_NOTIFICATION_USER_DISCONNECTED object:nil];
-    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshUI:) name:TWIC_NOTIFICATION_SUBSCRIBER_CONNECTED object:nil];
-    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshUI:) name:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshData:) name:TWIC_NOTIFICATION_USER_CONNECTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshData:) name:TWIC_NOTIFICATION_USER_DISCONNECTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshData:) name:TWIC_NOTIFICATION_SUBSCRIBER_CONNECTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshData:) name:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshData:) name:TWIC_NOTIFICATION_SUBSCRIBER_VIDEO_CHANGED object:nil];
 }
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [self refreshUI:nil];
+    [self refreshData:nil];
+}
+
+-(void)dealloc{
+    NOTIFICATION_CENTER_REMOVE;
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -52,7 +55,7 @@
     return YES;
 }
 
--(void)refreshData{
+-(void)refreshData:(NSNotification *)notification{
     //remove the current user from the list
     self.users = [NSMutableArray arrayWithCapacity:[TWICUserManager sharedInstance].allUsers.count -1];
     for(NSDictionary *user in [TWICUserManager sharedInstance].allUsers){
@@ -60,9 +63,10 @@
             [self.users addObject:user];
         }
     }
+    [self refreshUI];
 }
 
--(void)refreshUI:(NSNotification *)notification{
+-(void)refreshUI{
     self.titleLabel.text = [NSString stringWithFormat:@"%d Members",(int)self.users.count];
     [self.tableView reloadData];
 }
