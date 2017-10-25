@@ -2,6 +2,8 @@ package com.thestudnet.plugin;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.CordovaInterface;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,10 +23,15 @@ public class TWICCordovaPlugin extends CordovaPlugin {
     private Context mContext;
 
     @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+        // Register bus events
+        EventBus.getInstance().register(this);
+    }
+
+    @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         if (action.equals("launchHangout")) {
-            // Register bus events
-            EventBus.getInstance().register(this);
             cordova.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -48,16 +55,10 @@ public class TWICCordovaPlugin extends CordovaPlugin {
     public void OnPluginInteraction(com.thestudnet.twicandroidplugin.events.PluginInteraction.OnPluginInteractionEvent event) {
         Log.d("TWICCordovaPlugin", "IN OnPluginInteraction");
         if(event.getType() == com.thestudnet.twicandroidplugin.events.PluginInteraction.Type.IS_INITIALIZED) {
+            // Launch main activity
             Intent intent = new Intent(mContext, com.thestudnet.twicandroidplugin.activities.TWICAndroidPluginActivity.class);
             cordova.getActivity().startActivity(intent);
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        // Unregister bus events
-        EventBus.getInstance().unregister(this);
-        super.onDestroy();
     }
 
 }
