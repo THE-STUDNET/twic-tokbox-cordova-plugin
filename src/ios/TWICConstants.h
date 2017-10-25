@@ -41,6 +41,7 @@
 #define TWIC_NOTIFICATION_PUBLISHER_DESTROYED             @"tok_publisher_destroyed"
 #define TWIC_NOTIFICATION_PUBLISHER_PUBLISHING            @"tok_publisher_publishing"
 #define TWIC_NOTIFICATION_USER_ASK_SCREEN_AUTHORIZATION   @"tok_user_askscreen_authorization"
+#define TWIC_NOTIFICATION_USER_CANCEL_SCREEN_AUTHORIZATION @"tok_user_cancelscreen_authorization"
 #define TWIC_NOTIFICATION_SESSION_ARCHIVE_STARTED         @"tok_session_archive_started"
 #define TWIC_NOTIFICATION_SESSION_ARCHIVE_STOPPED         @"tok_session_archive_stoped"
 //chat

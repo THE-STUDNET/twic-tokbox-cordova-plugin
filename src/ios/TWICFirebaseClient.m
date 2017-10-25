@@ -56,8 +56,10 @@
                                                        storageBucket:nil
                                                    deepLinkURLScheme:nil];
         
-        //configure the app
-        [FIRApp configureWithOptions:options];
+        //configure the app /// TODO : see how to create many apps at the same time
+        if(FIRApp.defaultApp.options == nil){
+            [FIRApp configureWithOptions:options];
+        }
         
         //authent
         [[FIRAuth auth] signInWithCustomToken:settings[SettingsFirebaseTokenKey]

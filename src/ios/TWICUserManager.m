@@ -36,15 +36,14 @@
             completionBlock:(void (^)())completionBlock
                failureBlock:(void (^)(NSError *))failureBlock
 {
+    self.users = [NSMutableArray array];//reinitialise the objects
     [[TWICAPIClient sharedInstance] detailForUsers:userIds
                                    completionBlock:^(NSArray *data)
     {
         //build user actions
-        for(NSDictionary *userData in data)
-        {
+        for(NSDictionary *userData in data){
             [self.users addObject:[self createUserWithData:userData]];
-        }
-        
+        }        
         completionBlock();
     }
                                            failureBlock:^(NSError *error)
@@ -128,7 +127,7 @@
 -(BOOL)isUserSharingAudio:(NSDictionary*)user{
     __block BOOL isSharingAudio = NO;
     [[[TWICTokClient sharedInstance]streamsForUser:user]enumerateObjectsUsingBlock:^(OTStream * stream, NSUInteger idx, BOOL * _Nonnull stop) {
-        if(stream.hasAudio){
+        if(stream.hasAudio && stream.videoType != OTStreamVideoTypeScreen){
             isSharingAudio = YES;
             *stop=YES;
         }

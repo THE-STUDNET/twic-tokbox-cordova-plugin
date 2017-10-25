@@ -69,6 +69,7 @@
     if([TWICTokClient sharedInstance].publisher)//publishing
     {
         if(indexPath.row == 0){
+            //first remove the publisher from the superview if exist
             [(TWICStreamCollectionViewCell*)cell configureWithPublisher:[TWICTokClient sharedInstance].publisher];
         }
         else

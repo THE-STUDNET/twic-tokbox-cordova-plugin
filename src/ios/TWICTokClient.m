@@ -257,10 +257,15 @@
     
     //check if he was asking for permissions
     if([[TWICUserManager sharedInstance] isUserAskingCameraPermission:user]){
-        [self sendSignal:SignalTypeCameraAuthorization toUser:user];
+        [self sendSignal:SignalTypeCameraAuthorization
+                  toUser:user];
     }
     if([user[UserAskMicrophone]boolValue]){
-        [self.session signalWithType:SignalTypeCancelMicrophoneAuthorization string:nil connection:connection retryAfterReconnect:YES error:nil];
+        [self.session signalWithType:SignalTypeCancelMicrophoneAuthorization
+                              string:nil
+                          connection:connection
+                 retryAfterReconnect:YES
+                               error:nil];
     }
     
     //send a message
@@ -370,13 +375,24 @@
             }
         }
     }
+    else if([type isEqualToString:SignalTypeScreenAuthorization])
+    {
+        //can the current user process the request
+        if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskDevice]){
+            //check if this user has already send this request
+            if([[TWICUserManager sharedInstance]isUserAskingScreenPermission:signaledUser] == NO){
+                [[TWICUserManager sharedInstance]setAskPermission:UserAskScreen forUserID:signaledUser[UserIdKey] toValue:YES];
+                [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_USER_ASK_SCREEN_AUTHORIZATION object:signaledUser];
+            }
+        }
+    }
     else if([type isEqualToString:SignalTypeCancelScreenAuthorization]){
         //can the current user process the request
         if([[TWICHangoutManager sharedInstance] canUser:currentUser doAction:HangoutActionAskScreen]){
             //check if this user has already send this request
-            if([[TWICUserManager sharedInstance]isUserAskingMicrophonePermission:signaledUser] == NO){
-                [[TWICUserManager sharedInstance]setAskPermission:UserAskScreen forUserID:signaledUser[UserIdKey] toValue:YES];
-                [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_USER_ASK_SCREEN_AUTHORIZATION object:signaledUser];
+            if([[TWICUserManager sharedInstance]isUserAskingScreenPermission:signaledUser] == NO){
+                [[TWICUserManager sharedInstance]setAskPermission:UserAskScreen forUserID:signaledUser[UserIdKey] toValue:NO];
+                [NOTIFICATION_CENTER postNotificationName:TWIC_NOTIFICATION_USER_CANCEL_SCREEN_AUTHORIZATION object:signaledUser];
             }
         }
     }
@@ -544,6 +560,7 @@
     {
         // create subscriber
         OTSubscriber *subscriber = [[OTSubscriber alloc] initWithStream:stream delegate:self];
+        subscriber.viewScaleBehavior = OTVideoViewScaleBehaviorFit;
         
         // subscribe now
         OTError *error = nil;
@@ -656,13 +673,17 @@
 -(NSDictionary *)userForStreamID:(NSString *)streamID{
     OTSubscriber *subscriber = self.allSubscribers[streamID];
     if(subscriber){
-        NSData *data = [subscriber.stream.connection.data dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
-                                                                 options:NSJSONReadingMutableContainers
-                                                                   error:nil];
-        return [[TWICUserManager sharedInstance]userWithUserID:dataJson[UserIdKey]];
+        return [self userForSubscriber:subscriber];
     }
     return nil;
+}
+
+-(NSDictionary *)userForSubscriber:(OTSubscriber*)subscriber{
+    NSData *data = [subscriber.stream.connection.data dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dataJson = [NSJSONSerialization JSONObjectWithData:data
+                                                             options:NSJSONReadingMutableContainers
+                                                               error:nil];
+    return [[TWICUserManager sharedInstance]userWithUserID:dataJson[UserIdKey]];
 }
 
 -(void)kickUser:(NSDictionary *)user

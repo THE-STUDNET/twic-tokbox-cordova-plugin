@@ -119,9 +119,9 @@
         <resource-file src="src/ios/Resources/screen-green.png" />
         <resource-file src="src/ios/Resources/screen-green@2x.png" />
         <resource-file src="src/ios/Resources/screen-green@3x.png" />
-        <resource-file src="src/ios/Resources/screen.png" />
-        <resource-file src="src/ios/Resources/screen@2x.png" />
-        <resource-file src="src/ios/Resources/screen@3x.png" />
+        <resource-file src="src/ios/Resources/screen-white.png" />
+        <resource-file src="src/ios/Resources/screen-white@2x.png" />
+        <resource-file src="src/ios/Resources/screen-white@3x.png" />
         <resource-file src="src/ios/Resources/send.png" />
         <resource-file src="src/ios/Resources/send@2x.png" />
         <resource-file src="src/ios/Resources/send@3x.png" />
@@ -161,6 +161,13 @@
         <resource-file src="src/ios/Resources/camera-green.png" />
         <resource-file src="src/ios/Resources/camera-green@2x.png" />
         <resource-file src="src/ios/Resources/camera-green@3x.png" />
+        <resource-file src="src/ios/Resources/user-request-screen.png" />
+        <resource-file src="src/ios/Resources/user-request-screen@2x.png" />
+        <resource-file src="src/ios/Resources/user-request-screen@3x.png" />
+        <resource-file src="src/ios/Resources/screen.png" />
+        <resource-file src="src/ios/Resources/screen@2x.png" />
+        <resource-file src="src/ios/Resources/screen@3x.png" />
+
         <!-- Cocoapods -->
         <pods-config ios-min-version="9.0" use-frameworks="true"/>
         <pod id="Firebase/Database" version="~> 3.1" />

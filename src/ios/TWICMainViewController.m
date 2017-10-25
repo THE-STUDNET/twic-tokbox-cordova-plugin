@@ -258,9 +258,7 @@
              make.height.mas_equalTo(PUBLISHER_VIEW_FRAME_HEIGHT);
          }];
 
-        [TWICTokClient sharedInstance].publisher.view.layer.borderColor = [UIColor whiteColor].CGColor;
-        [TWICTokClient sharedInstance].publisher.view.layer.cornerRadius = 5.0f;
-        [TWICTokClient sharedInstance].publisher.view.layer.borderWidth = 1.0f;
+        [TWICTokClient sharedInstance].publisher.view.layer.cornerRadius = TWIC_CORNER_RADIUS;
         [TWICTokClient sharedInstance].publisher.view.clipsToBounds = YES;
         UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(publisherTouched:)];
         [[TWICTokClient sharedInstance].publisher.view addGestureRecognizer:tapAction];
@@ -417,14 +415,12 @@
     }
     else
     {
-        //disconnect, register disconnect event
-        [[TWICAPIClient sharedInstance]registerEventName:HangoutEventLeave completionBlock:^{} failureBlock:^(NSError *error) {}];
+        [SVProgressHUD showWithStatus:@"Disconnecting..."];
         
         //disconnect tokbox
         [[TWICTokClient sharedInstance]disconnect];
         
-        //hide display
-        [self dismissViewControllerAnimated:YES completion:nil];
+        //TODO ? RAISE EXIT EVENT 
     }
 }
 
@@ -473,10 +469,20 @@
 
 -(void)sessionDisconnected:(NSNotification *)notification
 {
+    [SVProgressHUD dismiss];
+    
+    //disconnect, register disconnect event
+    [[TWICAPIClient sharedInstance]registerEventName:HangoutEventLeave
+                                     completionBlock:^{}
+                                        failureBlock:^(NSError *error) {}];
+    
     //disconnect
     [self.twicStreamGridViewController.view removeFromSuperview];
     [self.twicStreamGridViewController removeFromParentViewController];
     self.twicStreamGridViewController = nil;
+    
+    //hide display
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Tok Subscribers Management
@@ -734,7 +740,7 @@
         {
             imageType = [UIImage imageNamed:@"user-request-microphone"];
         }
-        else if([[TWICUserManager sharedInstance]isUserSharingScreen:user])
+        else if([[TWICUserManager sharedInstance]isUserAskingScreenPermission:user])
         {
             imageType = [UIImage imageNamed:@"user-request-screen"];
         }
