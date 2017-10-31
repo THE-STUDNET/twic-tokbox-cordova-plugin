@@ -25,6 +25,7 @@ public class TWICCordovaPlugin extends CordovaPlugin {
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
+        Log.d("TWICCordovaPlugin", "initialize method called");
         // Register bus events
         EventBus.getInstance().register(this);
     }
