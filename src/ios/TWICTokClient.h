@@ -12,15 +12,19 @@
 static NSString *SignalTypeCameraAuthorization           = @"hgt_camera_authorization";
 static NSString *SignalTypeCancelCameraAuthorization     = @"hgt_cancel_camera_authorization";
 static NSString *SignalTypeCancelMicrophoneAuthorization = @"hgt_cancel_microphone_authorization";
+
 static NSString *SignalTypeMicrophoneAuthorization       = @"hgt_microphone_authorization";
 static NSString *SignalTypeCameraRequested               = @"hgt_camera_requested";
 static NSString *SignalTypeMicrophoneRequested           = @"hgt_microphone_requested";
+
 static NSString *SignalTypeForceMuteStream               = @"hgt_force_mute_stream";
 static NSString *SignalTypeForceUnmuteStream             = @"hgt_force_unmute_stream";
 static NSString *SignalTypeKickUser                      = @"hgt_kick_user";
 static NSString *SignalTypeForceUnpublishStream          = @"hgt_force_unpublish_stream";
 static NSString *SignalTypeForceUnpublishScreen          = @"hgt_force_unpublish_screen";
+
 static NSString *SignalTypeScreenRequested               = @"hgt_screen_requested";
+static NSString *SignalTypeScreenAuthorization           = @"hgt_screen_authorization";
 static NSString *SignalTypeCancelScreenAuthorization     = @"hgt_cancel_screen_authorization";
 
 @interface TWICTokClient : NSObject
@@ -49,12 +53,13 @@ static NSString *SignalTypeCancelScreenAuthorization     = @"hgt_cancel_screen_a
 
 //streams
 -(OTSubscriber *)subscriberForStreamID:(NSString *)streamID;
--(NSArray *)orderedSubscriberIDs;
--(OTStream *)streamForUser:(NSDictionary*)user;
+-(NSArray *)orderedStreamIDs;
+-(NSArray *)streamsForUser:(NSDictionary*)user;
 
 //archiving
 @property(nonatomic, readonly)BOOL archiving;
 
 //users <=> streams
--(NSDictionary *)userForSubscriberStreamID:(NSString *)streamID;
+-(NSDictionary *)userForStreamID:(NSString *)streamID;
+-(NSDictionary *)userForSubscriber:(OTSubscriber*)subscriber;
 @end

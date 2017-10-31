@@ -32,11 +32,11 @@
 }
 
 -(void)prepareForReuse{
-    [self.streamedView removeFromSuperview];
+    [[self.contentView viewWithTag:1000] removeFromSuperview];
 }
 
 -(void)configureWithStreamedView:(UIView *)view hasVideo:(BOOL)hasVideo hasAudio:(BOOL)hasAudio{
-    self.streamedView = view;
+    view.tag = 1000;
     [self.contentView insertSubview:view atIndex:0];
     [view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.contentView.mas_top);
@@ -46,12 +46,8 @@
     }];
     self.contentView.clipsToBounds = YES;
     self.contentView.layer.cornerRadius = TWIC_CORNER_RADIUS;
-    self.streamedView.layer.borderColor = [CLEAR_COLOR CGColor];
-//    if(!hasVideo && hasAudio){
-//        self.microphoneImageView.hidden = NO;
-//    }else{
-//        self.microphoneImageView.hidden = YES;
-//    }
+    self.contentView.layer.borderColor = [[UIColor clearColor]CGColor];
+    self.contentView.layer.borderWidth = 0;
     self.microphoneImageView.hidden = YES;
 }
 

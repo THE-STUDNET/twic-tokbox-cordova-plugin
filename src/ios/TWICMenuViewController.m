@@ -34,9 +34,20 @@
     
     [self configureSkin];
     
-    [self refreshData];
-    
-    [self refreshUI];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshData:) name:TWIC_NOTIFICATION_USER_CONNECTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshData:) name:TWIC_NOTIFICATION_USER_DISCONNECTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshData:) name:TWIC_NOTIFICATION_SUBSCRIBER_CONNECTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshData:) name:TWIC_NOTIFICATION_SUBSCRIBER_DISCONNECTED object:nil];
+    [NOTIFICATION_CENTER addObserver:self selector:@selector(refreshData:) name:TWIC_NOTIFICATION_SUBSCRIBER_VIDEO_CHANGED object:nil];
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self refreshData:nil];
+}
+
+-(void)dealloc{
+    NOTIFICATION_CENTER_REMOVE;
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -44,7 +55,7 @@
     return YES;
 }
 
--(void)refreshData{
+-(void)refreshData:(NSNotification *)notification{
     //remove the current user from the list
     self.users = [NSMutableArray arrayWithCapacity:[TWICUserManager sharedInstance].allUsers.count -1];
     for(NSDictionary *user in [TWICUserManager sharedInstance].allUsers){
@@ -52,10 +63,12 @@
             [self.users addObject:user];
         }
     }
+    [self refreshUI];
 }
 
 -(void)refreshUI{
     self.titleLabel.text = [NSString stringWithFormat:@"%d Members",(int)self.users.count];
+    [self.tableView reloadData];
 }
 
 -(void)configureSkin{
@@ -129,23 +142,19 @@
     }
 }
 #pragma mark - <FZAccordionTableViewDelegate> -
-
 - (BOOL)tableView:(FZAccordionTableView *)tableView canInteractWithHeaderAtSection:(NSInteger)section {
     //has actions ?
-    if([[[TWICUserManager sharedInstance]actionsForUser:self.users[section]] count] > 0)
-    {
+    if([[[TWICUserManager sharedInstance]actionsForUser:self.users[section]] count] > 0){
         return YES;
     }
     return NO;
 }
 
-- (void)tableView:(nonnull FZAccordionTableView *)tableView didOpenSection:(NSInteger)section withHeader:(nullable UITableViewHeaderFooterView *)header
-{
+- (void)tableView:(nonnull FZAccordionTableView *)tableView didOpenSection:(NSInteger)section withHeader:(nullable UITableViewHeaderFooterView *)header{
     [(TWICMenuAccordionHeaderView *)header willOpen];
 }
 
-- (void)tableView:(nonnull FZAccordionTableView *)tableView didCloseSection:(NSInteger)section withHeader:(nullable UITableViewHeaderFooterView *)header
-{
+- (void)tableView:(nonnull FZAccordionTableView *)tableView didCloseSection:(NSInteger)section withHeader:(nullable UITableViewHeaderFooterView *)header{
     [(TWICMenuAccordionHeaderView *)header willClose];
 }
 

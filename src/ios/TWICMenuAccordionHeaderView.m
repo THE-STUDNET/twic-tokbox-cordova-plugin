@@ -10,6 +10,7 @@
 #import "TWICConstants.h"
 #import "UIImageView+AFNetworking.h"
 #import "TWICUserManager.h"
+#import "TWICTokClient.h"
 
 @interface TWICMenuAccordionHeaderView()
 @property (weak, nonatomic) IBOutlet UIImageView *avatarImageView;
@@ -28,8 +29,6 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    [NOTIFICATION_CENTER addObserver:self selector:@selector(userConnected:) name:TWIC_NOTIFICATION_USER_CONNECTED object:nil];
-    [NOTIFICATION_CENTER addObserver:self selector:@selector(userDisconnected:) name:TWIC_NOTIFICATION_USER_DISCONNECTED object:nil];
     [self configureSkin];
 }
 
@@ -61,39 +60,25 @@
     }else{
         self.connectionStatusView.backgroundColor = TWIC_COLOR_RED;
     }
-    self.microphoneImageView.hidden = ![[TWICUserManager sharedInstance]isUserSharingAudio:user];
-    self.screenImageView.hidden = ![[TWICUserManager sharedInstance]isUserSharingScreen:user];
-    self.cameraImageView.hidden = ![[TWICUserManager sharedInstance]isUserSharingCamera:user];
     if([[TWICUserManager sharedInstance]actionsForUser:self.user].count > 0){
         self.chevronImageView.hidden = NO;
     }else{
         self.chevronImageView.hidden = YES;
     }
+    [self refreshStreamStates];
 }
 
--(void)willOpen
-{
+-(void)refreshStreamStates{
+    self.microphoneImageView.hidden = ![[TWICUserManager sharedInstance]isUserSharingAudio:self.user];
+    self.screenImageView.hidden = ![[TWICUserManager sharedInstance]isUserSharingScreen:self.user];
+    self.cameraImageView.hidden = ![[TWICUserManager sharedInstance]isUserSharingCamera:self.user];
+}
+
+-(void)willOpen{
     self.chevronImageView.image = [UIImage imageNamed:@"up-arrow"];
 }
 
--(void)willClose
-{
+-(void)willClose{
     self.chevronImageView.image = [UIImage imageNamed:@"down-arrow"];
 }
-
--(void)userConnected:(NSNotification *)notification{
-    NSDictionary *user = notification.object;
-    if([user[UserIdKey] isEqualToNumber:self.user[UserIdKey]])
-    {
-        self.connectionStatusView.backgroundColor = TWIC_COLOR_GREEN;
-    }
-}
--(void)userDisconnected:(NSNotification *)notification{
-    NSDictionary *user = notification.object;
-    if([user[UserIdKey] isEqualToNumber:self.user[UserIdKey]])
-    {
-        self.connectionStatusView.backgroundColor = TWIC_COLOR_RED;
-    }
-}
-
 @end

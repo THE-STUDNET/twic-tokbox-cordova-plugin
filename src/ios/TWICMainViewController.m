@@ -34,6 +34,8 @@
 
 #define FOOTER_VIEW_DEFAULT_HEIGHT      112
 
+#define PUBLISHER_VIEW_TAG              1000
+
 @interface TWICMainViewController ()<UITextFieldDelegate,TWICStreamGridViewControllerDelegate,TWICUserActionsViewControllerDelegate,TWICAlertViewControllerDelegate,TWICMenuViewControllerDelegate,TWICAlertsViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIView             *headerView;
 @property (weak, nonatomic) IBOutlet UIView             *supportView;
@@ -51,7 +53,7 @@
 @property (weak, nonatomic) IBOutlet UIView             *chatNewMessageView;
 
 @property (nonatomic, strong) TWICStreamGridViewController *twicStreamGridViewController;
-@property (nonatomic, copy  ) NSString                     *currentSubcriberStreamID;
+@property (nonatomic, copy  ) NSString                     *currentSubscriberStreamID;
 @property (nonatomic, assign) BOOL                         backButton;
 
 @property (nonatomic, strong) GRKBlurView      *blurView;
@@ -216,12 +218,12 @@
     }
 }
 
--(void)presentFullScreenSubscriberWithID:(NSString *)subscriberID{
+-(void)presentFullScreenSubscriberWithStreamID:(NSString *)streamID{
     //store the current subscriber id
-    self.currentSubcriberStreamID = subscriberID;
+    self.currentSubscriberStreamID = streamID;
     
     //add subscriber view
-    OTSubscriber *subscriber = [[TWICTokClient sharedInstance] subscriberForStreamID:subscriberID];
+    OTSubscriber *subscriber = [[TWICTokClient sharedInstance] subscriberForStreamID:streamID];
     [self.supportView addSubview:subscriber.view];
     [subscriber.view mas_makeConstraints:^(MASConstraintMaker *make)
      {
@@ -235,7 +237,7 @@
     [self addPublisherView];
     
     //change the current speaker label
-    NSDictionary *user = [[TWICTokClient sharedInstance]userForSubscriberStreamID:subscriberID];
+    NSDictionary *user = [[TWICTokClient sharedInstance] userForStreamID:streamID];
     if(user){
         self.currentSpeakerDisplayName.text = [[TWICUserManager sharedInstance]displayNameForUser:user];
         self.currentSpeakerDisplayName.hidden = NO;
@@ -246,6 +248,7 @@
 -(void)addPublisherView{
     if([TWICTokClient sharedInstance].publisher)
     {
+        [TWICTokClient sharedInstance].publisher.view.tag = PUBLISHER_VIEW_TAG;
         [self.supportView addSubview:[TWICTokClient sharedInstance].publisher.view];
         [[TWICTokClient sharedInstance].publisher.view mas_makeConstraints:^(MASConstraintMaker *make)
          {
@@ -255,13 +258,10 @@
              make.height.mas_equalTo(PUBLISHER_VIEW_FRAME_HEIGHT);
          }];
 
-        [TWICTokClient sharedInstance].publisher.view.layer.borderColor = [UIColor whiteColor].CGColor;
-        [TWICTokClient sharedInstance].publisher.view.layer.cornerRadius = 5.0f;
-        [TWICTokClient sharedInstance].publisher.view.layer.borderWidth = 1.0f;
+        [TWICTokClient sharedInstance].publisher.view.layer.cornerRadius = TWIC_CORNER_RADIUS;
         [TWICTokClient sharedInstance].publisher.view.clipsToBounds = YES;
         UITapGestureRecognizer *tapAction = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(publisherTouched:)];
         [[TWICTokClient sharedInstance].publisher.view addGestureRecognizer:tapAction];
-        
         
         //increase the height constraint for buttons
         self.currentUserButtonsViewTopConstraint.constant = PUBLISHER_VIEW_FRAME_HEIGHT + PUBLISHER_VIEW_FRAME_DEFAULT_Y;
@@ -395,11 +395,11 @@
         self.backButton = NO;
 
         //remove the current subscriber
-        OTSubscriber *currentSubscriber = [[TWICTokClient sharedInstance] subscriberForStreamID:self.currentSubcriberStreamID];
+        OTSubscriber *currentSubscriber = [[TWICTokClient sharedInstance] subscriberForStreamID:self.currentSubscriberStreamID];
         [currentSubscriber.view removeFromSuperview];
         
         //remove the publisher view
-        [[TWICTokClient sharedInstance].publisher.view removeFromSuperview];
+        [[self.supportView viewWithTag:PUBLISHER_VIEW_TAG] removeFromSuperview];
         
         //recalculate the good constraints for action buttons
         if(self.currentUserButtonsView){
@@ -415,14 +415,12 @@
     }
     else
     {
-        //disconnect, register disconnect event
-        [[TWICAPIClient sharedInstance]registerEventName:HangoutEventLeave completionBlock:^{} failureBlock:^(NSError *error) {}];
+        [SVProgressHUD showWithStatus:@"Disconnecting..."];
         
         //disconnect tokbox
         [[TWICTokClient sharedInstance]disconnect];
         
-        //hide display
-        [self dismissViewControllerAnimated:YES completion:nil];
+        //TODO ? RAISE EXIT EVENT 
     }
 }
 
@@ -433,7 +431,6 @@
     }else{
         [self hideChatViewController];
     }
-    
 }
 
 #pragma mark - TokSession Management
@@ -472,10 +469,20 @@
 
 -(void)sessionDisconnected:(NSNotification *)notification
 {
+    [SVProgressHUD dismiss];
+    
+    //disconnect, register disconnect event
+    [[TWICAPIClient sharedInstance]registerEventName:HangoutEventLeave
+                                     completionBlock:^{}
+                                        failureBlock:^(NSError *error) {}];
+    
     //disconnect
     [self.twicStreamGridViewController.view removeFromSuperview];
     [self.twicStreamGridViewController removeFromParentViewController];
     self.twicStreamGridViewController = nil;
+    
+    //hide display
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Tok Subscribers Management
@@ -487,15 +494,12 @@
 }
 
 -(void)subscriberDisconnected:(NSNotification *)notification{
-    if(self.twicStreamGridViewController)
-    {
+    if(self.twicStreamGridViewController){
         [self.twicStreamGridViewController refresh];
-    }
-    else
-    {
+    }else{
         //check if it's the current stream ?
         OTSubscriber *subscriber = notification.object;
-        if([subscriber.stream.streamId isEqualToString:self.currentSubcriberStreamID]){
+        if([subscriber.stream.streamId isEqualToString:self.currentSubscriberStreamID]){
             [self disconnect:nil];
         }
     }
@@ -504,9 +508,11 @@
 #pragma mark - Tok Publisher Management
 -(void)publisherDestroyed:(NSNotification *)notification{
     
-    if(self.twicStreamGridViewController)
-    {
+    if(self.twicStreamGridViewController){
         [self.twicStreamGridViewController refresh];
+    }else{
+        //remove the publisher view
+        [[self.supportView viewWithTag:PUBLISHER_VIEW_TAG]removeFromSuperview];
     }
     [self.view setNeedsDisplay];
     //add current user action buttons
@@ -514,10 +520,12 @@
 }
 
 -(void)publisherPublishing:(NSNotification *)notification{
-    if(self.twicStreamGridViewController)
-    {
+    if(self.twicStreamGridViewController){
         [self.twicStreamGridViewController refresh];
+    }else{
+        [self addPublisherView];
     }
+    [self.view setNeedsDisplay];
     //remove current user action buttons
     self.currentUserButtonsView.hidden = YES;
 }
@@ -548,13 +556,13 @@
     [self addActionsView];
 }
 
--(void)TWICStreamGridViewController:(id)sender didSelectSubscriberID:(NSString *)subscriberID
+-(void)TWICStreamGridViewController:(id)sender didSelectSubscriberWithStreamID:(NSString *)subscriberStreamID
 {
     [self.twicStreamGridViewController.view removeFromSuperview];
     self.twicStreamGridViewController = nil;
     
     //present the subscriber in fullscreen
-    [self presentFullScreenSubscriberWithID:subscriberID];
+    [self presentFullScreenSubscriberWithStreamID:subscriberStreamID];
     
     self.backButton = YES;
 }
@@ -732,7 +740,7 @@
         {
             imageType = [UIImage imageNamed:@"user-request-microphone"];
         }
-        else if([[TWICUserManager sharedInstance]isUserSharingScreen:user])
+        else if([[TWICUserManager sharedInstance]isUserAskingScreenPermission:user])
         {
             imageType = [UIImage imageNamed:@"user-request-screen"];
         }
