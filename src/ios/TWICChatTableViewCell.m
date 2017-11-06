@@ -36,9 +36,9 @@
 -(void)configureSkin{
     self.userAvatarImageView.layer.cornerRadius = self.userAvatarImageView.frame.size.width / 2;
     self.userDisplayNameLabel.textColor = TWIC_COLOR_BLACK;
-    self.userDisplayNameLabel.font = [UIFont boldSystemFontOfSize:12];
+    self.userDisplayNameLabel.font = [UIFont boldSystemFontOfSize:14];
     self.messageLabel.textColor = TWIC_COLOR_GREY;
-    self.messageLabel.font = [UIFont systemFontOfSize:12];
+    self.messageLabel.font = [UIFont systemFontOfSize:14];
     self.supportView.backgroundColor = [UIColor whiteColor];
     self.supportView.layer.cornerRadius = TWIC_CORNER_RADIUS;
     self.backgroundColor = [UIColor clearColor];

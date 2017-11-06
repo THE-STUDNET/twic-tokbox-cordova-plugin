@@ -320,6 +320,7 @@
     //update chat button color
     self.chatButton.backgroundColor = TWIC_COLOR_BLUE;
     self.chatButton.alpha = 1.0;
+    [self.chatButton setImage:[UIImage imageNamed:@"chat-white"] forState:UIControlStateNormal];
 }
 
 -(void)hideChatViewController
@@ -329,6 +330,7 @@
     //update chat button color
     self.chatButton.backgroundColor = [UIColor blackColor];
     self.chatButton.alpha = TWIC_ALPHA;
+    [self.chatButton setImage:[UIImage imageNamed:@"chat"] forState:UIControlStateNormal];
 }
 
 -(void)hideChatControls{
@@ -393,6 +395,8 @@
     if(self.backButton)
     {
         self.backButton = NO;
+        //update the button
+        [self.disconnectButton setImage:[UIImage imageNamed:@"disconnect"] forState:UIControlStateNormal];
 
         //remove the current subscriber
         OTSubscriber *currentSubscriber = [[TWICTokClient sharedInstance] subscriberForStreamID:self.currentSubscriberStreamID];
@@ -565,6 +569,7 @@
     [self presentFullScreenSubscriberWithStreamID:subscriberStreamID];
     
     self.backButton = YES;
+    [self.disconnectButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
 }
 
 #pragma mark - Popup views management
