@@ -8,7 +8,7 @@
 
 #import "FZAccordionTableView.h"
 
-static const CGFloat kDefaultAccordionHeaderViewHeight = 60.0;
+static const CGFloat kDefaultAccordionHeaderViewHeight = 70.0;
 
 @interface TWICMenuAccordionHeaderView : FZAccordionTableViewHeaderView
 

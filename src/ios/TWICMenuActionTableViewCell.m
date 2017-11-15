@@ -26,7 +26,7 @@
 
 -(void)configureSkin{
     self.backgroundColor = CLEAR_COLOR;
-    self.contentView.backgroundColor = CLEAR_COLOR;
+    self.contentView.backgroundColor = TWIC_COLOR_BLACK;
     self.actionTitleLabel.textColor = [UIColor whiteColor];
     self.adminActionTitleLabel.textColor = [UIColor whiteColor];
     self.adminActionTitleLabel.backgroundColor = TWIC_COLOR_RED;

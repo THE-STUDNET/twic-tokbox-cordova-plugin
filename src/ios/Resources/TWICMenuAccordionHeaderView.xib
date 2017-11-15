@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,7 +19,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="414" height="60"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="{DisplayName}" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="6" translatesAutoresizingMaskIntoConstraints="NO" id="529-R1-yiG">
-                            <rect key="frame" x="56" y="20.5" width="113.5" height="20.5"/>
+                            <rect key="frame" x="72" y="20.5" width="113" height="20.5"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <color key="textColor" red="0.80000007149999997" green="0.0" blue="0.53333336109999996" alpha="1" colorSpace="deviceRGB"/>
                             <nil key="highlightedColor"/>
@@ -32,24 +32,24 @@
                             </constraints>
                         </view>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="bOp-1a-Zm7">
-                            <rect key="frame" x="8" y="10" width="40" height="40"/>
+                            <rect key="frame" x="16" y="10" width="40" height="40"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="40" id="6bK-QR-aSa"/>
                                 <constraint firstAttribute="width" constant="40" id="KVg-mO-J6P"/>
                             </constraints>
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="up-arrow.png" translatesAutoresizingMaskIntoConstraints="NO" id="elM-Uo-HAD">
-                            <rect key="frame" x="392" y="25.5" width="14" height="8"/>
+                            <rect key="frame" x="384" y="25.5" width="14" height="8"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="14" id="uwF-cu-mhz"/>
                             </constraints>
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="screen-green.png" translatesAutoresizingMaskIntoConstraints="NO" id="TlI-vK-qye">
-                            <rect key="frame" x="369" y="22.5" width="15" height="15"/>
+                            <rect key="frame" x="361" y="22.5" width="15" height="15"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="microphone-green.png" translatesAutoresizingMaskIntoConstraints="NO" id="efA-I7-grd">
-                            <rect key="frame" x="346" y="22.5" width="15" height="15"/>
+                            <rect key="frame" x="338" y="22.5" width="15" height="15"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="15" id="qBd-nt-kka"/>
@@ -57,7 +57,7 @@
                             </constraints>
                         </imageView>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ORj-kw-7fF">
-                            <rect key="frame" x="8" y="10" width="10" height="10"/>
+                            <rect key="frame" x="16" y="10" width="10" height="10"/>
                             <color key="backgroundColor" red="1" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="10" id="GEv-Hv-1RB"/>
@@ -65,7 +65,7 @@
                             </constraints>
                         </view>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="camera-green.png" translatesAutoresizingMaskIntoConstraints="NO" id="8jm-Ja-YN8">
-                            <rect key="frame" x="323" y="22.5" width="15" height="15"/>
+                            <rect key="frame" x="315" y="22.5" width="15" height="15"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="15" id="YUl-lZ-pgL"/>
@@ -77,8 +77,8 @@
                     <constraints>
                         <constraint firstItem="8jm-Ja-YN8" firstAttribute="centerY" secondItem="efA-I7-grd" secondAttribute="centerY" id="13F-O4-9I2"/>
                         <constraint firstAttribute="trailing" secondItem="Etg-G3-Srz" secondAttribute="trailing" id="3c8-Qx-dsf"/>
-                        <constraint firstAttribute="trailing" secondItem="elM-Uo-HAD" secondAttribute="trailing" constant="8" id="3v0-0j-Kr5"/>
-                        <constraint firstItem="529-R1-yiG" firstAttribute="leading" secondItem="bOp-1a-Zm7" secondAttribute="trailing" constant="8" id="534-6Y-jSz"/>
+                        <constraint firstAttribute="trailing" secondItem="elM-Uo-HAD" secondAttribute="trailing" constant="16" id="3v0-0j-Kr5"/>
+                        <constraint firstItem="529-R1-yiG" firstAttribute="leading" secondItem="bOp-1a-Zm7" secondAttribute="trailing" constant="16" id="534-6Y-jSz"/>
                         <constraint firstItem="8jm-Ja-YN8" firstAttribute="width" secondItem="efA-I7-grd" secondAttribute="width" id="5YT-MN-0qP"/>
                         <constraint firstAttribute="centerY" secondItem="529-R1-yiG" secondAttribute="centerY" id="6AZ-LH-ISs"/>
                         <constraint firstItem="8jm-Ja-YN8" firstAttribute="height" secondItem="efA-I7-grd" secondAttribute="height" id="H9H-H1-6da"/>
@@ -91,7 +91,7 @@
                         <constraint firstItem="elM-Uo-HAD" firstAttribute="leading" secondItem="TlI-vK-qye" secondAttribute="trailing" constant="8" id="esU-8f-kx1"/>
                         <constraint firstItem="elM-Uo-HAD" firstAttribute="centerY" secondItem="Y9z-3k-J3L" secondAttribute="centerY" id="ewj-TT-rel"/>
                         <constraint firstAttribute="bottom" secondItem="Etg-G3-Srz" secondAttribute="bottom" id="gpa-Wo-lfq"/>
-                        <constraint firstItem="bOp-1a-Zm7" firstAttribute="leading" secondItem="Y9z-3k-J3L" secondAttribute="leading" constant="8" id="khK-Qw-3RQ"/>
+                        <constraint firstItem="bOp-1a-Zm7" firstAttribute="leading" secondItem="Y9z-3k-J3L" secondAttribute="leading" constant="16" id="khK-Qw-3RQ"/>
                         <constraint firstItem="efA-I7-grd" firstAttribute="centerY" secondItem="Y9z-3k-J3L" secondAttribute="centerY" id="re8-0g-BP5"/>
                         <constraint firstItem="ORj-kw-7fF" firstAttribute="leading" secondItem="bOp-1a-Zm7" secondAttribute="leading" id="shh-wU-S7G"/>
                         <constraint firstItem="TlI-vK-qye" firstAttribute="leading" secondItem="efA-I7-grd" secondAttribute="trailing" constant="8" id="vgG-Wn-oRX"/>

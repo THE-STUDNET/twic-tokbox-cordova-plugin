@@ -17,10 +17,10 @@
 #define TWIC_COLOR_RED          [@"#DF5656" representedColor]
 #define TWIC_COLOR_GREY         [@"#494C56" representedColor]
 #define TWIC_COLOR_GREEN        [@"#54B55A" representedColor]
-#define TWIC_COLOR_BLACK        [@"#444444" representedColor]
+#define TWIC_COLOR_BLACK        [@"#373B44" representedColor]
 #define TWIC_COLOR_BLUE         [@"5886EE"  representedColor]
 #define TWIC_CORNER_RADIUS      5
-#define TWIC_ALPHA              0.8f
+#define TWIC_ALPHA              0.5f
 
 #define TWIC_STORYBOARD         [UIStoryboard storyboardWithName:@"TWICCordovaPlugin" bundle:nil]
 

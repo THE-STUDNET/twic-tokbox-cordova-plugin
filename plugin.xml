@@ -167,6 +167,9 @@
         <resource-file src="src/ios/Resources/screen.png" />
         <resource-file src="src/ios/Resources/screen@2x.png" />
         <resource-file src="src/ios/Resources/screen@3x.png" />
+        <resource-file src="src/ios/Resources/back.png" />
+        <resource-file src="src/ios/Resources/back@2x.png" />
+        <resource-file src="src/ios/Resources/back@3x.png" />
 
         <!-- Cocoapods -->
         <pods-config ios-min-version="9.0" use-frameworks="true"/>

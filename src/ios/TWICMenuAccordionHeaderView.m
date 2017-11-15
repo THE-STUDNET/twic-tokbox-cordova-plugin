@@ -37,10 +37,15 @@
 }
 
 -(void)configureSkin{
+    self.backgroundColor = CLEAR_COLOR;
+    self.contentView.backgroundColor = TWIC_COLOR_BLACK;
     self.connectionStatusView.layer.cornerRadius = self.connectionStatusView.frame.size.width / 2;
     self.avatarImageView.layer.cornerRadius = self.avatarImageView.frame.size.width / 2;
+    self.avatarImageView.layer.borderColor = [[UIColor whiteColor]CGColor];
+    self.avatarImageView.layer.borderWidth = 1;
     self.separatorView.backgroundColor = TWIC_COLOR_GREY;
     self.displayNameLabel.textColor = [UIColor whiteColor];
+    self.displayNameLabel.font = [UIFont boldSystemFontOfSize:15];
     self.connectionStatusView.backgroundColor = TWIC_COLOR_RED;
     self.chevronImageView.image = [UIImage imageNamed:@"down-arrow"];
 }
@@ -53,7 +58,7 @@
 -(void)configureWithUser:(NSDictionary *)user
 {
     self.user = user;
-    [self.avatarImageView setImageWithURL:[NSURL URLWithString:[[TWICUserManager sharedInstance]avatarURLStringForUser:user]]];
+    [self.avatarImageView setImageWithURL:[NSURL URLWithString:[[TWICUserManager sharedInstance]avatarURLStringForUser:user]] placeholderImage:[UIImage imageNamed:@"user"]];
     self.displayNameLabel.text = [[TWICUserManager sharedInstance]displayNameForUser:user];
     if([user[UserConnectionStateKey]integerValue] == UserConnectionStateConnected){
         self.connectionStatusView.backgroundColor = TWIC_COLOR_GREEN;

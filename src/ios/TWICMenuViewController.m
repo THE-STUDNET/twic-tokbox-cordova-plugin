@@ -19,6 +19,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UIView *backgroundView;
 @property (weak, nonatomic) IBOutlet UIView *headerView;
+@property (weak, nonatomic) IBOutlet UIView *separatorview;
 
 //data
 @property (strong, nonatomic) NSMutableArray <NSDictionary *> *users;
@@ -72,13 +73,15 @@
 }
 
 -(void)configureSkin{
-    self.view.backgroundColor = CLEAR_COLOR;
-    self.headerView.backgroundColor = CLEAR_COLOR;
+    self.view.backgroundColor = TWIC_COLOR_BLACK;
+    self.tableView.backgroundColor = TWIC_COLOR_BLACK;
+    self.headerView.backgroundColor = TWIC_COLOR_BLACK;
     self.closeButton.backgroundColor = CLEAR_COLOR;
     self.titleLabel.textColor = [UIColor whiteColor];
+    self.titleLabel.font = [UIFont boldSystemFontOfSize:17];
     self.backgroundView.backgroundColor = [UIColor blackColor];
-    self.backgroundView.alpha = TWIC_ALPHA;
     self.closeButton.backgroundColor = CLEAR_COLOR;
+    self.separatorview.backgroundColor = TWIC_COLOR_GREY;
 }
 
 - (IBAction)close:(id)sender {
